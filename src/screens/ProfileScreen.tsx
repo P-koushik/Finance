@@ -23,6 +23,7 @@ import { BottomBar } from '../components/BottomBar';
 import { InputField } from '../components/InputField';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { useToast } from '../components/ToastProvider';
+import { useAuth } from '../contexts/AuthContext';
 import { formatCurrency } from '../utils/format';
 import {
   getProfile,
@@ -32,6 +33,7 @@ import {
 } from '../utils/storage';
 
 export function ProfileScreen() {
+  const { logout, user } = useAuth();
   const { showToast } = useToast();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -152,10 +154,10 @@ export function ProfileScreen() {
             </View>
             <View style={styles.summaryText}>
               <Text numberOfLines={1} style={styles.name}>
-                {name || 'Your Name'}
+                {user?.displayName || name || 'Your Name'}
               </Text>
               <Text numberOfLines={1} style={styles.email}>
-                {email || 'email@example.com'}
+                {user?.email || email || 'email@example.com'}
               </Text>
             </View>
           </View>
@@ -204,6 +206,12 @@ export function ProfileScreen() {
             loading={saving}
             onPress={handleSave}
             style={styles.saveButton}
+          />
+
+          <PrimaryButton
+            label="Sign Out"
+            onPress={logout}
+            style={styles.signOutButton}
           />
 
           <View style={styles.settingsCard}>
@@ -315,6 +323,10 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     marginTop: 28,
+  },
+  signOutButton: {
+    backgroundColor: '#be123c',
+    marginTop: 14,
   },
   settingsCard: {
     backgroundColor: '#ffffff',

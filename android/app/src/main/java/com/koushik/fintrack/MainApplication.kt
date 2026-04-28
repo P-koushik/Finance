@@ -1,4 +1,4 @@
-package com.finance
+package com.koushik.fintrack
 
 import android.app.Application
 import com.facebook.react.PackageList
