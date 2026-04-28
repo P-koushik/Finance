@@ -96,8 +96,8 @@ export function SignUpScreen({ navigation }: SignUpScreenProps) {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.brand}>
-          <WalletCards color="#2e62dd" size={25} strokeWidth={2.7} />
-          <Text style={styles.brandText}>FinTrack</Text>
+          <WalletCards color="#2e62dd" size={22} strokeWidth={2.7} />
+          <Text style={styles.brandText}>Finance</Text>
         </View>
 
         <View style={styles.card}>
@@ -218,21 +218,21 @@ const styles = StyleSheet.create({
   brand: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 10,
+    gap: 8,
     justifyContent: 'center',
-    marginBottom: 18,
+    marginBottom: 14,
   },
   brandText: {
     color: '#2b5fd7',
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '900',
   },
   card: {
     backgroundColor: '#ffffff',
     borderRadius: 12,
     elevation: 6,
-    gap: 22,
-    padding: 28,
+    gap: 16,
+    padding: 24,
     shadowColor: '#d9e3ee',
     shadowOffset: { width: 0, height: 14 },
     shadowOpacity: 0.75,
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
     justifyContent: 'center',
-    padding: 28,
+    padding: 24,
   },
   disabled: {
     opacity: 0.65,
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
   },
   dividerText: {
     color: '#94a3b8',
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: '800',
   },
   footerRow: {
@@ -268,16 +268,16 @@ const styles = StyleSheet.create({
   },
   footerText: {
     color: '#6b7280',
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '700',
   },
   form: {
-    gap: 18,
-    marginTop: 10,
+    gap: 14,
+    marginTop: 6,
   },
   linkText: {
     color: '#0f8c84',
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '900',
   },
   pressed: {
@@ -289,8 +289,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     elevation: 5,
     flexDirection: 'row',
-    gap: 12,
-    height: 62,
+    gap: 10,
+    height: 54,
     justifyContent: 'center',
     shadowColor: '#1e3f66',
     shadowOffset: { width: 0, height: 8 },
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
   },
   primaryButtonText: {
     color: '#ffffff',
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: '800',
   },
   safeArea: {
@@ -311,36 +311,36 @@ const styles = StyleSheet.create({
     borderColor: '#0f8c84',
     borderRadius: 12,
     borderWidth: 1,
-    height: 58,
+    height: 52,
     justifyContent: 'center',
   },
   socialText: {
     color: '#0f8c84',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '900',
   },
   subtitle: {
     color: '#6b7280',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    lineHeight: 23,
+    lineHeight: 21,
     textAlign: 'center',
   },
   termsRow: {
     alignItems: 'flex-start',
     flexDirection: 'row',
-    gap: 10,
+    gap: 8,
   },
   termsText: {
     color: '#6b7280',
     flex: 1,
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '700',
-    lineHeight: 22,
+    lineHeight: 20,
   },
   title: {
     color: '#2f3742',
-    fontSize: 27,
+    fontSize: 25,
     fontWeight: '900',
     textAlign: 'center',
   },

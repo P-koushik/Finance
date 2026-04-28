@@ -80,8 +80,8 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.brand}>
-          <WalletCards color="#2e62dd" size={25} strokeWidth={2.7} />
-          <Text style={styles.brandText}>FinTrack</Text>
+          <WalletCards color="#2e62dd" size={22} strokeWidth={2.7} />
+          <Text style={styles.brandText}>Finance</Text>
         </View>
 
         <View style={styles.card}>
@@ -176,21 +176,21 @@ const styles = StyleSheet.create({
   brand: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 10,
+    gap: 8,
     justifyContent: 'center',
-    marginBottom: 112,
+    marginBottom: 72,
   },
   brandText: {
     color: '#2b5fd7',
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '900',
   },
   card: {
     backgroundColor: '#ffffff',
-    borderRadius: 30,
+    borderRadius: 24,
     elevation: 6,
-    gap: 22,
-    padding: 28,
+    gap: 18,
+    padding: 24,
     shadowColor: '#d9e3ee',
     shadowOffset: { width: 0, height: 14 },
     shadowOpacity: 0.75,
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
     justifyContent: 'center',
-    padding: 28,
+    padding: 24,
   },
   disabled: {
     opacity: 0.65,
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     gap: 16,
-    marginTop: 8,
+    marginTop: 4,
   },
   dividerText: {
     color: '#94a3b8',
@@ -224,20 +224,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 34,
+    marginTop: 26,
   },
   footerText: {
     color: '#6b7280',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '700',
   },
   form: {
-    gap: 22,
-    marginTop: 10,
+    gap: 16,
+    marginTop: 6,
   },
   linkText: {
     color: '#0f8c84',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '900',
   },
   pressed: {
@@ -249,8 +249,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     elevation: 5,
     flexDirection: 'row',
-    gap: 12,
-    height: 62,
+    gap: 10,
+    height: 54,
     justifyContent: 'center',
     shadowColor: '#1e3f66',
     shadowOffset: { width: 0, height: 8 },
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
   },
   primaryButtonText: {
     color: '#ffffff',
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: '800',
   },
   safeArea: {
@@ -271,24 +271,24 @@ const styles = StyleSheet.create({
     borderColor: '#cbd5e1',
     borderRadius: 12,
     borderWidth: 1,
-    height: 58,
+    height: 52,
     justifyContent: 'center',
   },
   socialText: {
     color: '#2f3742',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '900',
   },
   subtitle: {
     color: '#6b7280',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    lineHeight: 23,
+    lineHeight: 21,
     textAlign: 'center',
   },
   title: {
     color: '#143f6d',
-    fontSize: 31,
+    fontSize: 27,
     fontWeight: '900',
     textAlign: 'center',
   },

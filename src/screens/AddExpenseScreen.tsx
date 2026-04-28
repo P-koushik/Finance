@@ -132,7 +132,7 @@ export function AddExpenseScreen({ navigation }: AddExpenseScreenProps) {
       >
         <View style={styles.header}>
           <View style={styles.brand}>
-            <WalletCards color="#2e62dd" size={24} strokeWidth={2.7} />
+            <WalletCards color="#2e62dd" size={22} strokeWidth={2.7} />
             <Text style={styles.brandText}>Finance</Text>
           </View>
         </View>
@@ -295,43 +295,43 @@ const styles = StyleSheet.create({
   brand: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 10,
+    gap: 8,
   },
   brandText: {
     color: '#2b5fd7',
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '800',
   },
   categoryGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
+    gap: 8,
   },
   categoryGroup: {
-    gap: 12,
+    gap: 10,
   },
   categoryPill: {
     alignItems: 'center',
     backgroundColor: '#e9edf0',
     borderRadius: 21,
     flexDirection: 'row',
-    gap: 7,
-    minHeight: 40,
-    paddingHorizontal: 16,
+    gap: 6,
+    minHeight: 34,
+    paddingHorizontal: 13,
   },
   categoryPillSelected: {
     backgroundColor: '#75e5df',
   },
   categoryText: {
     color: '#606872',
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '800',
   },
   categoryTextSelected: {
     color: '#117b78',
   },
   content: {
-    padding: 22,
+    padding: 18,
     paddingBottom: 44,
   },
   dateBox: {
@@ -339,32 +339,32 @@ const styles = StyleSheet.create({
     backgroundColor: '#eef1f4',
     borderRadius: 8,
     flexDirection: 'row',
-    gap: 16,
-    height: 58,
-    paddingHorizontal: 18,
+    gap: 12,
+    height: 50,
+    paddingHorizontal: 16,
   },
   dateGroup: {
-    gap: 10,
+    gap: 8,
   },
   dateText: {
     color: '#626a75',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '700',
   },
   dateModal: {
     backgroundColor: '#ffffff',
     borderRadius: 18,
-    gap: 20,
+    gap: 16,
     marginHorizontal: 24,
-    padding: 24,
+    padding: 20,
   },
   formCard: {
     backgroundColor: '#ffffff',
     borderRadius: 10,
     elevation: 2,
-    gap: 28,
-    marginTop: 30,
-    padding: 24,
+    gap: 22,
+    marginTop: 22,
+    padding: 20,
     shadowColor: '#d5dae1',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.55,
@@ -374,17 +374,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#ffffff',
     flexDirection: 'row',
-    height: 64,
+    height: 58,
     justifyContent: 'space-between',
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
   },
   hero: {
     backgroundColor: '#1f506f',
     borderRadius: 8,
-    height: 172,
+    height: 136,
     justifyContent: 'flex-end',
     overflow: 'hidden',
-    padding: 22,
+    padding: 18,
   },
   heroLineMedium: {
     backgroundColor: 'rgba(255,255,255,0.24)',
@@ -399,10 +399,10 @@ const styles = StyleSheet.create({
     width: 130,
   },
   heroLines: {
-    gap: 14,
-    left: 28,
+    gap: 11,
+    left: 24,
     position: 'absolute',
-    top: 28,
+    top: 24,
     transform: [{ rotate: '-10deg' }],
   },
   heroLineWide: {
@@ -417,20 +417,20 @@ const styles = StyleSheet.create({
   },
   heroSubtitle: {
     color: '#c8d7e6',
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '600',
-    lineHeight: 21,
+    lineHeight: 19,
     width: '78%',
   },
   heroTitle: {
     color: '#ffffff',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '800',
     marginBottom: 4,
   },
   label: {
     color: '#686e78',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
   },
   modalBackdrop: {
@@ -440,11 +440,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   modalButton: {
-    height: 56,
+    height: 50,
   },
   modalTitle: {
     color: '#2f3742',
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '800',
   },
   pressed: {
@@ -455,7 +455,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   saveButton: {
-    marginTop: 30,
+    marginTop: 24,
   },
   screen: {
     backgroundColor: '#f4f8fb',

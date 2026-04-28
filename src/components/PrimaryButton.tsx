@@ -39,7 +39,7 @@ export function PrimaryButton({
         <ActivityIndicator color="#ffffff" />
       ) : (
         <>
-          <CircleCheck color="#ffffff" size={22} strokeWidth={2.6} />
+          <CircleCheck color="#ffffff" size={20} strokeWidth={2.6} />
           <Text style={styles.label}>{label}</Text>
         </>
       )}
@@ -54,8 +54,8 @@ const styles = StyleSheet.create({
     borderRadius: 32,
     elevation: 8,
     flexDirection: 'row',
-    gap: 12,
-    height: 64,
+    gap: 10,
+    height: 54,
     justifyContent: 'center',
     shadowColor: '#0a2d4c',
     shadowOffset: { width: 0, height: 10 },
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
   },
   label: {
     color: '#ffffff',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '700',
   },
   pressed: {
