@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Keyboard,
   ScrollView,
@@ -8,7 +8,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import {useFocusEffect} from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   BadgeIndianRupee,
   Database,
@@ -17,13 +17,13 @@ import {
   User,
   WalletCards,
 } from 'lucide-react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import {BottomBar} from '../components/BottomBar';
-import {InputField} from '../components/InputField';
-import {PrimaryButton} from '../components/PrimaryButton';
-import {useToast} from '../components/ToastProvider';
-import {formatCurrency} from '../utils/format';
+import { BottomBar } from '../components/BottomBar';
+import { InputField } from '../components/InputField';
+import { PrimaryButton } from '../components/PrimaryButton';
+import { useToast } from '../components/ToastProvider';
+import { formatCurrency } from '../utils/format';
 import {
   getProfile,
   getSettings,
@@ -32,7 +32,7 @@ import {
 } from '../utils/storage';
 
 export function ProfileScreen() {
-  const {showToast} = useToast();
+  const { showToast } = useToast();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [monthlyBudget, setMonthlyBudget] = useState('');
@@ -94,7 +94,8 @@ export function ProfileScreen() {
       showToast({
         type: 'error',
         title: 'Storage disabled',
-        message: 'Turn on Local Storage in Settings before saving profile details.',
+        message:
+          'Turn on Local Storage in Settings before saving profile details.',
       });
       return;
     }
@@ -143,7 +144,8 @@ export function ProfileScreen() {
           ]}
           keyboardDismissMode="none"
           keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}>
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.summaryCard}>
             <View style={styles.avatar}>
               <User color="#ffffff" size={36} strokeWidth={2.4} />
@@ -222,7 +224,7 @@ export function ProfileScreen() {
               <Switch
                 onValueChange={handleStorageToggle}
                 thumbColor={localStorageEnabled ? '#ffffff' : '#f4f4f5'}
-                trackColor={{false: '#cbd5e1', true: '#75e5df'}}
+                trackColor={{ false: '#cbd5e1', true: '#75e5df' }}
                 value={localStorageEnabled}
               />
             </View>
@@ -291,7 +293,7 @@ const styles = StyleSheet.create({
     marginTop: 22,
     padding: 22,
     shadowColor: '#d5dae1',
-    shadowOffset: {width: 0, height: 6},
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.55,
     shadowRadius: 14,
   },
@@ -322,7 +324,7 @@ const styles = StyleSheet.create({
     marginTop: 22,
     padding: 22,
     shadowColor: '#d5dae1',
-    shadowOffset: {width: 0, height: 6},
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.55,
     shadowRadius: 14,
   },
@@ -377,7 +379,7 @@ const styles = StyleSheet.create({
     gap: 18,
     padding: 22,
     shadowColor: '#d5dae1',
-    shadowOffset: {width: 0, height: 6},
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.55,
     shadowRadius: 14,
   },

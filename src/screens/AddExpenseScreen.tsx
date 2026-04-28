@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Modal,
@@ -10,8 +10,8 @@ import {
   Text,
   View,
 } from 'react-native';
-import {CommonActions} from '@react-navigation/native';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import { CommonActions } from '@react-navigation/native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   BadgeDollarSign,
   CalendarDays,
@@ -22,23 +22,23 @@ import {
   WalletCards,
   Zap,
 } from 'lucide-react-native';
-import {Calendar, DateData} from 'react-native-calendars';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { Calendar, DateData } from 'react-native-calendars';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import {BottomBar} from '../components/BottomBar';
-import {InputField} from '../components/InputField';
-import {PrimaryButton} from '../components/PrimaryButton';
-import {useToast} from '../components/ToastProvider';
-import type {Expense, ExpenseCategory, RootStackParamList} from '../types';
-import {addExpense, getSettings} from '../utils/storage';
+import { BottomBar } from '../components/BottomBar';
+import { InputField } from '../components/InputField';
+import { PrimaryButton } from '../components/PrimaryButton';
+import { useToast } from '../components/ToastProvider';
+import type { Expense, ExpenseCategory, RootStackParamList } from '../types';
+import { addExpense, getSettings } from '../utils/storage';
 
 type AddExpenseScreenProps = NativeStackScreenProps<
   RootStackParamList,
   'AddExpense'
 >;
 
-export function AddExpenseScreen({navigation}: AddExpenseScreenProps) {
-  const {showToast} = useToast();
+export function AddExpenseScreen({ navigation }: AddExpenseScreenProps) {
+  const { showToast } = useToast();
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState<ExpenseCategory>('Food');
@@ -47,7 +47,10 @@ export function AddExpenseScreen({navigation}: AddExpenseScreenProps) {
   const [datePickerVisible, setDatePickerVisible] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const parsedAmount = useMemo(() => Number(amount.replace(/,/g, '')), [amount]);
+  const parsedAmount = useMemo(
+    () => Number(amount.replace(/,/g, '')),
+    [amount],
+  );
   const selectedCategory =
     category === 'Other' ? customCategory.trim() : category;
   const canSave =
@@ -93,7 +96,7 @@ export function AddExpenseScreen({navigation}: AddExpenseScreenProps) {
       navigation.dispatch(
         CommonActions.reset({
           index: 0,
-          routes: [{name: 'Home'}],
+          routes: [{ name: 'Home' }],
         }),
       );
     } finally {
@@ -102,10 +105,10 @@ export function AddExpenseScreen({navigation}: AddExpenseScreenProps) {
   };
 
   const categories = [
-    {label: 'Food', Icon: Utensils},
-    {label: 'Travel', Icon: Car},
-    {label: 'Utilities', Icon: Zap},
-    {label: 'Other', Icon: CircleEllipsis},
+    { label: 'Food', Icon: Utensils },
+    { label: 'Travel', Icon: Car },
+    { label: 'Utilities', Icon: Zap },
+    { label: 'Other', Icon: CircleEllipsis },
   ];
 
   const dateLabel = selectedDate.toLocaleDateString('en-IN', {
@@ -124,8 +127,9 @@ export function AddExpenseScreen({navigation}: AddExpenseScreenProps) {
     <SafeAreaView edges={['top']} style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#f4f8fb" />
       <KeyboardAvoidingView
-        behavior={Platform.select({ios: 'padding', android: undefined})}
-        style={styles.screen}>
+        behavior={Platform.select({ ios: 'padding', android: undefined })}
+        style={styles.screen}
+      >
         <View style={styles.header}>
           <View style={styles.brand}>
             <WalletCards color="#2e62dd" size={24} strokeWidth={2.7} />
@@ -136,7 +140,8 @@ export function AddExpenseScreen({navigation}: AddExpenseScreenProps) {
         <ScrollView
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}>
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.hero}>
             <View style={styles.heroOverlay} />
             <View style={styles.heroLines}>
@@ -174,32 +179,34 @@ export function AddExpenseScreen({navigation}: AddExpenseScreenProps) {
             <View style={styles.categoryGroup}>
               <Text style={styles.label}>Quick Category</Text>
               <View style={styles.categoryGrid}>
-                {categories.map(({label, Icon}) => {
+                {categories.map(({ label, Icon }) => {
                   const selected = category === label;
 
                   return (
-                  <Pressable
-                    accessibilityRole="button"
-                    key={label}
-                    onPress={() => setCategory(label as ExpenseCategory)}
-                    style={[
-                      styles.categoryPill,
-                      selected && styles.categoryPillSelected,
-                    ]}>
-                    <Icon
-                      color={selected ? '#117b78' : '#6f7782'}
-                      size={18}
-                      strokeWidth={2.4}
-                    />
-                    <Text
+                    <Pressable
+                      accessibilityRole="button"
+                      key={label}
+                      onPress={() => setCategory(label as ExpenseCategory)}
                       style={[
-                        styles.categoryText,
-                        selected && styles.categoryTextSelected,
-                      ]}>
-                      {label}
-                    </Text>
-                  </Pressable>
-                );
+                        styles.categoryPill,
+                        selected && styles.categoryPillSelected,
+                      ]}
+                    >
+                      <Icon
+                        color={selected ? '#117b78' : '#6f7782'}
+                        size={18}
+                        strokeWidth={2.4}
+                      />
+                      <Text
+                        style={[
+                          styles.categoryText,
+                          selected && styles.categoryTextSelected,
+                        ]}
+                      >
+                        {label}
+                      </Text>
+                    </Pressable>
+                  );
                 })}
               </View>
             </View>
@@ -220,7 +227,11 @@ export function AddExpenseScreen({navigation}: AddExpenseScreenProps) {
               <Pressable
                 accessibilityRole="button"
                 onPress={() => setDatePickerVisible(true)}
-                style={({pressed}) => [styles.dateBox, pressed && styles.pressed]}>
+                style={({ pressed }) => [
+                  styles.dateBox,
+                  pressed && styles.pressed,
+                ]}
+              >
                 <CalendarDays color="#747c88" size={22} strokeWidth={2.4} />
                 <Text style={styles.dateText}>{dateLabel}</Text>
               </Pressable>
@@ -240,7 +251,8 @@ export function AddExpenseScreen({navigation}: AddExpenseScreenProps) {
           animationType="fade"
           transparent
           visible={datePickerVisible}
-          onRequestClose={() => setDatePickerVisible(false)}>
+          onRequestClose={() => setDatePickerVisible(false)}
+        >
           <View style={styles.modalBackdrop}>
             <View style={styles.dateModal}>
               <Text style={styles.modalTitle}>Select Date</Text>
@@ -354,7 +366,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     padding: 24,
     shadowColor: '#d5dae1',
-    shadowOffset: {width: 0, height: 6},
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.55,
     shadowRadius: 14,
   },
@@ -391,7 +403,7 @@ const styles = StyleSheet.create({
     left: 28,
     position: 'absolute',
     top: 28,
-    transform: [{rotate: '-10deg'}],
+    transform: [{ rotate: '-10deg' }],
   },
   heroLineWide: {
     backgroundColor: 'rgba(255,255,255,0.15)',

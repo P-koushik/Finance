@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -8,19 +8,20 @@ import {
   Text,
   View,
 } from 'react-native';
-import {NavigationProp, useFocusEffect, useNavigation} from '@react-navigation/native';
 import {
-  TrendingUp,
-  WalletCards,
-} from 'lucide-react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+  NavigationProp,
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native';
+import { TrendingUp, WalletCards } from 'lucide-react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import {BottomBar} from '../components/BottomBar';
-import {ConfirmCard} from '../components/ConfirmCard';
-import {ExpenseCard} from '../components/ExpenseCard';
-import {useToast} from '../components/ToastProvider';
-import type {Expense, RootStackParamList, UserProfile} from '../types';
-import {formatCurrency} from '../utils/format';
+import { BottomBar } from '../components/BottomBar';
+import { ConfirmCard } from '../components/ConfirmCard';
+import { ExpenseCard } from '../components/ExpenseCard';
+import { useToast } from '../components/ToastProvider';
+import type { Expense, RootStackParamList, UserProfile } from '../types';
+import { formatCurrency } from '../utils/format';
 import {
   defaultProfile,
   deleteExpense,
@@ -30,7 +31,7 @@ import {
 
 export function HomeScreen() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const {showToast} = useToast();
+  const { showToast } = useToast();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [profile, setProfile] = useState<UserProfile>(defaultProfile);
   const [loading, setLoading] = useState(true);
@@ -110,7 +111,8 @@ export function HomeScreen() {
 
         <ScrollView
           contentContainerStyle={styles.content}
-          showsVerticalScrollIndicator={false}>
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.totalCard}>
             <Text style={styles.totalLabel}>Total Spent</Text>
             <Text style={styles.totalValue}>{formatCurrency(totalSpent)}</Text>
@@ -152,7 +154,8 @@ export function HomeScreen() {
               <Pressable
                 accessibilityRole="button"
                 onPress={() => navigation.navigate('AllExpenses')}
-                hitSlop={8}>
+                hitSlop={8}
+              >
                 <Text style={styles.viewAll}>View All</Text>
               </Pressable>
             ) : null}
@@ -311,7 +314,7 @@ const styles = StyleSheet.create({
     minHeight: 78,
     padding: 18,
     shadowColor: '#d3d8df',
-    shadowOffset: {width: 0, height: 5},
+    shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.62,
     shadowRadius: 10,
   },

@@ -1,6 +1,6 @@
 import React from 'react';
-import {Pressable, StyleSheet, Text, View} from 'react-native';
-import {CircleCheck, CircleX, Info, X} from 'lucide-react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { CircleCheck, CircleX, Info, X } from 'lucide-react-native';
 
 type MessageType = 'error' | 'success' | 'info';
 
@@ -12,9 +12,9 @@ type MessageCardProps = {
 };
 
 const colors = {
-  error: {bg: '#fff1f2', border: '#fecdd3', icon: '#e11d48'},
-  success: {bg: '#ecfdf5', border: '#bbf7d0', icon: '#059669'},
-  info: {bg: '#eff6ff', border: '#bfdbfe', icon: '#2563eb'},
+  error: { bg: '#fff1f2', border: '#fecdd3', icon: '#e11d48' },
+  success: { bg: '#ecfdf5', border: '#bbf7d0', icon: '#059669' },
+  info: { bg: '#eff6ff', border: '#bfdbfe', icon: '#2563eb' },
 };
 
 export function MessageCard({
@@ -23,15 +23,17 @@ export function MessageCard({
   type = 'info',
   onDismiss,
 }: MessageCardProps) {
-  const Icon = type === 'success' ? CircleCheck : type === 'error' ? CircleX : Info;
+  const Icon =
+    type === 'success' ? CircleCheck : type === 'error' ? CircleX : Info;
   const color = colors[type];
 
   return (
     <View
       style={[
         styles.card,
-        {backgroundColor: color.bg, borderColor: color.border},
-      ]}>
+        { backgroundColor: color.bg, borderColor: color.border },
+      ]}
+    >
       <Icon color={color.icon} size={22} strokeWidth={2.5} />
       <View style={styles.content}>
         <Text style={styles.title}>{title}</Text>
@@ -42,7 +44,8 @@ export function MessageCard({
           accessibilityLabel="Dismiss message"
           accessibilityRole="button"
           hitSlop={8}
-          onPress={onDismiss}>
+          onPress={onDismiss}
+        >
           <X color="#64748b" size={18} strokeWidth={2.4} />
         </Pressable>
       ) : null}

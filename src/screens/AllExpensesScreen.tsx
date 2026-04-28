@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -8,19 +8,19 @@ import {
   Text,
   View,
 } from 'react-native';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import {ChevronLeft, WalletCards} from 'lucide-react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { ChevronLeft, WalletCards } from 'lucide-react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import {ConfirmCard} from '../components/ConfirmCard';
-import {ExpenseCard} from '../components/ExpenseCard';
-import {useToast} from '../components/ToastProvider';
-import type {Expense} from '../types';
-import {deleteExpense, getExpenses} from '../utils/storage';
+import { ConfirmCard } from '../components/ConfirmCard';
+import { ExpenseCard } from '../components/ExpenseCard';
+import { useToast } from '../components/ToastProvider';
+import type { Expense } from '../types';
+import { deleteExpense, getExpenses } from '../utils/storage';
 
 export function AllExpensesScreen() {
   const navigation = useNavigation();
-  const {showToast} = useToast();
+  const { showToast } = useToast();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
   const [expenseToDelete, setExpenseToDelete] = useState<string | null>(null);
@@ -69,7 +69,8 @@ export function AllExpensesScreen() {
             accessibilityRole="button"
             hitSlop={10}
             onPress={() => navigation.goBack()}
-            style={styles.backButton}>
+            style={styles.backButton}
+          >
             <ChevronLeft color="#475569" size={26} strokeWidth={2.6} />
           </Pressable>
           <View style={styles.brand}>
@@ -80,7 +81,8 @@ export function AllExpensesScreen() {
 
         <ScrollView
           contentContainerStyle={styles.content}
-          showsVerticalScrollIndicator={false}>
+          showsVerticalScrollIndicator={false}
+        >
           {loading ? (
             <View style={styles.centerState}>
               <ActivityIndicator color="#124777" />
