@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import type {Expense} from '../src/types';
+import type { Expense } from '../src/types';
 import {
   addExpense,
   deleteExpense,
@@ -54,7 +54,10 @@ test('handles invalid storage safely', async () => {
 });
 
 test('saves and loads expenses', async () => {
-  await saveSettings({localStorageEnabled: true, storagePermissionAsked: true});
+  await saveSettings({
+    localStorageEnabled: true,
+    storagePermissionAsked: true,
+  });
   await saveExpenses([expense]);
 
   await expect(getExpenses()).resolves.toEqual([expense]);
@@ -68,7 +71,10 @@ test('adds a new expense before existing expenses', async () => {
     createdAt: '2026-04-28T11:00:00.000Z',
   };
 
-  await saveSettings({localStorageEnabled: true, storagePermissionAsked: true});
+  await saveSettings({
+    localStorageEnabled: true,
+    storagePermissionAsked: true,
+  });
   await saveExpenses([expense]);
   await addExpense(secondExpense);
 
@@ -83,7 +89,10 @@ test('deletes the matching expense', async () => {
     createdAt: '2026-04-28T11:00:00.000Z',
   };
 
-  await saveSettings({localStorageEnabled: true, storagePermissionAsked: true});
+  await saveSettings({
+    localStorageEnabled: true,
+    storagePermissionAsked: true,
+  });
   await saveExpenses([expense, secondExpense]);
   await deleteExpense('expense-1');
 
@@ -98,9 +107,15 @@ test('defaults local storage setting to disabled until permission is asked', asy
 });
 
 test('does not read or save expenses when local storage is disabled', async () => {
-  await saveSettings({localStorageEnabled: true, storagePermissionAsked: true});
+  await saveSettings({
+    localStorageEnabled: true,
+    storagePermissionAsked: true,
+  });
   await saveExpenses([expense]);
-  await saveSettings({localStorageEnabled: false, storagePermissionAsked: true});
+  await saveSettings({
+    localStorageEnabled: false,
+    storagePermissionAsked: true,
+  });
   await addExpense({
     id: 'expense-2',
     title: 'Coffee',
@@ -110,6 +125,9 @@ test('does not read or save expenses when local storage is disabled', async () =
 
   await expect(getExpenses()).resolves.toEqual([]);
 
-  await saveSettings({localStorageEnabled: true, storagePermissionAsked: true});
+  await saveSettings({
+    localStorageEnabled: true,
+    storagePermissionAsked: true,
+  });
   await expect(getExpenses()).resolves.toEqual([expense]);
 });

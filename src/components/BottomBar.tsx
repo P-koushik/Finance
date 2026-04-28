@@ -1,38 +1,38 @@
 import React from 'react';
-import {Pressable, StyleSheet, Text, View} from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import {
   CommonActions,
   NavigationProp,
   useNavigation,
 } from '@react-navigation/native';
-import {CirclePlus, Home, User} from 'lucide-react-native';
+import { CirclePlus, Home, User } from 'lucide-react-native';
 
-import type {RootStackParamList} from '../types';
+import type { RootStackParamList } from '../types';
 
 type BottomBarProps = {
   active: 'home' | 'add' | 'profile';
 };
 
-export function BottomBar({active}: BottomBarProps) {
+export function BottomBar({ active }: BottomBarProps) {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const items = [
-    {key: 'home', label: 'Home', Icon: Home, route: 'Home'},
-    {key: 'add', label: 'Add', Icon: CirclePlus, route: 'AddExpense'},
-    {key: 'profile', label: 'Profile', Icon: User, route: 'Profile'},
+    { key: 'home', label: 'Home', Icon: Home, route: 'Home' },
+    { key: 'add', label: 'Add', Icon: CirclePlus, route: 'AddExpense' },
+    { key: 'profile', label: 'Profile', Icon: User, route: 'Profile' },
   ] as const;
 
   const switchTab = (route: keyof RootStackParamList) => {
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
-        routes: [{name: route}],
+        routes: [{ name: route }],
       }),
     );
   };
 
   return (
     <View style={styles.container}>
-      {items.map(({key, label, Icon, route}) => {
+      {items.map(({ key, label, Icon, route }) => {
         const selected = active === key;
 
         return (
@@ -44,7 +44,8 @@ export function BottomBar({active}: BottomBarProps) {
                 switchTab(route);
               }
             }}
-            style={({pressed}) => [styles.item, pressed && styles.pressed]}>
+            style={({ pressed }) => [styles.item, pressed && styles.pressed]}
+          >
             <Icon
               color={selected ? '#2e62dd' : '#a8b0bb'}
               fill={selected ? '#2e62dd' : 'transparent'}
@@ -76,7 +77,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     paddingHorizontal: 20,
     shadowColor: '#d3d8df',
-    shadowOffset: {width: 0, height: -5},
+    shadowOffset: { width: 0, height: -5 },
     shadowOpacity: 0.55,
     shadowRadius: 12,
   },

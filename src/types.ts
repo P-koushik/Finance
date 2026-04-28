@@ -20,6 +20,8 @@ export type AppSettings = {
 };
 
 export type RootStackParamList = {
+  Login: undefined;
+  SignUp: undefined;
   Home: undefined;
   AddExpense: undefined;
   AllExpenses: undefined;

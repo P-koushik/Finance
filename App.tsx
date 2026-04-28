@@ -1,37 +1,77 @@
 import React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
-import {enableScreens} from 'react-native-screens';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { enableScreens } from 'react-native-screens';
 
-import {AddExpenseScreen} from './src/screens/AddExpenseScreen';
-import {AllExpensesScreen} from './src/screens/AllExpensesScreen';
-import {HomeScreen} from './src/screens/HomeScreen';
-import {ProfileScreen} from './src/screens/ProfileScreen';
-import {ToastProvider} from './src/components/ToastProvider';
-import {StoragePermissionPrompt} from './src/components/StoragePermissionPrompt';
-import type {RootStackParamList} from './src/types';
+import { AddExpenseScreen } from './src/screens/AddExpenseScreen';
+import { AllExpensesScreen } from './src/screens/AllExpensesScreen';
+import { HomeScreen } from './src/screens/HomeScreen';
+import { LoginScreen } from './src/screens/LoginScreen';
+import { ProfileScreen } from './src/screens/ProfileScreen';
+import { SignUpScreen } from './src/screens/SignUpScreen';
+import { ToastProvider } from './src/components/ToastProvider';
+import { StoragePermissionPrompt } from './src/components/StoragePermissionPrompt';
+import { AuthProvider, useAuth } from './src/contexts/AuthContext';
+import type { RootStackParamList } from './src/types';
 
 enableScreens();
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-function App() {
+function AppNavigator() {
+  const { initializing, user } = useAuth();
+
+  if (initializing) {
+    return (
+      <View style={styles.loadingScreen}>
+        <ActivityIndicator color="#124777" size="large" />
+      </View>
+    );
+  }
+
   return (
-    <SafeAreaProvider>
-      <ToastProvider>
-        <StoragePermissionPrompt />
-        <NavigationContainer>
-          <Stack.Navigator screenOptions={{headerShown: false}}>
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {user ? (
+          <>
             <Stack.Screen component={HomeScreen} name="Home" />
             <Stack.Screen component={AddExpenseScreen} name="AddExpense" />
             <Stack.Screen component={AllExpensesScreen} name="AllExpenses" />
             <Stack.Screen component={ProfileScreen} name="Profile" />
-          </Stack.Navigator>
-        </NavigationContainer>
+          </>
+        ) : (
+          <>
+            <Stack.Screen component={LoginScreen} name="Login" />
+            <Stack.Screen component={SignUpScreen} name="SignUp" />
+          </>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+function App() {
+  return (
+    <SafeAreaProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <StoragePermissionPrompt />
+          <AppNavigator />
+        </AuthProvider>
       </ToastProvider>
     </SafeAreaProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingScreen: {
+    alignItems: 'center',
+    backgroundColor: '#f4f8fb',
+    flex: 1,
+    justifyContent: 'center',
+  },
+});
 
 export default App;

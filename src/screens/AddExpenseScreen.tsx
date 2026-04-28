@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Modal,
@@ -10,8 +10,8 @@ import {
   Text,
   View,
 } from 'react-native';
-import {CommonActions} from '@react-navigation/native';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import { CommonActions } from '@react-navigation/native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   BadgeDollarSign,
   CalendarDays,
@@ -22,23 +22,23 @@ import {
   WalletCards,
   Zap,
 } from 'lucide-react-native';
-import {Calendar, DateData} from 'react-native-calendars';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { Calendar, DateData } from 'react-native-calendars';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import {BottomBar} from '../components/BottomBar';
-import {InputField} from '../components/InputField';
-import {PrimaryButton} from '../components/PrimaryButton';
-import {useToast} from '../components/ToastProvider';
-import type {Expense, ExpenseCategory, RootStackParamList} from '../types';
-import {addExpense, getSettings} from '../utils/storage';
+import { BottomBar } from '../components/BottomBar';
+import { InputField } from '../components/InputField';
+import { PrimaryButton } from '../components/PrimaryButton';
+import { useToast } from '../components/ToastProvider';
+import type { Expense, ExpenseCategory, RootStackParamList } from '../types';
+import { addExpense, getSettings } from '../utils/storage';
 
 type AddExpenseScreenProps = NativeStackScreenProps<
   RootStackParamList,
   'AddExpense'
 >;
 
-export function AddExpenseScreen({navigation}: AddExpenseScreenProps) {
-  const {showToast} = useToast();
+export function AddExpenseScreen({ navigation }: AddExpenseScreenProps) {
+  const { showToast } = useToast();
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState<ExpenseCategory>('Food');
@@ -47,7 +47,10 @@ export function AddExpenseScreen({navigation}: AddExpenseScreenProps) {
   const [datePickerVisible, setDatePickerVisible] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const parsedAmount = useMemo(() => Number(amount.replace(/,/g, '')), [amount]);
+  const parsedAmount = useMemo(
+    () => Number(amount.replace(/,/g, '')),
+    [amount],
+  );
   const selectedCategory =
     category === 'Other' ? customCategory.trim() : category;
   const canSave =
@@ -93,7 +96,7 @@ export function AddExpenseScreen({navigation}: AddExpenseScreenProps) {
       navigation.dispatch(
         CommonActions.reset({
           index: 0,
-          routes: [{name: 'Home'}],
+          routes: [{ name: 'Home' }],
         }),
       );
     } finally {
@@ -102,10 +105,10 @@ export function AddExpenseScreen({navigation}: AddExpenseScreenProps) {
   };
 
   const categories = [
-    {label: 'Food', Icon: Utensils},
-    {label: 'Travel', Icon: Car},
-    {label: 'Utilities', Icon: Zap},
-    {label: 'Other', Icon: CircleEllipsis},
+    { label: 'Food', Icon: Utensils },
+    { label: 'Travel', Icon: Car },
+    { label: 'Utilities', Icon: Zap },
+    { label: 'Other', Icon: CircleEllipsis },
   ];
 
   const dateLabel = selectedDate.toLocaleDateString('en-IN', {
@@ -124,11 +127,12 @@ export function AddExpenseScreen({navigation}: AddExpenseScreenProps) {
     <SafeAreaView edges={['top']} style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#f4f8fb" />
       <KeyboardAvoidingView
-        behavior={Platform.select({ios: 'padding', android: undefined})}
-        style={styles.screen}>
+        behavior={Platform.select({ ios: 'padding', android: undefined })}
+        style={styles.screen}
+      >
         <View style={styles.header}>
           <View style={styles.brand}>
-            <WalletCards color="#2e62dd" size={24} strokeWidth={2.7} />
+            <WalletCards color="#2e62dd" size={22} strokeWidth={2.7} />
             <Text style={styles.brandText}>Finance</Text>
           </View>
         </View>
@@ -136,7 +140,8 @@ export function AddExpenseScreen({navigation}: AddExpenseScreenProps) {
         <ScrollView
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}>
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.hero}>
             <View style={styles.heroOverlay} />
             <View style={styles.heroLines}>
@@ -174,32 +179,34 @@ export function AddExpenseScreen({navigation}: AddExpenseScreenProps) {
             <View style={styles.categoryGroup}>
               <Text style={styles.label}>Quick Category</Text>
               <View style={styles.categoryGrid}>
-                {categories.map(({label, Icon}) => {
+                {categories.map(({ label, Icon }) => {
                   const selected = category === label;
 
                   return (
-                  <Pressable
-                    accessibilityRole="button"
-                    key={label}
-                    onPress={() => setCategory(label as ExpenseCategory)}
-                    style={[
-                      styles.categoryPill,
-                      selected && styles.categoryPillSelected,
-                    ]}>
-                    <Icon
-                      color={selected ? '#117b78' : '#6f7782'}
-                      size={18}
-                      strokeWidth={2.4}
-                    />
-                    <Text
+                    <Pressable
+                      accessibilityRole="button"
+                      key={label}
+                      onPress={() => setCategory(label as ExpenseCategory)}
                       style={[
-                        styles.categoryText,
-                        selected && styles.categoryTextSelected,
-                      ]}>
-                      {label}
-                    </Text>
-                  </Pressable>
-                );
+                        styles.categoryPill,
+                        selected && styles.categoryPillSelected,
+                      ]}
+                    >
+                      <Icon
+                        color={selected ? '#117b78' : '#6f7782'}
+                        size={18}
+                        strokeWidth={2.4}
+                      />
+                      <Text
+                        style={[
+                          styles.categoryText,
+                          selected && styles.categoryTextSelected,
+                        ]}
+                      >
+                        {label}
+                      </Text>
+                    </Pressable>
+                  );
                 })}
               </View>
             </View>
@@ -220,7 +227,11 @@ export function AddExpenseScreen({navigation}: AddExpenseScreenProps) {
               <Pressable
                 accessibilityRole="button"
                 onPress={() => setDatePickerVisible(true)}
-                style={({pressed}) => [styles.dateBox, pressed && styles.pressed]}>
+                style={({ pressed }) => [
+                  styles.dateBox,
+                  pressed && styles.pressed,
+                ]}
+              >
                 <CalendarDays color="#747c88" size={22} strokeWidth={2.4} />
                 <Text style={styles.dateText}>{dateLabel}</Text>
               </Pressable>
@@ -240,7 +251,8 @@ export function AddExpenseScreen({navigation}: AddExpenseScreenProps) {
           animationType="fade"
           transparent
           visible={datePickerVisible}
-          onRequestClose={() => setDatePickerVisible(false)}>
+          onRequestClose={() => setDatePickerVisible(false)}
+        >
           <View style={styles.modalBackdrop}>
             <View style={styles.dateModal}>
               <Text style={styles.modalTitle}>Select Date</Text>
@@ -283,43 +295,43 @@ const styles = StyleSheet.create({
   brand: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 10,
+    gap: 8,
   },
   brandText: {
     color: '#2b5fd7',
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '800',
   },
   categoryGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
+    gap: 8,
   },
   categoryGroup: {
-    gap: 12,
+    gap: 10,
   },
   categoryPill: {
     alignItems: 'center',
     backgroundColor: '#e9edf0',
     borderRadius: 21,
     flexDirection: 'row',
-    gap: 7,
-    minHeight: 40,
-    paddingHorizontal: 16,
+    gap: 6,
+    minHeight: 34,
+    paddingHorizontal: 13,
   },
   categoryPillSelected: {
     backgroundColor: '#75e5df',
   },
   categoryText: {
     color: '#606872',
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '800',
   },
   categoryTextSelected: {
     color: '#117b78',
   },
   content: {
-    padding: 22,
+    padding: 18,
     paddingBottom: 44,
   },
   dateBox: {
@@ -327,34 +339,34 @@ const styles = StyleSheet.create({
     backgroundColor: '#eef1f4',
     borderRadius: 8,
     flexDirection: 'row',
-    gap: 16,
-    height: 58,
-    paddingHorizontal: 18,
+    gap: 12,
+    height: 50,
+    paddingHorizontal: 16,
   },
   dateGroup: {
-    gap: 10,
+    gap: 8,
   },
   dateText: {
     color: '#626a75',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '700',
   },
   dateModal: {
     backgroundColor: '#ffffff',
     borderRadius: 18,
-    gap: 20,
+    gap: 16,
     marginHorizontal: 24,
-    padding: 24,
+    padding: 20,
   },
   formCard: {
     backgroundColor: '#ffffff',
     borderRadius: 10,
     elevation: 2,
-    gap: 28,
-    marginTop: 30,
-    padding: 24,
+    gap: 22,
+    marginTop: 22,
+    padding: 20,
     shadowColor: '#d5dae1',
-    shadowOffset: {width: 0, height: 6},
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.55,
     shadowRadius: 14,
   },
@@ -362,17 +374,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#ffffff',
     flexDirection: 'row',
-    height: 64,
+    height: 58,
     justifyContent: 'space-between',
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
   },
   hero: {
     backgroundColor: '#1f506f',
     borderRadius: 8,
-    height: 172,
+    height: 136,
     justifyContent: 'flex-end',
     overflow: 'hidden',
-    padding: 22,
+    padding: 18,
   },
   heroLineMedium: {
     backgroundColor: 'rgba(255,255,255,0.24)',
@@ -387,11 +399,11 @@ const styles = StyleSheet.create({
     width: 130,
   },
   heroLines: {
-    gap: 14,
-    left: 28,
+    gap: 11,
+    left: 24,
     position: 'absolute',
-    top: 28,
-    transform: [{rotate: '-10deg'}],
+    top: 24,
+    transform: [{ rotate: '-10deg' }],
   },
   heroLineWide: {
     backgroundColor: 'rgba(255,255,255,0.15)',
@@ -405,20 +417,20 @@ const styles = StyleSheet.create({
   },
   heroSubtitle: {
     color: '#c8d7e6',
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '600',
-    lineHeight: 21,
+    lineHeight: 19,
     width: '78%',
   },
   heroTitle: {
     color: '#ffffff',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '800',
     marginBottom: 4,
   },
   label: {
     color: '#686e78',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
   },
   modalBackdrop: {
@@ -428,11 +440,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   modalButton: {
-    height: 56,
+    height: 50,
   },
   modalTitle: {
     color: '#2f3742',
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '800',
   },
   pressed: {
@@ -443,7 +455,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   saveButton: {
-    marginTop: 30,
+    marginTop: 24,
   },
   screen: {
     backgroundColor: '#f4f8fb',

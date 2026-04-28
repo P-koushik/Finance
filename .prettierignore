@@ -1,0 +1,12 @@
+node_modules
+android/build
+android/app/build
+android/app/.cxx
+android/.gradle
+android/app/google-services.json
+ios/Pods
+ios/**/*.xcassets
+coverage
+.bundle
+.git
+package-lock.json

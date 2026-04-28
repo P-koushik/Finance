@@ -7,10 +7,10 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {StyleSheet, View} from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import { StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import {MessageCard} from './MessageCard';
+import { MessageCard } from './MessageCard';
 
 type ToastType = 'error' | 'success' | 'info';
 
@@ -29,7 +29,7 @@ type ToastContextValue = {
 
 const ToastContext = createContext<ToastContextValue | null>(null);
 
-export function ToastProvider({children}: {children: ReactNode}) {
+export function ToastProvider({ children }: { children: ReactNode }) {
   const insets = useSafeAreaInsets();
   const [toast, setToast] = useState<Toast | null>(null);
 
@@ -53,7 +53,7 @@ export function ToastProvider({children}: {children: ReactNode}) {
     return () => clearTimeout(timeout);
   }, [dismissToast, toast]);
 
-  const value = useMemo(() => ({showToast}), [showToast]);
+  const value = useMemo(() => ({ showToast }), [showToast]);
 
   return (
     <ToastContext.Provider value={value}>
@@ -61,7 +61,8 @@ export function ToastProvider({children}: {children: ReactNode}) {
       {toast ? (
         <View
           pointerEvents="box-none"
-          style={[styles.toastWrap, {top: insets.top + 12}]}>
+          style={[styles.toastWrap, { top: insets.top + 12 }]}
+        >
           <MessageCard
             message={toast.message}
             onDismiss={dismissToast}

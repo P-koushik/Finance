@@ -1,16 +1,16 @@
 import React from 'react';
-import {Pressable, StyleSheet, Text, View} from 'react-native';
-import {ShoppingCart, Trash2} from 'lucide-react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { ShoppingCart, Trash2 } from 'lucide-react-native';
 
-import type {Expense} from '../types';
-import {formatCurrency, formatDateTime} from '../utils/format';
+import type { Expense } from '../types';
+import { formatCurrency, formatDateTime } from '../utils/format';
 
 type ExpenseCardProps = {
   expense: Expense;
   onDelete: (expenseId: string) => void;
 };
 
-export function ExpenseCard({expense, onDelete}: ExpenseCardProps) {
+export function ExpenseCard({ expense, onDelete }: ExpenseCardProps) {
   return (
     <View style={styles.card}>
       <View style={styles.iconWrap}>
@@ -38,7 +38,11 @@ export function ExpenseCard({expense, onDelete}: ExpenseCardProps) {
         accessibilityRole="button"
         hitSlop={10}
         onPress={() => onDelete(expense.id)}
-        style={({pressed}) => [styles.deleteButton, pressed && styles.pressed]}>
+        style={({ pressed }) => [
+          styles.deleteButton,
+          pressed && styles.pressed,
+        ]}
+      >
         <Trash2 color="#87909c" size={18} strokeWidth={2.4} />
       </Pressable>
     </View>
@@ -66,7 +70,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     shadowColor: '#d1d7df',
-    shadowOffset: {width: 0, height: 5},
+    shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.65,
     shadowRadius: 9,
   },

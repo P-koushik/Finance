@@ -6,7 +6,7 @@ import {
   Text,
   ViewStyle,
 } from 'react-native';
-import {CircleCheck} from 'lucide-react-native';
+import { CircleCheck } from 'lucide-react-native';
 
 type PrimaryButtonProps = {
   label: string;
@@ -28,17 +28,18 @@ export function PrimaryButton({
       accessibilityRole="button"
       disabled={disabled || loading}
       onPress={onPress}
-      style={({pressed}) => [
+      style={({ pressed }) => [
         styles.button,
         style,
         pressed && styles.pressed,
         (disabled || loading) && styles.disabled,
-      ]}>
+      ]}
+    >
       {loading ? (
         <ActivityIndicator color="#ffffff" />
       ) : (
         <>
-          <CircleCheck color="#ffffff" size={22} strokeWidth={2.6} />
+          <CircleCheck color="#ffffff" size={20} strokeWidth={2.6} />
           <Text style={styles.label}>{label}</Text>
         </>
       )}
@@ -53,11 +54,11 @@ const styles = StyleSheet.create({
     borderRadius: 32,
     elevation: 8,
     flexDirection: 'row',
-    gap: 12,
-    height: 64,
+    gap: 10,
+    height: 54,
     justifyContent: 'center',
     shadowColor: '#0a2d4c',
-    shadowOffset: {width: 0, height: 10},
+    shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.22,
     shadowRadius: 16,
   },
@@ -66,11 +67,11 @@ const styles = StyleSheet.create({
   },
   label: {
     color: '#ffffff',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '700',
   },
   pressed: {
     opacity: 0.88,
-    transform: [{scale: 0.99}],
+    transform: [{ scale: 0.99 }],
   },
 });

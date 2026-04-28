@@ -7,7 +7,7 @@ import {
   TextInputProps,
   View,
 } from 'react-native';
-import {LucideIcon} from 'lucide-react-native';
+import { LucideIcon } from 'lucide-react-native';
 
 type InputFieldProps = {
   label: string;
@@ -39,7 +39,7 @@ export function InputField({
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
       <View style={styles.inputWrap}>
-        <Icon color="#747c88" size={21} strokeWidth={2.3} />
+        <Icon color="#747c88" size={19} strokeWidth={2.3} />
         {prefix ? <Text style={styles.prefix}>{prefix}</Text> : null}
         <TextInput
           onChangeText={onChangeText}
@@ -60,14 +60,14 @@ export function InputField({
 
 const styles = StyleSheet.create({
   container: {
-    gap: 10,
+    gap: 7,
   },
   input: {
     color: '#2f3742',
     flex: 1,
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    height: 54,
+    height: 46,
     padding: 0,
   },
   inputDisabled: {
@@ -78,18 +78,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#eef1f4',
     borderRadius: 8,
     flexDirection: 'row',
-    gap: 12,
-    height: 64,
-    paddingHorizontal: 18,
+    gap: 10,
+    height: 54,
+    paddingHorizontal: 16,
   },
   label: {
     color: '#686e78',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
   },
   prefix: {
     color: '#2f5f91',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '700',
   },
 });

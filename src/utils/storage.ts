@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import type {AppSettings, Expense, UserProfile} from '../types';
+import type { AppSettings, Expense, UserProfile } from '../types';
 
 const EXPENSES_KEY = 'expenses';
 const PROFILE_KEY = 'profile';

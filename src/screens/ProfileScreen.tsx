@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Keyboard,
   ScrollView,
@@ -8,22 +8,22 @@ import {
   Text,
   View,
 } from 'react-native';
-import {useFocusEffect} from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   BadgeIndianRupee,
   Database,
-  Mail,
   Settings,
   User,
   WalletCards,
 } from 'lucide-react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import {BottomBar} from '../components/BottomBar';
-import {InputField} from '../components/InputField';
-import {PrimaryButton} from '../components/PrimaryButton';
-import {useToast} from '../components/ToastProvider';
-import {formatCurrency} from '../utils/format';
+import { BottomBar } from '../components/BottomBar';
+import { InputField } from '../components/InputField';
+import { PrimaryButton } from '../components/PrimaryButton';
+import { useToast } from '../components/ToastProvider';
+import { useAuth } from '../contexts/AuthContext';
+import { formatCurrency } from '../utils/format';
 import {
   getProfile,
   getSettings,
@@ -32,9 +32,10 @@ import {
 } from '../utils/storage';
 
 export function ProfileScreen() {
-  const {showToast} = useToast();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const { logout, user } = useAuth();
+  const { showToast } = useToast();
+  const [storedName, setStoredName] = useState('');
+  const [storedEmail, setStoredEmail] = useState('');
   const [monthlyBudget, setMonthlyBudget] = useState('');
   const [localStorageEnabled, setLocalStorageEnabled] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -47,8 +48,8 @@ export function ProfileScreen() {
           getProfile(),
           getSettings(),
         ]);
-        setName(profile.name);
-        setEmail(profile.email);
+        setStoredName(profile.name);
+        setStoredEmail(profile.email);
         setMonthlyBudget(String(profile.monthlyBudget));
         setLocalStorageEnabled(settings.localStorageEnabled);
       };
@@ -72,6 +73,8 @@ export function ProfileScreen() {
   }, []);
 
   const parsedBudget = Number(monthlyBudget.replace(/,/g, ''));
+  const profileName = user?.displayName || storedName || 'Your Name';
+  const profileEmail = user?.email || storedEmail || 'email@example.com';
 
   const handleStorageToggle = async (enabled: boolean) => {
     setLocalStorageEnabled(enabled);
@@ -84,8 +87,8 @@ export function ProfileScreen() {
       type: enabled ? 'success' : 'info',
       title: enabled ? 'Local storage enabled' : 'Local storage disabled',
       message: enabled
-        ? 'The app can save expenses and profile details on this device.'
-        : 'The app will stop reading and saving expenses/profile details until you enable it again.',
+        ? 'The app can save expenses and your monthly budget on this device.'
+        : 'The app will stop reading and saving expenses/budget details until you enable it again.',
     });
   };
 
@@ -94,16 +97,17 @@ export function ProfileScreen() {
       showToast({
         type: 'error',
         title: 'Storage disabled',
-        message: 'Turn on Local Storage in Settings before saving profile details.',
+        message:
+          'Turn on Local Storage in Settings before saving profile details.',
       });
       return;
     }
 
-    if (!name.trim() || !email.trim() || parsedBudget <= 0) {
+    if (parsedBudget <= 0) {
       showToast({
         type: 'error',
-        title: 'Missing details',
-        message: 'Enter your name, email, and a positive monthly budget.',
+        title: 'Missing budget',
+        message: 'Enter a positive monthly budget.',
       });
       return;
     }
@@ -111,8 +115,8 @@ export function ProfileScreen() {
     setSaving(true);
     try {
       await saveProfile({
-        name: name.trim(),
-        email: email.trim(),
+        name: profileName,
+        email: profileEmail,
         monthlyBudget: parsedBudget,
       });
       showToast({
@@ -131,7 +135,7 @@ export function ProfileScreen() {
       <View style={styles.screen}>
         <View style={styles.header}>
           <View style={styles.brand}>
-            <WalletCards color="#2e62dd" size={24} strokeWidth={2.7} />
+            <WalletCards color="#2e62dd" size={22} strokeWidth={2.7} />
             <Text style={styles.brandText}>Profile</Text>
           </View>
         </View>
@@ -143,17 +147,18 @@ export function ProfileScreen() {
           ]}
           keyboardDismissMode="none"
           keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}>
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.summaryCard}>
             <View style={styles.avatar}>
-              <User color="#ffffff" size={36} strokeWidth={2.4} />
+              <User color="#ffffff" size={30} strokeWidth={2.4} />
             </View>
             <View style={styles.summaryText}>
               <Text numberOfLines={1} style={styles.name}>
-                {name || 'Your Name'}
+                {profileName}
               </Text>
               <Text numberOfLines={1} style={styles.email}>
-                {email || 'email@example.com'}
+                {profileEmail}
               </Text>
             </View>
           </View>
@@ -166,24 +171,6 @@ export function ProfileScreen() {
           </View>
 
           <View style={styles.formCard}>
-            <InputField
-              icon={User}
-              label="Full Name"
-              onChangeText={setName}
-              placeholder="Your name"
-              editable={localStorageEnabled}
-              value={name}
-            />
-            <InputField
-              autoCapitalize="none"
-              editable={localStorageEnabled}
-              icon={Mail}
-              keyboardType="email-address"
-              label="Email"
-              onChangeText={setEmail}
-              placeholder="you@example.com"
-              value={email}
-            />
             <InputField
               editable={localStorageEnabled}
               icon={BadgeIndianRupee}
@@ -204,25 +191,31 @@ export function ProfileScreen() {
             style={styles.saveButton}
           />
 
+          <PrimaryButton
+            label="Sign Out"
+            onPress={logout}
+            style={styles.signOutButton}
+          />
+
           <View style={styles.settingsCard}>
             <View style={styles.settingsHeader}>
-              <Settings color="#124777" size={22} strokeWidth={2.5} />
+              <Settings color="#124777" size={20} strokeWidth={2.5} />
               <Text style={styles.settingsTitle}>Settings</Text>
             </View>
             <View style={styles.permissionRow}>
               <View style={styles.permissionIcon}>
-                <Database color="#078f84" size={21} strokeWidth={2.5} />
+                <Database color="#078f84" size={19} strokeWidth={2.5} />
               </View>
               <View style={styles.permissionTextGroup}>
                 <Text style={styles.permissionTitle}>Local Storage</Text>
                 <Text style={styles.permissionText}>
-                  Expenses and profile details are saved on this device.
+                  Expenses and your monthly budget are saved on this device.
                 </Text>
               </View>
               <Switch
                 onValueChange={handleStorageToggle}
                 thumbColor={localStorageEnabled ? '#ffffff' : '#f4f4f5'}
-                trackColor={{false: '#cbd5e1', true: '#75e5df'}}
+                trackColor={{ false: '#cbd5e1', true: '#75e5df' }}
                 value={localStorageEnabled}
               />
             </View>
@@ -239,40 +232,40 @@ const styles = StyleSheet.create({
   avatar: {
     alignItems: 'center',
     backgroundColor: '#078f84',
-    borderRadius: 34,
-    height: 68,
+    borderRadius: 29,
+    height: 58,
     justifyContent: 'center',
-    width: 68,
+    width: 58,
   },
   brand: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 10,
+    gap: 8,
   },
   brandText: {
     color: '#2b5fd7',
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '800',
   },
   budgetCard: {
     backgroundColor: '#2e5f95',
-    borderRadius: 24,
-    gap: 8,
-    marginTop: 20,
-    padding: 24,
+    borderRadius: 18,
+    gap: 6,
+    marginTop: 16,
+    padding: 20,
   },
   budgetValue: {
     color: '#ffffff',
-    fontSize: 34,
+    fontSize: 28,
     fontWeight: '500',
   },
   cardLabel: {
     color: '#b8c9df',
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '800',
   },
   content: {
-    padding: 22,
+    padding: 18,
     paddingBottom: 120,
   },
   contentKeyboardOpen: {
@@ -280,18 +273,18 @@ const styles = StyleSheet.create({
   },
   email: {
     color: '#74808d',
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '700',
   },
   formCard: {
     backgroundColor: '#ffffff',
     borderRadius: 12,
     elevation: 2,
-    gap: 24,
-    marginTop: 22,
-    padding: 22,
+    gap: 20,
+    marginTop: 18,
+    padding: 18,
     shadowColor: '#d5dae1',
-    shadowOffset: {width: 0, height: 6},
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.55,
     shadowRadius: 14,
   },
@@ -299,12 +292,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#ffffff',
     flexDirection: 'row',
-    height: 64,
-    paddingHorizontal: 24,
+    height: 58,
+    paddingHorizontal: 20,
   },
   name: {
     color: '#303844',
-    fontSize: 22,
+    fontSize: 19,
     fontWeight: '900',
   },
   safeArea: {
@@ -312,48 +305,52 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   saveButton: {
-    marginTop: 28,
+    marginTop: 22,
+  },
+  signOutButton: {
+    backgroundColor: '#be123c',
+    marginTop: 12,
   },
   settingsCard: {
     backgroundColor: '#ffffff',
     borderRadius: 12,
     elevation: 2,
-    gap: 18,
-    marginTop: 22,
-    padding: 22,
+    gap: 14,
+    marginTop: 18,
+    padding: 18,
     shadowColor: '#d5dae1',
-    shadowOffset: {width: 0, height: 6},
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.55,
     shadowRadius: 14,
   },
   settingsHeader: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 10,
+    gap: 8,
   },
   settingsTitle: {
     color: '#303844',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '900',
   },
   permissionIcon: {
     alignItems: 'center',
     backgroundColor: '#e4f5f2',
-    borderRadius: 22,
-    height: 44,
+    borderRadius: 20,
+    height: 40,
     justifyContent: 'center',
-    width: 44,
+    width: 40,
   },
   permissionRow: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 14,
+    gap: 12,
   },
   permissionText: {
     color: '#74808d',
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '600',
-    lineHeight: 19,
+    lineHeight: 17,
   },
   permissionTextGroup: {
     flex: 1,
@@ -361,7 +358,7 @@ const styles = StyleSheet.create({
   },
   permissionTitle: {
     color: '#303844',
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '900',
   },
   screen: {
@@ -371,19 +368,19 @@ const styles = StyleSheet.create({
   summaryCard: {
     alignItems: 'center',
     backgroundColor: '#ffffff',
-    borderRadius: 22,
+    borderRadius: 18,
     elevation: 2,
     flexDirection: 'row',
-    gap: 18,
-    padding: 22,
+    gap: 14,
+    padding: 18,
     shadowColor: '#d5dae1',
-    shadowOffset: {width: 0, height: 6},
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.55,
     shadowRadius: 14,
   },
   summaryText: {
     flex: 1,
-    gap: 6,
+    gap: 4,
     minWidth: 0,
   },
 });
