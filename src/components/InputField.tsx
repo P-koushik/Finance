@@ -7,7 +7,7 @@ import {
   TextInputProps,
   View,
 } from 'react-native';
-import {LucideIcon} from 'lucide-react-native';
+import { LucideIcon } from 'lucide-react-native';
 
 type InputFieldProps = {
   label: string;

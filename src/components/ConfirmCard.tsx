@@ -1,5 +1,5 @@
 import React from 'react';
-import {Modal, Pressable, StyleSheet, Text, View} from 'react-native';
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 type ConfirmCardProps = {
   visible: boolean;
@@ -21,7 +21,12 @@ export function ConfirmCard({
   onConfirm,
 }: ConfirmCardProps) {
   return (
-    <Modal transparent animationType="fade" visible={visible} onRequestClose={onCancel}>
+    <Modal
+      transparent
+      animationType="fade"
+      visible={visible}
+      onRequestClose={onCancel}
+    >
       <View style={styles.backdrop}>
         <View style={styles.card}>
           <Text style={styles.title}>{title}</Text>
@@ -30,13 +35,15 @@ export function ConfirmCard({
             <Pressable
               accessibilityRole="button"
               onPress={onCancel}
-              style={[styles.button, styles.cancelButton]}>
+              style={[styles.button, styles.cancelButton]}
+            >
               <Text style={styles.cancelText}>{cancelLabel}</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
               onPress={onConfirm}
-              style={[styles.button, styles.confirmButton]}>
+              style={[styles.button, styles.confirmButton]}
+            >
               <Text style={styles.confirmText}>{confirmLabel}</Text>
             </Pressable>
           </View>

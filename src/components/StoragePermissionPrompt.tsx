@@ -1,12 +1,12 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {Modal, Pressable, StyleSheet, Text, View} from 'react-native';
-import {Database} from 'lucide-react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Database } from 'lucide-react-native';
 
-import {getSettings, saveSettings} from '../utils/storage';
-import {useToast} from './ToastProvider';
+import { getSettings, saveSettings } from '../utils/storage';
+import { useToast } from './ToastProvider';
 
 export function StoragePermissionPrompt() {
-  const {showToast} = useToast();
+  const { showToast } = useToast();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -52,13 +52,15 @@ export function StoragePermissionPrompt() {
             <Pressable
               accessibilityRole="button"
               onPress={() => answerPermission(false)}
-              style={[styles.button, styles.denyButton]}>
+              style={[styles.button, styles.denyButton]}
+            >
               <Text style={styles.denyText}>Deny</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
               onPress={() => answerPermission(true)}
-              style={[styles.button, styles.allowButton]}>
+              style={[styles.button, styles.allowButton]}
+            >
               <Text style={styles.allowText}>Allow</Text>
             </Pressable>
           </View>
