@@ -4,7 +4,6 @@ import {
   Pressable,
   ScrollView,
   StatusBar,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -72,25 +71,27 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView className="flex-1 bg-[#f5f9fc]">
       <StatusBar barStyle="dark-content" backgroundColor="#f5f9fc" />
       <ScrollView
-        contentContainerStyle={styles.content}
+        contentContainerClassName="flex-grow justify-center p-6"
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.brand}>
+        <View className="mb-[72px] flex-row items-center justify-center gap-2">
           <WalletCards color="#2e62dd" size={22} strokeWidth={2.7} />
-          <Text style={styles.brandText}>Finance</Text>
+          <Text className="text-[20px] font-black text-[#2b5fd7]">Finance</Text>
         </View>
 
-        <View style={styles.card}>
-          <Text style={styles.title}>Welcome Back</Text>
-          <Text style={styles.subtitle}>
+        <View className="gap-[18px] rounded-3xl bg-white p-6 shadow-lg shadow-[#d9e3ee]">
+          <Text className="text-center text-[27px] font-black text-[#143f6d]">
+            Welcome Back
+          </Text>
+          <Text className="text-center text-[15px] font-semibold leading-[21px] text-[#6b7280]">
             Sign in to manage your finances with clarity.
           </Text>
 
-          <View style={styles.form}>
+          <View className="mt-[6px] gap-4">
             <AuthInput
               autoCapitalize="none"
               icon={Mail}
@@ -118,178 +119,63 @@ export function LoginScreen({ navigation }: LoginScreenProps) {
             accessibilityRole="button"
             disabled={loading !== null}
             onPress={handleEmailLogin}
-            style={({ pressed }) => [
-              styles.primaryButton,
-              pressed && styles.pressed,
-              loading && styles.disabled,
-            ]}
+            className={`h-[54px] flex-row items-center justify-center gap-2.5 rounded-[10px] bg-[#2f5f95] shadow-lg shadow-[#1e3f66] ${
+              loading !== null ? 'opacity-[0.65]' : 'active:opacity-[0.82]'
+            }`}
           >
             {loading === 'email' ? (
               <ActivityIndicator color="#ffffff" />
             ) : (
               <>
-                <Text style={styles.primaryButtonText}>Login</Text>
+                <Text className="text-[16px] font-extrabold text-white">
+                  Login
+                </Text>
                 <ArrowRight color="#ffffff" size={22} strokeWidth={2.5} />
               </>
             )}
           </Pressable>
 
-          <View style={styles.dividerRow}>
-            <View style={styles.divider} />
-            <Text style={styles.dividerText}>Or continue with</Text>
-            <View style={styles.divider} />
+          <View className="mt-1 flex-row items-center gap-4">
+            <View className="h-px flex-1 bg-slate-300" />
+            <Text className="text-[13px] font-bold text-slate-400">
+              Or continue with
+            </Text>
+            <View className="h-px flex-1 bg-slate-300" />
           </View>
 
           <Pressable
             accessibilityRole="button"
             disabled={loading !== null}
             onPress={handleGoogleLogin}
-            style={({ pressed }) => [
-              styles.socialButton,
-              pressed && styles.pressed,
-              loading && styles.disabled,
-            ]}
+            className={`h-[52px] items-center justify-center rounded-xl border border-slate-300 ${
+              loading !== null ? 'opacity-[0.65]' : 'active:opacity-[0.82]'
+            }`}
           >
             {loading === 'google' ? (
               <ActivityIndicator color="#124777" />
             ) : (
-              <Text style={styles.socialText}>Google</Text>
+              <Text className="text-[15px] font-black text-[#2f3742]">
+                Google
+              </Text>
             )}
           </Pressable>
         </View>
 
-        <View style={styles.footerRow}>
-          <Text style={styles.footerText}>Don’t have an account?</Text>
+        <View className="mt-[26px] flex-row items-center justify-center">
+          <Text className="text-[15px] font-bold text-[#6b7280]">
+            Don’t have an account?
+          </Text>
           <Pressable
             accessibilityRole="button"
             onPress={() => navigation.navigate('SignUp')}
           >
-            <Text style={styles.linkText}> Sign Up</Text>
+            <Text className="text-[15px] font-black text-[#0f8c84]">
+              {' '}
+              Sign Up
+            </Text>
           </Pressable>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  brand: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 8,
-    justifyContent: 'center',
-    marginBottom: 72,
-  },
-  brandText: {
-    color: '#2b5fd7',
-    fontSize: 20,
-    fontWeight: '900',
-  },
-  card: {
-    backgroundColor: '#ffffff',
-    borderRadius: 24,
-    elevation: 6,
-    gap: 18,
-    padding: 24,
-    shadowColor: '#d9e3ee',
-    shadowOffset: { width: 0, height: 14 },
-    shadowOpacity: 0.75,
-    shadowRadius: 26,
-  },
-  content: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    padding: 24,
-  },
-  disabled: {
-    opacity: 0.65,
-  },
-  divider: {
-    backgroundColor: '#cbd5e1',
-    flex: 1,
-    height: 1,
-  },
-  dividerRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 16,
-    marginTop: 4,
-  },
-  dividerText: {
-    color: '#94a3b8',
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  footerRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 26,
-  },
-  footerText: {
-    color: '#6b7280',
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  form: {
-    gap: 16,
-    marginTop: 6,
-  },
-  linkText: {
-    color: '#0f8c84',
-    fontSize: 15,
-    fontWeight: '900',
-  },
-  pressed: {
-    opacity: 0.82,
-  },
-  primaryButton: {
-    alignItems: 'center',
-    backgroundColor: '#2f5f95',
-    borderRadius: 10,
-    elevation: 5,
-    flexDirection: 'row',
-    gap: 10,
-    height: 54,
-    justifyContent: 'center',
-    shadowColor: '#1e3f66',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.24,
-    shadowRadius: 12,
-  },
-  primaryButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '800',
-  },
-  safeArea: {
-    backgroundColor: '#f5f9fc',
-    flex: 1,
-  },
-  socialButton: {
-    alignItems: 'center',
-    borderColor: '#cbd5e1',
-    borderRadius: 12,
-    borderWidth: 1,
-    height: 52,
-    justifyContent: 'center',
-  },
-  socialText: {
-    color: '#2f3742',
-    fontSize: 15,
-    fontWeight: '900',
-  },
-  subtitle: {
-    color: '#6b7280',
-    fontSize: 15,
-    fontWeight: '600',
-    lineHeight: 21,
-    textAlign: 'center',
-  },
-  title: {
-    color: '#143f6d',
-    fontSize: 27,
-    fontWeight: '900',
-    textAlign: 'center',
-  },
-});

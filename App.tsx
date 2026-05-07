@@ -1,7 +1,9 @@
 import React from 'react';
+import './global.css';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 
@@ -24,7 +26,7 @@ function AppNavigator() {
 
   if (initializing) {
     return (
-      <View style={styles.loadingScreen}>
+      <View className="flex-1 items-center justify-center bg-[#f4f8fb]">
         <ActivityIndicator color="#124777" size="large" />
       </View>
     );
@@ -62,14 +64,5 @@ function App() {
     </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  loadingScreen: {
-    alignItems: 'center',
-    backgroundColor: '#f4f8fb',
-    flex: 1,
-    justifyContent: 'center',
-  },
-});
 
 export default App;

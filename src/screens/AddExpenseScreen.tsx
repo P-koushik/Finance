@@ -6,7 +6,6 @@ import {
   Pressable,
   ScrollView,
   StatusBar,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -112,38 +111,42 @@ export function AddExpenseScreen({ navigation }: AddExpenseScreenProps) {
   };
 
   return (
-    <SafeAreaView edges={['top']} style={styles.safeArea}>
+    <SafeAreaView edges={['top']} className="flex-1 bg-[#f4f8fb]">
       <StatusBar barStyle="dark-content" backgroundColor="#f4f8fb" />
       <KeyboardAvoidingView
         behavior={Platform.select({ ios: 'padding', android: undefined })}
-        style={styles.screen}
+        className="flex-1 bg-[#f4f8fb]"
       >
-        <View style={styles.header}>
-          <View style={styles.brand}>
+        <View className="h-[58px] flex-row items-center justify-between bg-white px-5">
+          <View className="flex-row items-center gap-2">
             <WalletCards color="#2e62dd" size={22} strokeWidth={2.7} />
-            <Text style={styles.brandText}>Finance</Text>
+            <Text className="text-[18px] font-extrabold text-[#2b5fd7]">
+              Finance
+            </Text>
           </View>
         </View>
 
         <ScrollView
-          contentContainerStyle={styles.content}
+          contentContainerClassName="p-[18px] pb-11"
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.hero}>
-            <View style={styles.heroOverlay} />
-            <View style={styles.heroLines}>
-              <View style={styles.heroLineWide} />
-              <View style={styles.heroLineShort} />
-              <View style={styles.heroLineMedium} />
+          <View className="h-[136px] justify-end overflow-hidden rounded-lg bg-[#1f506f] p-[18px]">
+            <View className="absolute inset-0 bg-[#072636]/30" />
+            <View className="absolute left-6 top-6 gap-[11px] -rotate-[10deg]">
+              <View className="h-[9px] w-[240px] rounded-[5px] bg-white/15" />
+              <View className="h-[9px] w-[130px] rounded-[5px] bg-white/20" />
+              <View className="h-[9px] w-[200px] rounded-[5px] bg-white/25" />
             </View>
-            <Text style={styles.heroTitle}>Add New Expense</Text>
-            <Text style={styles.heroSubtitle}>
+            <Text className="mb-1 text-[16px] font-extrabold text-white">
+              Add New Expense
+            </Text>
+            <Text className="w-[78%] text-[14px] font-semibold leading-[19px] text-[#c8d7e6]">
               Keep your financial clarity by logging every spend.
             </Text>
           </View>
 
-          <View style={styles.formCard}>
+          <View className="mt-[22px] gap-[22px] rounded-[10px] bg-white p-5 shadow-md shadow-[#d5dae1]">
             <InputField
               icon={ShoppingBag}
               label="Expense Title"
@@ -164,9 +167,11 @@ export function AddExpenseScreen({ navigation }: AddExpenseScreenProps) {
               value={amount}
             />
 
-            <View style={styles.categoryGroup}>
-              <Text style={styles.label}>Quick Category</Text>
-              <View style={styles.categoryGrid}>
+            <View className="gap-2.5">
+              <Text className="text-[14px] font-semibold text-[#686e78]">
+                Quick Category
+              </Text>
+              <View className="flex-row flex-wrap gap-2">
                 {categories.map(({ label, Icon }) => {
                   const selected = category === label;
 
@@ -175,10 +180,9 @@ export function AddExpenseScreen({ navigation }: AddExpenseScreenProps) {
                       accessibilityRole="button"
                       key={label}
                       onPress={() => setCategory(label as ExpenseCategory)}
-                      style={[
-                        styles.categoryPill,
-                        selected && styles.categoryPillSelected,
-                      ]}
+                      className={`min-h-[34px] flex-row items-center gap-1.5 rounded-[21px] px-[13px] ${
+                        selected ? 'bg-[#75e5df]' : 'bg-[#e9edf0]'
+                      }`}
                     >
                       <Icon
                         color={selected ? '#117b78' : '#6f7782'}
@@ -186,10 +190,9 @@ export function AddExpenseScreen({ navigation }: AddExpenseScreenProps) {
                         strokeWidth={2.4}
                       />
                       <Text
-                        style={[
-                          styles.categoryText,
-                          selected && styles.categoryTextSelected,
-                        ]}
+                        className={`text-[14px] font-extrabold ${
+                          selected ? 'text-[#117b78]' : 'text-[#606872]'
+                        }`}
                       >
                         {label}
                       </Text>
@@ -210,28 +213,29 @@ export function AddExpenseScreen({ navigation }: AddExpenseScreenProps) {
               />
             ) : null}
 
-            <View style={styles.dateGroup}>
-              <Text style={styles.label}>Date</Text>
+            <View className="gap-2">
+              <Text className="text-[14px] font-semibold text-[#686e78]">
+                Date
+              </Text>
               <Pressable
                 accessibilityRole="button"
+                className="h-[50px] flex-row items-center gap-3 rounded-lg bg-[#eef1f4] px-4 active:opacity-70"
                 onPress={() => setDatePickerVisible(true)}
-                style={({ pressed }) => [
-                  styles.dateBox,
-                  pressed && styles.pressed,
-                ]}
               >
                 <CalendarDays color="#747c88" size={22} strokeWidth={2.4} />
-                <Text style={styles.dateText}>{dateLabel}</Text>
+                <Text className="text-[15px] font-bold text-[#626a75]">
+                  {dateLabel}
+                </Text>
               </Pressable>
             </View>
           </View>
 
           <PrimaryButton
+            className="mt-6"
             disabled={!canSave}
             label="Save Expense"
             loading={saving}
             onPress={handleSave}
-            style={styles.saveButton}
           />
         </ScrollView>
 
@@ -241,9 +245,11 @@ export function AddExpenseScreen({ navigation }: AddExpenseScreenProps) {
           visible={datePickerVisible}
           onRequestClose={() => setDatePickerVisible(false)}
         >
-          <View style={styles.modalBackdrop}>
-            <View style={styles.dateModal}>
-              <Text style={styles.modalTitle}>Select Date</Text>
+          <View className="flex-1 items-center justify-center bg-slate-900/40">
+            <View className="mx-6 gap-4 rounded-[18px] bg-white p-5">
+              <Text className="text-[18px] font-extrabold text-[#2f3742]">
+                Select Date
+              </Text>
               <Calendar
                 current={selectedDateKey}
                 markedDates={{
@@ -265,9 +271,9 @@ export function AddExpenseScreen({ navigation }: AddExpenseScreenProps) {
                 }}
               />
               <PrimaryButton
+                className="h-[50px]"
                 label="Close Calendar"
                 onPress={() => setDatePickerVisible(false)}
-                style={styles.modalButton}
               />
             </View>
           </View>
@@ -278,175 +284,3 @@ export function AddExpenseScreen({ navigation }: AddExpenseScreenProps) {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  brand: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 8,
-  },
-  brandText: {
-    color: '#2b5fd7',
-    fontSize: 18,
-    fontWeight: '800',
-  },
-  categoryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  categoryGroup: {
-    gap: 10,
-  },
-  categoryPill: {
-    alignItems: 'center',
-    backgroundColor: '#e9edf0',
-    borderRadius: 21,
-    flexDirection: 'row',
-    gap: 6,
-    minHeight: 34,
-    paddingHorizontal: 13,
-  },
-  categoryPillSelected: {
-    backgroundColor: '#75e5df',
-  },
-  categoryText: {
-    color: '#606872',
-    fontSize: 14,
-    fontWeight: '800',
-  },
-  categoryTextSelected: {
-    color: '#117b78',
-  },
-  content: {
-    padding: 18,
-    paddingBottom: 44,
-  },
-  dateBox: {
-    alignItems: 'center',
-    backgroundColor: '#eef1f4',
-    borderRadius: 8,
-    flexDirection: 'row',
-    gap: 12,
-    height: 50,
-    paddingHorizontal: 16,
-  },
-  dateGroup: {
-    gap: 8,
-  },
-  dateText: {
-    color: '#626a75',
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  dateModal: {
-    backgroundColor: '#ffffff',
-    borderRadius: 18,
-    gap: 16,
-    marginHorizontal: 24,
-    padding: 20,
-  },
-  formCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 10,
-    elevation: 2,
-    gap: 22,
-    marginTop: 22,
-    padding: 20,
-    shadowColor: '#d5dae1',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.55,
-    shadowRadius: 14,
-  },
-  header: {
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-    flexDirection: 'row',
-    height: 58,
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-  },
-  hero: {
-    backgroundColor: '#1f506f',
-    borderRadius: 8,
-    height: 136,
-    justifyContent: 'flex-end',
-    overflow: 'hidden',
-    padding: 18,
-  },
-  heroLineMedium: {
-    backgroundColor: 'rgba(255,255,255,0.24)',
-    borderRadius: 5,
-    height: 9,
-    width: 200,
-  },
-  heroLineShort: {
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    borderRadius: 5,
-    height: 9,
-    width: 130,
-  },
-  heroLines: {
-    gap: 11,
-    left: 24,
-    position: 'absolute',
-    top: 24,
-    transform: [{ rotate: '-10deg' }],
-  },
-  heroLineWide: {
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    borderRadius: 5,
-    height: 9,
-    width: 240,
-  },
-  heroOverlay: {
-    ...StyleSheet.absoluteFill,
-    backgroundColor: 'rgba(7, 38, 54, 0.28)',
-  },
-  heroSubtitle: {
-    color: '#c8d7e6',
-    fontSize: 14,
-    fontWeight: '600',
-    lineHeight: 19,
-    width: '78%',
-  },
-  heroTitle: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '800',
-    marginBottom: 4,
-  },
-  label: {
-    color: '#686e78',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  modalBackdrop: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(17, 24, 39, 0.4)',
-    flex: 1,
-    justifyContent: 'center',
-  },
-  modalButton: {
-    height: 50,
-  },
-  modalTitle: {
-    color: '#2f3742',
-    fontSize: 18,
-    fontWeight: '800',
-  },
-  pressed: {
-    opacity: 0.7,
-  },
-  safeArea: {
-    backgroundColor: '#f4f8fb',
-    flex: 1,
-  },
-  saveButton: {
-    marginTop: 24,
-  },
-  screen: {
-    backgroundColor: '#f4f8fb',
-    flex: 1,
-  },
-});

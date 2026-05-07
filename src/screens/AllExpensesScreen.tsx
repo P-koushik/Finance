@@ -4,7 +4,6 @@ import {
   Pressable,
   ScrollView,
   StatusBar,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -60,35 +59,37 @@ export function AllExpensesScreen() {
   };
 
   return (
-    <SafeAreaView edges={['top']} style={styles.safeArea}>
+    <SafeAreaView edges={['top']} className="flex-1 bg-[#f4f8fb]">
       <StatusBar barStyle="dark-content" backgroundColor="#f4f8fb" />
-      <View style={styles.screen}>
-        <View style={styles.header}>
+      <View className="flex-1 bg-[#f4f8fb]">
+        <View className="h-16 flex-row items-center gap-2 bg-white px-[14px]">
           <Pressable
             accessibilityLabel="Back to home"
             accessibilityRole="button"
+            className="h-10 w-10 items-center justify-center"
             hitSlop={10}
             onPress={() => navigation.goBack()}
-            style={styles.backButton}
           >
             <ChevronLeft color="#475569" size={26} strokeWidth={2.6} />
           </Pressable>
-          <View style={styles.brand}>
+          <View className="flex-row items-center gap-2.5">
             <WalletCards color="#2e62dd" size={24} strokeWidth={2.7} />
-            <Text style={styles.brandText}>All Transactions</Text>
+            <Text className="text-[20px] font-extrabold text-[#2b5fd7]">
+              All Transactions
+            </Text>
           </View>
         </View>
 
         <ScrollView
-          contentContainerStyle={styles.content}
+          contentContainerClassName="p-[22px] pb-10"
           showsVerticalScrollIndicator={false}
         >
           {loading ? (
-            <View style={styles.centerState}>
+            <View className="items-center py-8">
               <ActivityIndicator color="#124777" />
             </View>
           ) : expenses.length ? (
-            <View style={styles.list}>
+            <View className="gap-[14px]">
               {expenses.map(expense => (
                 <ExpenseCard
                   expense={expense}
@@ -98,9 +99,11 @@ export function AllExpensesScreen() {
               ))}
             </View>
           ) : (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyTitle}>No transactions</Text>
-              <Text style={styles.emptyText}>
+            <View className="items-center rounded-[22px] bg-white p-7">
+              <Text className="mb-2 text-[17px] font-extrabold text-[#343b45]">
+                No transactions
+              </Text>
+              <Text className="text-center text-[14px] leading-[21px] text-[#7a828d]">
                 Saved expenses will appear here.
               </Text>
             </View>
@@ -118,67 +121,3 @@ export function AllExpensesScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  backButton: {
-    alignItems: 'center',
-    height: 40,
-    justifyContent: 'center',
-    width: 40,
-  },
-  brand: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 10,
-  },
-  brandText: {
-    color: '#2b5fd7',
-    fontSize: 20,
-    fontWeight: '800',
-  },
-  centerState: {
-    alignItems: 'center',
-    paddingVertical: 32,
-  },
-  content: {
-    padding: 22,
-    paddingBottom: 40,
-  },
-  emptyState: {
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-    borderRadius: 22,
-    padding: 28,
-  },
-  emptyText: {
-    color: '#7a828d',
-    fontSize: 14,
-    lineHeight: 21,
-    textAlign: 'center',
-  },
-  emptyTitle: {
-    color: '#343b45',
-    fontSize: 17,
-    fontWeight: '800',
-    marginBottom: 8,
-  },
-  header: {
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-    flexDirection: 'row',
-    gap: 8,
-    height: 64,
-    paddingHorizontal: 14,
-  },
-  list: {
-    gap: 14,
-  },
-  safeArea: {
-    backgroundColor: '#f4f8fb',
-    flex: 1,
-  },
-  screen: {
-    backgroundColor: '#f4f8fb',
-    flex: 1,
-  },
-});

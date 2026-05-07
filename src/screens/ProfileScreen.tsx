@@ -1,12 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  Keyboard,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Keyboard, ScrollView, StatusBar, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { BadgeIndianRupee, User, WalletCards } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -87,47 +80,56 @@ export function ProfileScreen() {
   };
 
   return (
-    <SafeAreaView edges={['top']} style={styles.safeArea}>
+    <SafeAreaView edges={['top']} className="flex-1 bg-[#f4f8fb]">
       <StatusBar barStyle="dark-content" backgroundColor="#f4f8fb" />
-      <View style={styles.screen}>
-        <View style={styles.header}>
-          <View style={styles.brand}>
+      <View className="flex-1 bg-[#f4f8fb]">
+        <View className="h-[58px] flex-row items-center bg-white px-5">
+          <View className="flex-row items-center gap-2">
             <WalletCards color="#2e62dd" size={22} strokeWidth={2.7} />
-            <Text style={styles.brandText}>Profile</Text>
+            <Text className="text-[18px] font-extrabold text-[#2b5fd7]">
+              Profile
+            </Text>
           </View>
         </View>
 
         <ScrollView
-          contentContainerStyle={[
-            styles.content,
-            keyboardVisible && styles.contentKeyboardOpen,
-          ]}
+          contentContainerClassName={`p-[18px] ${
+            keyboardVisible ? 'pb-[320px]' : 'pb-[120px]'
+          }`}
           keyboardDismissMode="none"
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.summaryCard}>
-            <View style={styles.avatar}>
+          <View className="flex-row items-center gap-[14px] rounded-[18px] bg-white p-[18px] shadow-md shadow-[#d5dae1]">
+            <View className="h-[58px] w-[58px] items-center justify-center rounded-[29px] bg-[#078f84]">
               <User color="#ffffff" size={30} strokeWidth={2.4} />
             </View>
-            <View style={styles.summaryText}>
-              <Text numberOfLines={1} style={styles.name}>
+            <View className="min-w-0 flex-1 gap-1">
+              <Text
+                numberOfLines={1}
+                className="text-[19px] font-black text-[#303844]"
+              >
                 {profileName}
               </Text>
-              <Text numberOfLines={1} style={styles.email}>
+              <Text
+                numberOfLines={1}
+                className="text-[14px] font-bold text-[#74808d]"
+              >
                 {profileEmail}
               </Text>
             </View>
           </View>
 
-          <View style={styles.budgetCard}>
-            <Text style={styles.cardLabel}>Monthly Budget</Text>
-            <Text style={styles.budgetValue}>
+          <View className="mt-4 gap-1.5 rounded-[18px] bg-[#2e5f95] p-5">
+            <Text className="text-[14px] font-extrabold text-[#b8c9df]">
+              Monthly Budget
+            </Text>
+            <Text className="text-[28px] font-medium text-white">
               {formatCurrency(parsedBudget > 0 ? parsedBudget : 0)}
             </Text>
           </View>
 
-          <View style={styles.formCard}>
+          <View className="mt-[18px] gap-5 rounded-xl bg-white p-[18px] shadow-md shadow-[#d5dae1]">
             <InputField
               icon={BadgeIndianRupee}
               keyboardType="decimal-pad"
@@ -140,17 +142,17 @@ export function ProfileScreen() {
           </View>
 
           <PrimaryButton
+            className="mt-[22px]"
             disabled={saving}
             label="Save Profile"
             loading={saving}
             onPress={handleSave}
-            style={styles.saveButton}
           />
 
           <PrimaryButton
+            className="mt-3 bg-[#be123c]"
             label="Sign Out"
             onPress={logout}
-            style={styles.signOutButton}
           />
         </ScrollView>
 
@@ -159,110 +161,3 @@ export function ProfileScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  avatar: {
-    alignItems: 'center',
-    backgroundColor: '#078f84',
-    borderRadius: 29,
-    height: 58,
-    justifyContent: 'center',
-    width: 58,
-  },
-  brand: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 8,
-  },
-  brandText: {
-    color: '#2b5fd7',
-    fontSize: 18,
-    fontWeight: '800',
-  },
-  budgetCard: {
-    backgroundColor: '#2e5f95',
-    borderRadius: 18,
-    gap: 6,
-    marginTop: 16,
-    padding: 20,
-  },
-  budgetValue: {
-    color: '#ffffff',
-    fontSize: 28,
-    fontWeight: '500',
-  },
-  cardLabel: {
-    color: '#b8c9df',
-    fontSize: 14,
-    fontWeight: '800',
-  },
-  content: {
-    padding: 18,
-    paddingBottom: 120,
-  },
-  contentKeyboardOpen: {
-    paddingBottom: 320,
-  },
-  email: {
-    color: '#74808d',
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  formCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    elevation: 2,
-    gap: 20,
-    marginTop: 18,
-    padding: 18,
-    shadowColor: '#d5dae1',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.55,
-    shadowRadius: 14,
-  },
-  header: {
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-    flexDirection: 'row',
-    height: 58,
-    paddingHorizontal: 20,
-  },
-  name: {
-    color: '#303844',
-    fontSize: 19,
-    fontWeight: '900',
-  },
-  safeArea: {
-    backgroundColor: '#f4f8fb',
-    flex: 1,
-  },
-  saveButton: {
-    marginTop: 22,
-  },
-  signOutButton: {
-    backgroundColor: '#be123c',
-    marginTop: 12,
-  },
-  screen: {
-    backgroundColor: '#f4f8fb',
-    flex: 1,
-  },
-  summaryCard: {
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-    borderRadius: 18,
-    elevation: 2,
-    flexDirection: 'row',
-    gap: 14,
-    padding: 18,
-    shadowColor: '#d5dae1',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.55,
-    shadowRadius: 14,
-  },
-  summaryText: {
-    flex: 1,
-    gap: 4,
-    minWidth: 0,
-  },
-});
