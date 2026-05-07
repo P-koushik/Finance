@@ -2,7 +2,7 @@ import React from 'react';
 import {
   ActivityIndicator,
   Pressable,
-  StyleSheet,
+  StyleProp,
   Text,
   ViewStyle,
 } from 'react-native';
@@ -13,7 +13,8 @@ type PrimaryButtonProps = {
   onPress: () => void;
   disabled?: boolean;
   loading?: boolean;
-  style?: ViewStyle;
+  className?: string;
+  style?: StyleProp<ViewStyle>;
 };
 
 export function PrimaryButton({
@@ -21,18 +22,28 @@ export function PrimaryButton({
   onPress,
   disabled,
   loading,
+  className,
   style,
 }: PrimaryButtonProps) {
+  const buttonClassName = [
+    'h-[54px] flex-row items-center justify-center gap-2.5 rounded-[32px] bg-[#124777] shadow-lg shadow-[color:#0a2d4c]',
+    className,
+    disabled || loading ? 'opacity-[0.58]' : 'active:opacity-[0.88]',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
     <Pressable
       accessibilityRole="button"
+      className={buttonClassName}
       disabled={disabled || loading}
       onPress={onPress}
       style={({ pressed }) => [
-        styles.button,
         style,
-        pressed && styles.pressed,
-        (disabled || loading) && styles.disabled,
+        pressed && !disabled && !loading
+          ? { transform: [{ scale: 0.99 }] }
+          : null,
       ]}
     >
       {loading ? (
@@ -40,38 +51,9 @@ export function PrimaryButton({
       ) : (
         <>
           <CircleCheck color="#ffffff" size={20} strokeWidth={2.6} />
-          <Text style={styles.label}>{label}</Text>
+          <Text className="text-[15px] font-bold text-white">{label}</Text>
         </>
       )}
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  button: {
-    alignItems: 'center',
-    backgroundColor: '#124777',
-    borderRadius: 32,
-    elevation: 8,
-    flexDirection: 'row',
-    gap: 10,
-    height: 54,
-    justifyContent: 'center',
-    shadowColor: '#0a2d4c',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.22,
-    shadowRadius: 16,
-  },
-  disabled: {
-    opacity: 0.58,
-  },
-  label: {
-    color: '#ffffff',
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  pressed: {
-    opacity: 0.88,
-    transform: [{ scale: 0.99 }],
-  },
-});

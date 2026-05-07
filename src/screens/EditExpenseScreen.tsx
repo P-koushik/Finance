@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Modal,
@@ -9,12 +9,12 @@ import {
   Text,
   View,
 } from 'react-native';
-import { CommonActions } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   BadgeDollarSign,
   CalendarDays,
   Car,
+  ChevronLeft,
   CircleEllipsis,
   ShoppingBag,
   Utensils,
@@ -24,20 +24,38 @@ import {
 import { Calendar, DateData } from 'react-native-calendars';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BottomBar } from '../components/BottomBar';
 import { InputField } from '../components/InputField';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { useToast } from '../components/ToastProvider';
 import type { Expense, ExpenseCategory, RootStackParamList } from '../types';
-import { addExpense } from '../utils/storage';
+import { getExpenses, updateExpense } from '../utils/storage';
 
-type AddExpenseScreenProps = NativeStackScreenProps<
+type EditExpenseScreenProps = NativeStackScreenProps<
   RootStackParamList,
-  'AddExpense'
+  'EditExpense'
 >;
 
-export function AddExpenseScreen({ navigation }: AddExpenseScreenProps) {
+const categoryOptions = [
+  { label: 'Food', Icon: Utensils },
+  { label: 'Travel', Icon: Car },
+  { label: 'Utilities', Icon: Zap },
+  { label: 'Other', Icon: CircleEllipsis },
+] as const;
+
+const standardCategories: ExpenseCategory[] = ['Food', 'Travel', 'Utilities'];
+
+const getSafeDate = (dateString: string) => {
+  const date = new Date(dateString);
+
+  return Number.isNaN(date.getTime()) ? new Date() : date;
+};
+
+export function EditExpenseScreen({
+  navigation,
+  route,
+}: EditExpenseScreenProps) {
   const { showToast } = useToast();
+  const [expense, setExpense] = useState<Expense | null>(null);
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState<ExpenseCategory>('Food');
@@ -46,6 +64,52 @@ export function AddExpenseScreen({ navigation }: AddExpenseScreenProps) {
   const [datePickerVisible, setDatePickerVisible] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  useEffect(() => {
+    let mounted = true;
+
+    const loadExpense = async () => {
+      const expenses = await getExpenses();
+      const selectedExpense = expenses.find(
+        item => item.id === route.params.expenseId,
+      );
+
+      if (!mounted) {
+        return;
+      }
+
+      if (!selectedExpense) {
+        showToast({
+          type: 'error',
+          title: 'Transaction not found',
+          message: 'This transaction may have already been removed.',
+        });
+        navigation.goBack();
+        return;
+      }
+
+      const storedCategory = selectedExpense.category ?? 'Other';
+
+      setExpense(selectedExpense);
+      setTitle(selectedExpense.title);
+      setAmount(String(selectedExpense.amount));
+      setSelectedDate(getSafeDate(selectedExpense.createdAt));
+
+      if (standardCategories.includes(storedCategory as ExpenseCategory)) {
+        setCategory(storedCategory as ExpenseCategory);
+        setCustomCategory('');
+      } else {
+        setCategory('Other');
+        setCustomCategory(storedCategory === 'Other' ? '' : storedCategory);
+      }
+    };
+
+    loadExpense();
+
+    return () => {
+      mounted = false;
+    };
+  }, [navigation, route.params.expenseId, showToast]);
+
   const parsedAmount = useMemo(
     () => Number(amount.replace(/,/g, '')),
     [amount],
@@ -53,50 +117,11 @@ export function AddExpenseScreen({ navigation }: AddExpenseScreenProps) {
   const selectedCategory =
     category === 'Other' ? customCategory.trim() : category;
   const canSave =
+    Boolean(expense) &&
     title.trim().length > 0 &&
     parsedAmount > 0 &&
     selectedCategory.length > 0 &&
     !saving;
-
-  const handleSave = async () => {
-    if (!canSave) {
-      showToast({
-        type: 'error',
-        title: 'Missing details',
-        message: 'Enter a title, amount, and category before saving.',
-      });
-      return;
-    }
-
-    setSaving(true);
-
-    const expense: Expense = {
-      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-      title: title.trim(),
-      amount: parsedAmount,
-      category: selectedCategory,
-      createdAt: selectedDate.toISOString(),
-    };
-
-    try {
-      await addExpense(expense);
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{ name: 'Home' }],
-        }),
-      );
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const categories = [
-    { label: 'Food', Icon: Utensils },
-    { label: 'Travel', Icon: Car },
-    { label: 'Utilities', Icon: Zap },
-    { label: 'Other', Icon: CircleEllipsis },
-  ];
 
   const dateLabel = selectedDate.toLocaleDateString('en-IN', {
     day: '2-digit',
@@ -110,6 +135,47 @@ export function AddExpenseScreen({ navigation }: AddExpenseScreenProps) {
     setDatePickerVisible(false);
   };
 
+  const handleSave = async () => {
+    if (!expense || !canSave) {
+      showToast({
+        type: 'error',
+        title: 'Missing details',
+        message: 'Enter a title, amount, and category before saving.',
+      });
+      return;
+    }
+
+    setSaving(true);
+
+    try {
+      const nextExpenses = await updateExpense({
+        ...expense,
+        amount: parsedAmount,
+        category: selectedCategory,
+        createdAt: selectedDate.toISOString(),
+        title: title.trim(),
+      });
+
+      if (!nextExpenses) {
+        showToast({
+          type: 'error',
+          title: 'Transaction not found',
+          message: 'This transaction may have already been removed.',
+        });
+        return;
+      }
+
+      showToast({
+        type: 'success',
+        title: 'Transaction updated',
+        message: 'Your changes were saved.',
+      });
+      navigation.goBack();
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-[#f4f8fb]">
       <StatusBar barStyle="dark-content" backgroundColor="#f4f8fb" />
@@ -117,11 +183,21 @@ export function AddExpenseScreen({ navigation }: AddExpenseScreenProps) {
         behavior={Platform.select({ ios: 'padding', android: undefined })}
         className="flex-1 bg-[#f4f8fb]"
       >
-        <View className="h-[58px] flex-row items-center justify-between bg-white px-5">
+        <View className="h-[58px] flex-row items-center bg-white px-3">
+          <Pressable
+            accessibilityLabel="Back to transactions"
+            accessibilityRole="button"
+            className="h-10 w-10 items-center justify-center"
+            hitSlop={10}
+            onPress={() => navigation.goBack()}
+          >
+            <ChevronLeft color="#475569" size={26} strokeWidth={2.6} />
+          </Pressable>
+
           <View className="flex-row items-center gap-2">
             <WalletCards color="#2e62dd" size={22} strokeWidth={2.7} />
             <Text className="text-[18px] font-extrabold text-[#2b5fd7]">
-              Finance
+              Edit Transaction
             </Text>
           </View>
         </View>
@@ -139,10 +215,10 @@ export function AddExpenseScreen({ navigation }: AddExpenseScreenProps) {
               <View className="h-[9px] w-[200px] rounded-[5px] bg-white/25" />
             </View>
             <Text className="mb-1 text-[16px] font-extrabold text-white">
-              Add New Expense
+              Edit Expense
             </Text>
             <Text className="w-[78%] text-[14px] font-semibold leading-[19px] text-[#c8d7e6]">
-              Keep your financial clarity by logging every spend.
+              Update the details without creating a duplicate transaction.
             </Text>
           </View>
 
@@ -172,17 +248,17 @@ export function AddExpenseScreen({ navigation }: AddExpenseScreenProps) {
                 Quick Category
               </Text>
               <View className="flex-row flex-wrap gap-2">
-                {categories.map(({ label, Icon }) => {
+                {categoryOptions.map(({ label, Icon }) => {
                   const selected = category === label;
 
                   return (
                     <Pressable
                       accessibilityRole="button"
-                      key={label}
-                      onPress={() => setCategory(label as ExpenseCategory)}
                       className={`min-h-[34px] flex-row items-center gap-1.5 rounded-[21px] px-[13px] ${
                         selected ? 'bg-[#75e5df]' : 'bg-[#e9edf0]'
                       }`}
+                      key={label}
+                      onPress={() => setCategory(label)}
                     >
                       <Icon
                         color={selected ? '#117b78' : '#6f7782'}
@@ -233,7 +309,7 @@ export function AddExpenseScreen({ navigation }: AddExpenseScreenProps) {
           <PrimaryButton
             className="mt-6"
             disabled={!canSave}
-            label="Save Expense"
+            label="Update Expense"
             loading={saving}
             onPress={handleSave}
           />
@@ -278,8 +354,6 @@ export function AddExpenseScreen({ navigation }: AddExpenseScreenProps) {
             </View>
           </View>
         </Modal>
-
-        <BottomBar active="add" />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
