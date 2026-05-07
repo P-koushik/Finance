@@ -30,7 +30,7 @@ import { InputField } from '../components/InputField';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { useToast } from '../components/ToastProvider';
 import type { Expense, ExpenseCategory, RootStackParamList } from '../types';
-import { addExpense, getSettings } from '../utils/storage';
+import { addExpense } from '../utils/storage';
 
 type AddExpenseScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -80,18 +80,6 @@ export function AddExpenseScreen({ navigation }: AddExpenseScreenProps) {
     };
 
     try {
-      const settings = await getSettings();
-
-      if (!settings.localStorageEnabled) {
-        showToast({
-          type: 'error',
-          title: 'Storage disabled',
-          message:
-            'Turn on Local Storage in Profile settings before saving expenses.',
-        });
-        return;
-      }
-
       await addExpense(expense);
       navigation.dispatch(
         CommonActions.reset({

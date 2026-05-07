@@ -4,18 +4,11 @@ import {
   ScrollView,
   StatusBar,
   StyleSheet,
-  Switch,
   Text,
   View,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import {
-  BadgeIndianRupee,
-  Database,
-  Settings,
-  User,
-  WalletCards,
-} from 'lucide-react-native';
+import { BadgeIndianRupee, User, WalletCards } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomBar } from '../components/BottomBar';
@@ -24,12 +17,7 @@ import { PrimaryButton } from '../components/PrimaryButton';
 import { useToast } from '../components/ToastProvider';
 import { useAuth } from '../contexts/AuthContext';
 import { formatCurrency } from '../utils/format';
-import {
-  getProfile,
-  getSettings,
-  saveProfile,
-  saveSettings,
-} from '../utils/storage';
+import { getProfile, saveProfile } from '../utils/storage';
 
 export function ProfileScreen() {
   const { logout, user } = useAuth();
@@ -37,21 +25,16 @@ export function ProfileScreen() {
   const [storedName, setStoredName] = useState('');
   const [storedEmail, setStoredEmail] = useState('');
   const [monthlyBudget, setMonthlyBudget] = useState('');
-  const [localStorageEnabled, setLocalStorageEnabled] = useState(true);
   const [saving, setSaving] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
       const loadProfile = async () => {
-        const [profile, settings] = await Promise.all([
-          getProfile(),
-          getSettings(),
-        ]);
+        const profile = await getProfile();
         setStoredName(profile.name);
         setStoredEmail(profile.email);
         setMonthlyBudget(String(profile.monthlyBudget));
-        setLocalStorageEnabled(settings.localStorageEnabled);
       };
 
       loadProfile();
@@ -76,33 +59,7 @@ export function ProfileScreen() {
   const profileName = user?.displayName || storedName || 'Your Name';
   const profileEmail = user?.email || storedEmail || 'email@example.com';
 
-  const handleStorageToggle = async (enabled: boolean) => {
-    setLocalStorageEnabled(enabled);
-    await saveSettings({
-      localStorageEnabled: enabled,
-      storagePermissionAsked: true,
-    });
-
-    showToast({
-      type: enabled ? 'success' : 'info',
-      title: enabled ? 'Local storage enabled' : 'Local storage disabled',
-      message: enabled
-        ? 'The app can save expenses and your monthly budget on this device.'
-        : 'The app will stop reading and saving expenses/budget details until you enable it again.',
-    });
-  };
-
   const handleSave = async () => {
-    if (!localStorageEnabled) {
-      showToast({
-        type: 'error',
-        title: 'Storage disabled',
-        message:
-          'Turn on Local Storage in Settings before saving profile details.',
-      });
-      return;
-    }
-
     if (parsedBudget <= 0) {
       showToast({
         type: 'error',
@@ -172,7 +129,6 @@ export function ProfileScreen() {
 
           <View style={styles.formCard}>
             <InputField
-              editable={localStorageEnabled}
               icon={BadgeIndianRupee}
               keyboardType="decimal-pad"
               label="Monthly Budget"
@@ -184,7 +140,7 @@ export function ProfileScreen() {
           </View>
 
           <PrimaryButton
-            disabled={saving || !localStorageEnabled}
+            disabled={saving}
             label="Save Profile"
             loading={saving}
             onPress={handleSave}
@@ -196,30 +152,6 @@ export function ProfileScreen() {
             onPress={logout}
             style={styles.signOutButton}
           />
-
-          <View style={styles.settingsCard}>
-            <View style={styles.settingsHeader}>
-              <Settings color="#124777" size={20} strokeWidth={2.5} />
-              <Text style={styles.settingsTitle}>Settings</Text>
-            </View>
-            <View style={styles.permissionRow}>
-              <View style={styles.permissionIcon}>
-                <Database color="#078f84" size={19} strokeWidth={2.5} />
-              </View>
-              <View style={styles.permissionTextGroup}>
-                <Text style={styles.permissionTitle}>Local Storage</Text>
-                <Text style={styles.permissionText}>
-                  Expenses and your monthly budget are saved on this device.
-                </Text>
-              </View>
-              <Switch
-                onValueChange={handleStorageToggle}
-                thumbColor={localStorageEnabled ? '#ffffff' : '#f4f4f5'}
-                trackColor={{ false: '#cbd5e1', true: '#75e5df' }}
-                value={localStorageEnabled}
-              />
-            </View>
-          </View>
         </ScrollView>
 
         {!keyboardVisible ? <BottomBar active="profile" /> : null}
@@ -310,56 +242,6 @@ const styles = StyleSheet.create({
   signOutButton: {
     backgroundColor: '#be123c',
     marginTop: 12,
-  },
-  settingsCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    elevation: 2,
-    gap: 14,
-    marginTop: 18,
-    padding: 18,
-    shadowColor: '#d5dae1',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.55,
-    shadowRadius: 14,
-  },
-  settingsHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 8,
-  },
-  settingsTitle: {
-    color: '#303844',
-    fontSize: 16,
-    fontWeight: '900',
-  },
-  permissionIcon: {
-    alignItems: 'center',
-    backgroundColor: '#e4f5f2',
-    borderRadius: 20,
-    height: 40,
-    justifyContent: 'center',
-    width: 40,
-  },
-  permissionRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 12,
-  },
-  permissionText: {
-    color: '#74808d',
-    fontSize: 12,
-    fontWeight: '600',
-    lineHeight: 17,
-  },
-  permissionTextGroup: {
-    flex: 1,
-    gap: 4,
-  },
-  permissionTitle: {
-    color: '#303844',
-    fontSize: 14,
-    fontWeight: '900',
   },
   screen: {
     backgroundColor: '#f4f8fb',

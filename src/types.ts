@@ -14,11 +14,6 @@ export type UserProfile = {
   monthlyBudget: number;
 };
 
-export type AppSettings = {
-  localStorageEnabled: boolean;
-  storagePermissionAsked: boolean;
-};
-
 export type RootStackParamList = {
   Login: undefined;
   SignUp: undefined;

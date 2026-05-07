@@ -12,7 +12,6 @@ import { LoginScreen } from './src/screens/LoginScreen';
 import { ProfileScreen } from './src/screens/ProfileScreen';
 import { SignUpScreen } from './src/screens/SignUpScreen';
 import { ToastProvider } from './src/components/ToastProvider';
-import { StoragePermissionPrompt } from './src/components/StoragePermissionPrompt';
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
 import type { RootStackParamList } from './src/types';
 
@@ -57,7 +56,6 @@ function App() {
     <SafeAreaProvider>
       <ToastProvider>
         <AuthProvider>
-          <StoragePermissionPrompt />
           <AppNavigator />
         </AuthProvider>
       </ToastProvider>
