@@ -8,6 +8,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
+import type { NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 
 import {
   NavigationProp,
@@ -44,6 +45,7 @@ export function HomeScreen() {
   const [profile, setProfile] = useState<UserProfile>(defaultProfile);
   const [loading, setLoading] = useState(true);
   const [expenseToDelete, setExpenseToDelete] = useState<string | null>(null);
+  const [carouselIndex, setCarouselIndex] = useState(0);
 
   const totalSpent = useMemo(
     () => expenses.reduce((total, expense) => total + expense.amount, 0),
@@ -113,6 +115,22 @@ export function HomeScreen() {
     });
   };
 
+  const handleCarouselScroll = (
+    event: NativeSyntheticEvent<NativeScrollEvent>,
+  ) => {
+    const carouselInterval = carouselCardWidth + 16;
+    const horizontalOffset = event.nativeEvent.contentOffset.x;
+    const fastSwitchOffset = carouselInterval * 0.08;
+
+    setCarouselIndex(currentIndex => {
+      if (currentIndex === 0) {
+        return horizontalOffset > fastSwitchOffset ? 1 : 0;
+      }
+
+      return horizontalOffset < carouselInterval - fastSwitchOffset ? 0 : 1;
+    });
+  };
+
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-[#f4f8fb]">
       <StatusBar barStyle="dark-content" backgroundColor="#f4f8fb" />
@@ -137,6 +155,8 @@ export function HomeScreen() {
             pagingEnabled
             decelerationRate="fast"
             snapToInterval={carouselCardWidth + 16}
+            onScroll={handleCarouselScroll}
+            scrollEventThrottle={1}
             showsHorizontalScrollIndicator={false}
             contentContainerClassName="gap-4"
           >
@@ -209,6 +229,21 @@ export function HomeScreen() {
               </View>
             </View>
           </ScrollView>
+
+          <View className="mt-3 flex-row justify-center gap-2">
+            {[0, 1].map(index => {
+              const active = carouselIndex === index;
+
+              return (
+                <View
+                  className={`h-2 rounded-full ${
+                    active ? 'w-[18px] bg-[#078f84]' : 'w-2 bg-[#c9d4df]'
+                  }`}
+                  key={index}
+                />
+              );
+            })}
+          </View>
 
           <View className="mt-6 flex-row gap-[18px]">
             <View className="flex-1 rounded-3xl bg-white p-[18px]">

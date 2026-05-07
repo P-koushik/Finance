@@ -128,17 +128,17 @@ export function SavingsScreen() {
         behavior={Platform.select({ ios: 'padding', android: undefined })}
         className="flex-1 bg-[#f4f8fb]"
       >
-        <View className="h-16 flex-row items-center justify-between bg-white px-6">
-          <View className="flex-row items-center gap-2.5">
-            <WalletCards color="#2e62dd" size={24} strokeWidth={2.7} />
-            <Text className="text-[20px] font-extrabold text-[#2b5fd7]">
+        <View className="h-[58px] flex-row items-center justify-between bg-white px-5">
+          <View className="flex-row items-center gap-2">
+            <WalletCards color="#2e62dd" size={22} strokeWidth={2.7} />
+            <Text className="text-[18px] font-extrabold text-[#2b5fd7]">
               Savings
             </Text>
           </View>
         </View>
 
         <ScrollView
-          contentContainerClassName="p-[22px] pb-28"
+          contentContainerClassName="p-[18px] pb-11"
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
@@ -148,37 +148,37 @@ export function SavingsScreen() {
             </View>
           ) : (
             <>
-              <View className="min-h-[184px] justify-between rounded-[28px] bg-[#078f84] p-6">
-                <Text className="text-[15px] font-bold text-[#bde9e4]">
+              <View className="h-[112px] justify-end rounded-lg bg-[#078f84] p-4">
+                <Text className="text-[14px] font-bold text-[#bde9e4]">
                   Savings Balance
                 </Text>
                 <Text
-                  className="mt-5 text-[38px] font-extrabold text-white"
+                  className="mt-1.5 text-[30px] font-extrabold text-white"
                   numberOfLines={1}
                 >
                   {formatCurrency(profile.savingsAmount)}
                 </Text>
               </View>
 
-              <View className="mt-5 flex-row gap-3">
-                <View className="flex-1 rounded-[18px] bg-white p-4">
-                  <Text className="text-[13px] font-bold text-[#6c7480]">
+              <View className="mt-3 flex-row gap-2.5">
+                <View className="flex-1 rounded-[14px] bg-white p-3">
+                  <Text className="text-[12px] font-bold text-[#6c7480]">
                     Available
                   </Text>
                   <Text
-                    className="mt-2 text-[16px] font-extrabold text-[#2c5c8d]"
+                    className="mt-1.5 text-[14px] font-extrabold text-[#2c5c8d]"
                     numberOfLines={1}
                   >
                     {formatCurrency(availableMoney)}
                   </Text>
                 </View>
 
-                <View className="flex-1 rounded-[18px] bg-white p-4">
-                  <Text className="text-[13px] font-bold text-[#6c7480]">
+                <View className="flex-1 rounded-[14px] bg-white p-3">
+                  <Text className="text-[12px] font-bold text-[#6c7480]">
                     Monthly Amount
                   </Text>
                   <Text
-                    className="mt-2 text-[16px] font-extrabold text-[#2c5c8d]"
+                    className="mt-1.5 text-[14px] font-extrabold text-[#2c5c8d]"
                     numberOfLines={1}
                   >
                     {formatCurrency(profile.monthlyBudget)}
@@ -186,26 +186,26 @@ export function SavingsScreen() {
                 </View>
               </View>
 
-              <View className="mt-5 rounded-[18px] bg-white p-5 shadow-md shadow-[color:#d5dae1]">
-                <Text className="text-[17px] font-extrabold text-[#2f3742]">
+              <View className="mt-3 rounded-[10px] bg-white p-4 shadow-md shadow-[color:#d5dae1]">
+                <Text className="text-[15px] font-extrabold text-[#2f3742]">
                   Savings Action
                 </Text>
 
-                <View className="mt-4 flex-row gap-2">
+                <View className="mt-3 flex-row gap-2">
                   {actionOptions.map(option => {
                     const selected = action === option.key;
 
                     return (
                       <Pressable
                         accessibilityRole="button"
-                        className={`min-h-[46px] flex-1 items-center justify-center rounded-xl px-3 ${
+                        className={`min-h-10 flex-1 items-center justify-center rounded-xl px-3 ${
                           selected ? 'bg-[#078f84]' : 'bg-[#eef1f4]'
                         }`}
                         key={option.key}
                         onPress={() => setAction(option.key)}
                       >
                         <Text
-                          className={`text-center text-[13px] font-extrabold ${
+                          className={`text-center text-[12px] font-extrabold ${
                             selected ? 'text-white' : 'text-[#58616d]'
                           }`}
                         >
@@ -216,7 +216,7 @@ export function SavingsScreen() {
                   })}
                 </View>
 
-                <View className="mt-5">
+                <View className="mt-4">
                   <InputField
                     icon={BadgeIndianRupee}
                     keyboardType="decimal-pad"
@@ -230,7 +230,7 @@ export function SavingsScreen() {
                 </View>
 
                 <PrimaryButton
-                  className="mt-5"
+                  className="mt-4"
                   disabled={!canSubmit}
                   label={isDeposit ? 'Add to Savings' : 'Withdraw from Savings'}
                   loading={saving}
