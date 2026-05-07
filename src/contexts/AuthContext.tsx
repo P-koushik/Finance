@@ -20,7 +20,7 @@ import {
 import type { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import * as GoogleSignInModule from '@react-native-google-signin/google-signin';
 
-import { GOOGLE_WEB_CLIENT_ID } from '../config/auth';
+import { GOOGLE_WEB_CLIENT_ID } from '@env';
 
 type AuthContextValue = {
   initializing: boolean;
