@@ -4,7 +4,6 @@ import {
   Pressable,
   ScrollView,
   StatusBar,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -88,25 +87,27 @@ export function SignUpScreen({ navigation }: SignUpScreenProps) {
   const TermsIcon = acceptedTerms ? SquareCheck : Square;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView className="flex-1 bg-[#f5f9fc]">
       <StatusBar barStyle="dark-content" backgroundColor="#f5f9fc" />
       <ScrollView
-        contentContainerStyle={styles.content}
+        contentContainerClassName="flex-grow justify-center p-6"
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.brand}>
+        <View className="mb-[14px] flex-row items-center justify-center gap-2">
           <WalletCards color="#2e62dd" size={22} strokeWidth={2.7} />
-          <Text style={styles.brandText}>Finance</Text>
+          <Text className="text-[20px] font-black text-[#2b5fd7]">Finance</Text>
         </View>
 
-        <View style={styles.card}>
-          <Text style={styles.title}>Create Account</Text>
-          <Text style={styles.subtitle}>
+        <View className="gap-4 rounded-xl bg-white p-6 shadow-lg shadow-[color:#d9e3ee]">
+          <Text className="text-center text-[25px] font-black text-[#2f3742]">
+            Create Account
+          </Text>
+          <Text className="text-center text-[15px] font-semibold leading-[21px] text-[#6b7280]">
             Start your journey to financial freedom.
           </Text>
 
-          <View style={styles.form}>
+          <View className="mt-[6px] gap-[14px]">
             <AuthInput
               icon={User}
               label="Full Name"
@@ -142,17 +143,22 @@ export function SignUpScreen({ navigation }: SignUpScreenProps) {
             accessibilityRole="checkbox"
             accessibilityState={{ checked: acceptedTerms }}
             onPress={() => setAcceptedTerms(value => !value)}
-            style={styles.termsRow}
+            className="flex-row items-start gap-2"
           >
             <TermsIcon
               color={acceptedTerms ? '#0f8c84' : '#cbd5e1'}
               size={24}
               strokeWidth={2.5}
             />
-            <Text style={styles.termsText}>
+            <Text className="flex-1 text-[14px] font-bold leading-5 text-[#6b7280]">
               I agree to the{' '}
-              <Text style={styles.linkText}>Terms and Conditions</Text> and{' '}
-              <Text style={styles.linkText}>Privacy Policy.</Text>
+              <Text className="text-[14px] font-black text-[#0f8c84]">
+                Terms and Conditions
+              </Text>{' '}
+              and{' '}
+              <Text className="text-[14px] font-black text-[#0f8c84]">
+                Privacy Policy.
+              </Text>
             </Text>
           </Pressable>
 
@@ -160,52 +166,59 @@ export function SignUpScreen({ navigation }: SignUpScreenProps) {
             accessibilityRole="button"
             disabled={loading !== null}
             onPress={handleEmailSignUp}
-            style={({ pressed }) => [
-              styles.primaryButton,
-              pressed && styles.pressed,
-              loading && styles.disabled,
-            ]}
+            className={`h-[54px] flex-row items-center justify-center gap-2.5 rounded-[10px] bg-[#2f5f95] shadow-lg shadow-[color:#1e3f66] ${
+              loading !== null ? 'opacity-[0.65]' : 'active:opacity-[0.82]'
+            }`}
           >
             {loading === 'email' ? (
               <ActivityIndicator color="#ffffff" />
             ) : (
               <>
-                <Text style={styles.primaryButtonText}>Sign Up</Text>
+                <Text className="text-[16px] font-extrabold text-white">
+                  Sign Up
+                </Text>
                 <ArrowRight color="#ffffff" size={22} strokeWidth={2.5} />
               </>
             )}
           </Pressable>
 
-          <View style={styles.dividerRow}>
-            <View style={styles.divider} />
-            <Text style={styles.dividerText}>OR</Text>
-            <View style={styles.divider} />
+          <View className="flex-row items-center gap-4">
+            <View className="h-px flex-1 bg-slate-300" />
+            <Text className="text-[13px] font-extrabold text-slate-400">
+              OR
+            </Text>
+            <View className="h-px flex-1 bg-slate-300" />
           </View>
 
           <Pressable
             accessibilityRole="button"
             disabled={loading !== null}
             onPress={handleGoogleSignUp}
-            style={({ pressed }) => [
-              styles.socialButton,
-              pressed && styles.pressed,
-              loading && styles.disabled,
-            ]}
+            className={`h-[52px] items-center justify-center rounded-xl border border-[#0f8c84] ${
+              loading !== null ? 'opacity-[0.65]' : 'active:opacity-[0.82]'
+            }`}
           >
             {loading === 'google' ? (
               <ActivityIndicator color="#0f8c84" />
             ) : (
-              <Text style={styles.socialText}>Google</Text>
+              <Text className="text-[15px] font-black text-[#0f8c84]">
+                Google
+              </Text>
             )}
           </Pressable>
 
-          <View style={styles.footerRow}>
-            <Text style={styles.footerText}>Already have an account?</Text>
+          <View className="flex-row items-center justify-center">
+            <Text className="text-[14px] font-bold text-[#6b7280]">
+              Already have an account?
+            </Text>
             <Pressable
               accessibilityRole="button"
               onPress={() => navigation.navigate('Login')}
             >
-              <Text style={styles.linkText}> Sign In</Text>
+              <Text className="text-[14px] font-black text-[#0f8c84]">
+                {' '}
+                Sign In
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -213,135 +226,3 @@ export function SignUpScreen({ navigation }: SignUpScreenProps) {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  brand: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 8,
-    justifyContent: 'center',
-    marginBottom: 14,
-  },
-  brandText: {
-    color: '#2b5fd7',
-    fontSize: 20,
-    fontWeight: '900',
-  },
-  card: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    elevation: 6,
-    gap: 16,
-    padding: 24,
-    shadowColor: '#d9e3ee',
-    shadowOffset: { width: 0, height: 14 },
-    shadowOpacity: 0.75,
-    shadowRadius: 26,
-  },
-  content: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    padding: 24,
-  },
-  disabled: {
-    opacity: 0.65,
-  },
-  divider: {
-    backgroundColor: '#cbd5e1',
-    flex: 1,
-    height: 1,
-  },
-  dividerRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 16,
-  },
-  dividerText: {
-    color: '#94a3b8',
-    fontSize: 13,
-    fontWeight: '800',
-  },
-  footerRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  footerText: {
-    color: '#6b7280',
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  form: {
-    gap: 14,
-    marginTop: 6,
-  },
-  linkText: {
-    color: '#0f8c84',
-    fontSize: 14,
-    fontWeight: '900',
-  },
-  pressed: {
-    opacity: 0.82,
-  },
-  primaryButton: {
-    alignItems: 'center',
-    backgroundColor: '#2f5f95',
-    borderRadius: 10,
-    elevation: 5,
-    flexDirection: 'row',
-    gap: 10,
-    height: 54,
-    justifyContent: 'center',
-    shadowColor: '#1e3f66',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.24,
-    shadowRadius: 12,
-  },
-  primaryButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '800',
-  },
-  safeArea: {
-    backgroundColor: '#f5f9fc',
-    flex: 1,
-  },
-  socialButton: {
-    alignItems: 'center',
-    borderColor: '#0f8c84',
-    borderRadius: 12,
-    borderWidth: 1,
-    height: 52,
-    justifyContent: 'center',
-  },
-  socialText: {
-    color: '#0f8c84',
-    fontSize: 15,
-    fontWeight: '900',
-  },
-  subtitle: {
-    color: '#6b7280',
-    fontSize: 15,
-    fontWeight: '600',
-    lineHeight: 21,
-    textAlign: 'center',
-  },
-  termsRow: {
-    alignItems: 'flex-start',
-    flexDirection: 'row',
-    gap: 8,
-  },
-  termsText: {
-    color: '#6b7280',
-    flex: 1,
-    fontSize: 14,
-    fontWeight: '700',
-    lineHeight: 20,
-  },
-  title: {
-    color: '#2f3742',
-    fontSize: 25,
-    fontWeight: '900',
-    textAlign: 'center',
-  },
-});

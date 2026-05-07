@@ -8,9 +8,10 @@ import { formatCurrency, formatDateTime } from '../utils/format';
 type ExpenseCardProps = {
   expense: Expense;
   onDelete: (expenseId: string) => void;
+  onPress?: (expense: Expense) => void;
 };
 
-export function ExpenseCard({ expense, onDelete }: ExpenseCardProps) {
+export function ExpenseCard({ expense, onDelete, onPress }: ExpenseCardProps) {
   return (
     <View style={styles.card}>
       <View style={styles.iconWrap}>
@@ -32,6 +33,15 @@ export function ExpenseCard({ expense, onDelete }: ExpenseCardProps) {
           <Text style={styles.tagText}>{expense.category ?? 'Other'}</Text>
         </View>
       </View>
+
+      {onPress ? (
+        <Pressable
+          accessibilityLabel={`Edit ${expense.title}`}
+          accessibilityRole="button"
+          onPress={() => onPress(expense)}
+          style={styles.editHitArea}
+        />
+      ) : null}
 
       <Pressable
         accessibilityLabel={`Delete ${expense.title}`}
@@ -69,6 +79,7 @@ const styles = StyleSheet.create({
     minHeight: 78,
     paddingHorizontal: 16,
     paddingVertical: 12,
+    position: 'relative',
     shadowColor: '#d1d7df',
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.65,
@@ -90,6 +101,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: -6,
     width: 34,
+    zIndex: 2,
+  },
+  editHitArea: {
+    borderRadius: 22,
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 48,
+    top: 0,
+    zIndex: 1,
   },
   iconWrap: {
     alignItems: 'center',

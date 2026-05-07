@@ -5,12 +5,12 @@ import {
   NavigationProp,
   useNavigation,
 } from '@react-navigation/native';
-import { CirclePlus, Home, User } from 'lucide-react-native';
+import { CirclePlus, Home, PiggyBank, User } from 'lucide-react-native';
 
 import type { RootStackParamList } from '../types';
 
 type BottomBarProps = {
-  active: 'home' | 'add' | 'profile';
+  active: 'home' | 'add' | 'savings' | 'profile';
 };
 
 export function BottomBar({ active }: BottomBarProps) {
@@ -18,6 +18,7 @@ export function BottomBar({ active }: BottomBarProps) {
   const items = [
     { key: 'home', label: 'Home', Icon: Home, route: 'Home' },
     { key: 'add', label: 'Add', Icon: CirclePlus, route: 'AddExpense' },
+    { key: 'savings', label: 'Savings', Icon: PiggyBank, route: 'Savings' },
     { key: 'profile', label: 'Profile', Icon: User, route: 'Profile' },
   ] as const;
 
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 74,
     justifyContent: 'space-around',
-    paddingHorizontal: 20,
+    paddingHorizontal: 12,
     shadowColor: '#d3d8df',
     shadowOffset: { width: 0, height: -5 },
     shadowOpacity: 0.55,
@@ -84,7 +85,7 @@ const styles = StyleSheet.create({
   item: {
     alignItems: 'center',
     gap: 5,
-    minWidth: 54,
+    minWidth: 50,
   },
   label: {
     color: '#9aa3af',

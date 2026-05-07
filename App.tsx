@@ -1,18 +1,21 @@
 import React from 'react';
+import './global.css';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 
 import { AddExpenseScreen } from './src/screens/AddExpenseScreen';
 import { AllExpensesScreen } from './src/screens/AllExpensesScreen';
+import { EditExpenseScreen } from './src/screens/EditExpenseScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { ProfileScreen } from './src/screens/ProfileScreen';
+import { SavingsScreen } from './src/screens/SavingsScreen';
 import { SignUpScreen } from './src/screens/SignUpScreen';
 import { ToastProvider } from './src/components/ToastProvider';
-import { StoragePermissionPrompt } from './src/components/StoragePermissionPrompt';
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
 import type { RootStackParamList } from './src/types';
 
@@ -25,7 +28,7 @@ function AppNavigator() {
 
   if (initializing) {
     return (
-      <View style={styles.loadingScreen}>
+      <View className="flex-1 items-center justify-center bg-[#f4f8fb]">
         <ActivityIndicator color="#124777" size="large" />
       </View>
     );
@@ -38,6 +41,8 @@ function AppNavigator() {
           <>
             <Stack.Screen component={HomeScreen} name="Home" />
             <Stack.Screen component={AddExpenseScreen} name="AddExpense" />
+            <Stack.Screen component={SavingsScreen} name="Savings" />
+            <Stack.Screen component={EditExpenseScreen} name="EditExpense" />
             <Stack.Screen component={AllExpensesScreen} name="AllExpenses" />
             <Stack.Screen component={ProfileScreen} name="Profile" />
           </>
@@ -57,21 +62,11 @@ function App() {
     <SafeAreaProvider>
       <ToastProvider>
         <AuthProvider>
-          <StoragePermissionPrompt />
           <AppNavigator />
         </AuthProvider>
       </ToastProvider>
     </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  loadingScreen: {
-    alignItems: 'center',
-    backgroundColor: '#f4f8fb',
-    flex: 1,
-    justifyContent: 'center',
-  },
-});
 
 export default App;
