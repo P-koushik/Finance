@@ -7,18 +7,22 @@ import {
   Text,
   View,
 } from 'react-native';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import {
+  NavigationProp,
+  useFocusEffect,
+  useNavigation,
+} from '@react-navigation/native';
 import { ChevronLeft, WalletCards } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ConfirmCard } from '../components/ConfirmCard';
 import { ExpenseCard } from '../components/ExpenseCard';
 import { useToast } from '../components/ToastProvider';
-import type { Expense } from '../types';
+import type { Expense, RootStackParamList } from '../types';
 import { deleteExpense, getExpenses } from '../utils/storage';
 
 export function AllExpensesScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { showToast } = useToast();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
@@ -95,6 +99,11 @@ export function AllExpensesScreen() {
                   expense={expense}
                   key={expense.id}
                   onDelete={handleDelete}
+                  onPress={selectedExpense =>
+                    navigation.navigate('EditExpense', {
+                      expenseId: selectedExpense.id,
+                    })
+                  }
                 />
               ))}
             </View>

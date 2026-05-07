@@ -12,6 +12,10 @@ export type UserProfile = {
   name: string;
   email: string;
   monthlyBudget: number;
+  availableAmount: number;
+  savingsAmount: number;
+  monthlyCreditDay: number;
+  lastMonthlyCreditMonth: string | null;
 };
 
 export type RootStackParamList = {
@@ -19,6 +23,8 @@ export type RootStackParamList = {
   SignUp: undefined;
   Home: undefined;
   AddExpense: undefined;
+  Savings: undefined;
+  EditExpense: { expenseId: string };
   AllExpenses: undefined;
   Profile: undefined;
 };

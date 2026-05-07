@@ -9,9 +9,11 @@ import { enableScreens } from 'react-native-screens';
 
 import { AddExpenseScreen } from './src/screens/AddExpenseScreen';
 import { AllExpensesScreen } from './src/screens/AllExpensesScreen';
+import { EditExpenseScreen } from './src/screens/EditExpenseScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { ProfileScreen } from './src/screens/ProfileScreen';
+import { SavingsScreen } from './src/screens/SavingsScreen';
 import { SignUpScreen } from './src/screens/SignUpScreen';
 import { ToastProvider } from './src/components/ToastProvider';
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
@@ -39,6 +41,8 @@ function AppNavigator() {
           <>
             <Stack.Screen component={HomeScreen} name="Home" />
             <Stack.Screen component={AddExpenseScreen} name="AddExpense" />
+            <Stack.Screen component={SavingsScreen} name="Savings" />
+            <Stack.Screen component={EditExpenseScreen} name="EditExpense" />
             <Stack.Screen component={AllExpensesScreen} name="AllExpenses" />
             <Stack.Screen component={ProfileScreen} name="Profile" />
           </>

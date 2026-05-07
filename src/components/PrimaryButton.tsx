@@ -26,7 +26,7 @@ export function PrimaryButton({
   style,
 }: PrimaryButtonProps) {
   const buttonClassName = [
-    'h-[54px] flex-row items-center justify-center gap-2.5 rounded-[32px] bg-[#124777] shadow-lg shadow-[#0a2d4c]',
+    'h-[54px] flex-row items-center justify-center gap-2.5 rounded-[32px] bg-[#124777] shadow-lg shadow-[color:#0a2d4c]',
     className,
     disabled || loading ? 'opacity-[0.58]' : 'active:opacity-[0.88]',
   ]

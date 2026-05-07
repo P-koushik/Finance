@@ -5,6 +5,7 @@ import {
   ScrollView,
   StatusBar,
   Text,
+  useWindowDimensions,
   View,
 } from 'react-native';
 
@@ -27,6 +28,7 @@ import type { Expense, RootStackParamList, UserProfile } from '../types';
 import { formatCurrency } from '../utils/format';
 
 import {
+  applyMonthlyCreditIfDue,
   defaultProfile,
   deleteExpense,
   getExpenses,
@@ -35,6 +37,7 @@ import {
 
 export function HomeScreen() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { width } = useWindowDimensions();
   const { showToast } = useToast();
 
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -62,7 +65,10 @@ export function HomeScreen() {
   }, [expenses]);
 
   const monthlyBudget = profile.monthlyBudget;
-  const remaining = Math.max(monthlyBudget - totalSpent, 0);
+  const availableAmount = profile.availableAmount;
+  const savingsAmount = profile.savingsAmount;
+  const availableMoney = Math.max(availableAmount - totalSpent, 0);
+  const carouselCardWidth = Math.max(width - 44, 280);
 
   const visibleExpenses = expenses.slice(0, 10);
 
@@ -72,9 +78,10 @@ export function HomeScreen() {
         getExpenses(),
         getProfile(),
       ]);
+      const creditedProfile = await applyMonthlyCreditIfDue(storedProfile);
 
       setExpenses(storedExpenses);
-      setProfile(storedProfile);
+      setProfile(creditedProfile);
     } finally {
       setLoading(false);
     }
@@ -125,41 +132,83 @@ export function HomeScreen() {
           contentContainerClassName="p-[22px] pb-28"
           showsVerticalScrollIndicator={false}
         >
-          <View className="rounded-[28px] bg-[#2e5f95] p-6">
-            <Text className="text-[16px] font-bold text-[#9db6d8]">
-              Total Spent
-            </Text>
+          <ScrollView
+            horizontal
+            pagingEnabled
+            decelerationRate="fast"
+            snapToInterval={carouselCardWidth + 16}
+            showsHorizontalScrollIndicator={false}
+            contentContainerClassName="gap-4"
+          >
+            <View
+              className="h-[220px] rounded-[28px] bg-[#2e5f95] p-6"
+              style={{ width: carouselCardWidth }}
+            >
+              <Text className="text-[15px] font-bold text-[#9db6d8]">
+                Total Spent
+              </Text>
 
-            <Text className="mt-3.5 text-[36px] font-normal text-white">
-              {formatCurrency(totalSpent)}
-            </Text>
+              <Text
+                className="mt-3.5 text-[36px] font-normal text-white"
+                numberOfLines={1}
+              >
+                {formatCurrency(totalSpent)}
+              </Text>
 
-            <View className="mt-7 flex-row items-center gap-3.5 rounded-[20px] bg-white/15 p-4">
-              <View className="h-12 w-12 items-center justify-center rounded-full bg-[#69bdc1]">
-                <TrendingUp color="#ffffff" size={24} strokeWidth={2.7} />
+              <View className="mt-7 flex-row items-center gap-3.5 rounded-[20px] bg-white/15 p-4">
+                <View className="h-12 w-12 items-center justify-center rounded-full bg-[#69bdc1]">
+                  <TrendingUp color="#ffffff" size={24} strokeWidth={2.7} />
+                </View>
+
+                <View className="min-w-0 flex-1 gap-1">
+                  <Text className="text-[14px] font-bold text-[#a8bdd9]">
+                    Monthly Amount
+                  </Text>
+
+                  <Text
+                    className="text-[14px] font-extrabold text-[#e8f0fb]"
+                    numberOfLines={1}
+                  >
+                    {formatCurrency(monthlyBudget)}
+                  </Text>
+                </View>
+
+                <View className="min-w-0 flex-1 gap-1">
+                  <Text className="text-[14px] font-bold text-[#a8bdd9]">
+                    Available
+                  </Text>
+
+                  <Text
+                    className="text-[14px] font-extrabold text-[#e8f0fb]"
+                    numberOfLines={1}
+                  >
+                    {formatCurrency(availableMoney)}
+                  </Text>
+                </View>
               </View>
+            </View>
 
-              <View className="flex-1 gap-1">
-                <Text className="text-[14px] font-bold text-[#a8bdd9]">
-                  Monthly Budget
+            <View
+              className="h-[220px] justify-between rounded-[28px] bg-[#078f84] p-6"
+              style={{ width: carouselCardWidth }}
+            >
+              <Text className="text-[15px] font-bold text-[#bde9e4]">
+                Savings Balance
+              </Text>
+
+              <View>
+                <Text className="text-[16px] font-bold text-[#bde9e4]">
+                  Savings
                 </Text>
-
-                <Text className="text-[14px] font-extrabold text-[#e8f0fb]">
-                  {formatCurrency(monthlyBudget)}
-                </Text>
-              </View>
-
-              <View className="flex-1 gap-1">
-                <Text className="text-[14px] font-bold text-[#a8bdd9]">
-                  Remaining
-                </Text>
-
-                <Text className="text-[14px] font-extrabold text-[#e8f0fb]">
-                  {formatCurrency(remaining)}
+                <Text
+                  className="mt-3 text-[36px] font-extrabold text-white"
+                  numberOfLines={1}
+                >
+                  {formatCurrency(savingsAmount)}
                 </Text>
               </View>
             </View>
-          </View>
+          </ScrollView>
 
           <View className="mt-6 flex-row gap-[18px]">
             <View className="flex-1 rounded-3xl bg-white p-[18px]">
@@ -212,6 +261,11 @@ export function HomeScreen() {
                   expense={expense}
                   key={expense.id}
                   onDelete={handleDelete}
+                  onPress={selectedExpense =>
+                    navigation.navigate('EditExpense', {
+                      expenseId: selectedExpense.id,
+                    })
+                  }
                 />
               ))}
             </View>

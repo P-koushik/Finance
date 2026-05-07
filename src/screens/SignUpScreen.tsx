@@ -99,7 +99,7 @@ export function SignUpScreen({ navigation }: SignUpScreenProps) {
           <Text className="text-[20px] font-black text-[#2b5fd7]">Finance</Text>
         </View>
 
-        <View className="gap-4 rounded-xl bg-white p-6 shadow-lg shadow-[#d9e3ee]">
+        <View className="gap-4 rounded-xl bg-white p-6 shadow-lg shadow-[color:#d9e3ee]">
           <Text className="text-center text-[25px] font-black text-[#2f3742]">
             Create Account
           </Text>
@@ -166,7 +166,7 @@ export function SignUpScreen({ navigation }: SignUpScreenProps) {
             accessibilityRole="button"
             disabled={loading !== null}
             onPress={handleEmailSignUp}
-            className={`h-[54px] flex-row items-center justify-center gap-2.5 rounded-[10px] bg-[#2f5f95] shadow-lg shadow-[#1e3f66] ${
+            className={`h-[54px] flex-row items-center justify-center gap-2.5 rounded-[10px] bg-[#2f5f95] shadow-lg shadow-[color:#1e3f66] ${
               loading !== null ? 'opacity-[0.65]' : 'active:opacity-[0.82]'
             }`}
           >
