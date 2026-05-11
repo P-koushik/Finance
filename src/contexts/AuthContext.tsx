@@ -21,9 +21,12 @@ import type { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import * as GoogleSignInModule from '@react-native-google-signin/google-signin';
 
 import { GOOGLE_WEB_CLIENT_ID } from '@env';
+import { queryClient } from '../lib/query-client';
+import { financeApi } from '../services/finance-api';
 
 type AuthContextValue = {
   initializing: boolean;
+  authError: unknown | null;
   user: FirebaseAuthTypes.User | null;
   loginWithEmail: (email: string, password: string) => Promise<void>;
   signUpWithEmail: (
@@ -68,8 +71,11 @@ const getGoogleSignin = () => {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
   const [initializing, setInitializing] = useState(true);
+  const [authError, setAuthError] = useState<unknown | null>(null);
 
   useEffect(() => {
+    let mounted = true;
+
     try {
       getGoogleSignin().configure({
         webClientId: GOOGLE_WEB_CLIENT_ID,
@@ -80,10 +86,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      return onAuthStateChanged(getAuth(), nextUser => {
-        setUser(nextUser);
-        setInitializing(false);
+      const unsubscribe = onAuthStateChanged(getAuth(), nextUser => {
+        const syncBackendSession = async () => {
+          setInitializing(true);
+
+          if (!nextUser) {
+            queryClient.clear();
+            setUser(null);
+            setInitializing(false);
+            return;
+          }
+
+          try {
+            const idToken = await nextUser.getIdToken();
+            await financeApi.signIn(idToken);
+
+            if (!mounted) {
+              return;
+            }
+
+            setAuthError(null);
+            setUser(nextUser);
+          } catch (error) {
+            if (!mounted) {
+              return;
+            }
+
+            setAuthError(error);
+            setUser(null);
+            queryClient.clear();
+            await signOut(getAuth()).catch(() => undefined);
+          } finally {
+            if (mounted) {
+              setInitializing(false);
+            }
+          }
+        };
+
+        syncBackendSession();
       });
+
+      return () => {
+        mounted = false;
+        unsubscribe();
+      };
     } catch {
       setInitializing(false);
       return undefined;
@@ -132,17 +178,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(async () => {
-    await Promise.allSettled([
-      getGoogleSignin()
-        .signOut()
-        .catch(() => null),
-      signOut(getAuth()),
-    ]);
+    const signOutGoogle = async () => {
+      try {
+        await getGoogleSignin().signOut();
+      } catch {
+        // Email/password auth can still sign out cleanly without Google Sign-In.
+      }
+    };
+
+    queryClient.clear();
+    await Promise.allSettled([signOutGoogle(), signOut(getAuth())]);
   }, []);
 
   const value = useMemo(
     () => ({
       initializing,
+      authError,
       user,
       loginWithEmail,
       signUpWithEmail,
@@ -151,6 +202,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }),
     [
       initializing,
+      authError,
       user,
       loginWithEmail,
       signUpWithEmail,

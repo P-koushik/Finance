@@ -3,9 +3,12 @@ import './global.css';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
+
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { AddExpenseScreen } from './src/screens/AddExpenseScreen';
 import { AllExpensesScreen } from './src/screens/AllExpensesScreen';
@@ -15,8 +18,11 @@ import { LoginScreen } from './src/screens/LoginScreen';
 import { ProfileScreen } from './src/screens/ProfileScreen';
 import { SavingsScreen } from './src/screens/SavingsScreen';
 import { SignUpScreen } from './src/screens/SignUpScreen';
+
 import { ToastProvider } from './src/components/ToastProvider';
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
+import { queryClient } from './src/lib/query-client';
+
 import type { RootStackParamList } from './src/types';
 
 enableScreens();
@@ -59,13 +65,17 @@ function AppNavigator() {
 
 function App() {
   return (
-    <SafeAreaProvider>
-      <ToastProvider>
-        <AuthProvider>
-          <AppNavigator />
-        </AuthProvider>
-      </ToastProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryClientProvider client={queryClient}>
+        <SafeAreaProvider>
+          <ToastProvider>
+            <AuthProvider>
+              <AppNavigator />
+            </AuthProvider>
+          </ToastProvider>
+        </SafeAreaProvider>
+      </QueryClientProvider>
+    </GestureHandlerRootView>
   );
 }
 
