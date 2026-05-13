@@ -35,6 +35,15 @@ jest.mock('@react-native-google-signin/google-signin', () => ({
   },
 }));
 
+jest.mock('react-native-gesture-handler', () => ({
+  GestureHandlerRootView: (props: any) => props.children,
+}));
+
+jest.mock('react-native-reanimated-carousel', () => ({
+  __esModule: true,
+  default: () => null,
+}));
+
 jest.mock('react-native-screens', () => ({
   enableScreens: jest.fn(),
 }));

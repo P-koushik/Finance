@@ -46,14 +46,16 @@ export function BottomBar({ active }: BottomBarProps) {
               }
             }}
             style={({ pressed }) => [styles.item, pressed && styles.pressed]}
+            className="items-center gap-1.5 min-w-12"
           >
             <Icon
-              color={selected ? '#2e62dd' : '#a8b0bb'}
-              fill={selected ? '#2e62dd' : 'transparent'}
+              className={`text-[${selected ? '#2e62dd' : '#a8b0bb'}]`}
               size={22}
               strokeWidth={2.4}
             />
-            <Text style={[styles.label, selected && styles.activeLabel]}>
+            <Text
+              className={`text-[10px] font-extrabold ${selected && 'text-[#2e62dd]'}`}
+            >
               {label}
             </Text>
           </Pressable>
