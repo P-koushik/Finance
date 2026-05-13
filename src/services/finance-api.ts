@@ -6,8 +6,15 @@ type ApiEnvelope<T> = {
   data: T;
 };
 
-type BackendUser = UserProfile & {
-  id: string;
+type BackendUser = Partial<UserProfile> & {
+  _id?: string;
+  id?: string;
+  monthly_income?: number;
+  balance?: number;
+  savings?: number;
+  income_day?: number;
+  income_date?: string | Date | null;
+  last_income_credit_month?: string | null;
 };
 
 type TransactionPayload = {
@@ -17,14 +24,29 @@ type TransactionPayload = {
   date: string;
 };
 
+export type UpdateProfilePayload = Pick<
+  UserProfile,
+  | 'name'
+  | 'monthlyBudget'
+  | 'availableAmount'
+  | 'savingsAmount'
+  | 'monthlyCreditDay'
+> & {
+  income_date: string;
+};
+
 const normalizeProfile = (user: BackendUser): UserProfile => ({
   name: user.name ?? '',
   email: user.email ?? '',
-  monthlyBudget: user.monthlyBudget ?? 0,
-  availableAmount: user.availableAmount ?? 0,
-  savingsAmount: user.savingsAmount ?? 0,
-  monthlyCreditDay: user.monthlyCreditDay ?? 1,
-  lastMonthlyCreditMonth: user.lastMonthlyCreditMonth ?? null,
+  monthlyBudget: user.monthlyBudget ?? user.monthly_income ?? 0,
+  availableAmount: user.availableAmount ?? user.balance ?? 0,
+  savingsAmount: user.savingsAmount ?? user.savings ?? 0,
+  monthlyCreditDay: user.monthlyCreditDay ?? user.income_day ?? 1,
+  incomeDate:
+    user.incomeDate ??
+    (user.income_date ? new Date(user.income_date).toISOString() : null),
+  lastMonthlyCreditMonth:
+    user.lastMonthlyCreditMonth ?? user.last_income_credit_month ?? null,
 });
 
 export const financeApi = {
@@ -50,9 +72,7 @@ export const financeApi = {
     return normalizeProfile(response.data.data);
   },
 
-  async updateProfile(
-    profile: Pick<UserProfile, 'monthlyBudget' | 'monthlyCreditDay'>,
-  ) {
+  async updateProfile(profile: UpdateProfilePayload) {
     const response = await api.put<ApiEnvelope<BackendUser>>('/user', profile);
 
     return normalizeProfile(response.data.data);

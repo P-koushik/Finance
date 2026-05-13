@@ -60,11 +60,11 @@ export function AllExpensesView({
               {expenses.map(expense => (
                 <ExpenseCard
                   expense={expense}
-                  key={expense.id}
+                  key={expense._id}
                   onDelete={handleDelete}
                   onPress={selectedExpense =>
                     navigation.navigate('EditExpense', {
-                      expenseId: selectedExpense.id,
+                      expenseId: selectedExpense._id,
                     })
                   }
                 />

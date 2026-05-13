@@ -6,6 +6,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '../components/ToastProvider';
 import { financeApi, financeQueryKeys } from '../services/finance-api';
 import type { ExpenseCategory, RootStackParamList } from '../types';
+import { formatDateKey, formatDateTime } from '../utils/format';
 
 type EditExpenseScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -14,10 +15,10 @@ type EditExpenseScreenProps = NativeStackScreenProps<
 
 const standardCategories: ExpenseCategory[] = ['Food', 'Travel', 'Utilities'];
 
-const getSafeDate = (dateString: string) => {
-  const date = new Date(dateString);
+const getSafeDate = (date: Date | string) => {
+  const nextDate = date instanceof Date ? date : new Date(date);
 
-  return Number.isNaN(date.getTime()) ? new Date() : date;
+  return Number.isNaN(nextDate.getTime()) ? new Date() : nextDate;
 };
 
 export function useEditExpenseViewModel({
@@ -52,7 +53,7 @@ export function useEditExpenseViewModel({
 
     setTitle(expense.title);
     setAmount(String(expense.amount));
-    setSelectedDate(getSafeDate(expense.createdAt));
+    setSelectedDate(getSafeDate(expense.date));
 
     if (standardCategories.includes(storedCategory as ExpenseCategory)) {
       setCategory(storedCategory as ExpenseCategory);
@@ -107,6 +108,13 @@ export function useEditExpenseViewModel({
       });
       navigation.goBack();
     },
+    onError: () => {
+      showToast({
+        type: 'error',
+        title: 'Update failed',
+        message: 'The transaction could not be saved. Please try again.',
+      });
+    },
   });
 
   const canSave =
@@ -139,18 +147,14 @@ export function useEditExpenseViewModel({
     canSave,
     category,
     customCategory,
-    dateLabel: selectedDate.toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    }),
+    dateLabel: formatDateTime(selectedDate),
     datePickerVisible,
     handleDayPress,
     handleSave,
     loadingExpense,
     navigation,
     saving: updateMutation.isPending,
-    selectedDateKey: selectedDate.toISOString().split('T')[0],
+    selectedDateKey: formatDateKey(selectedDate),
     setAmount,
     setCategory,
     setCustomCategory,

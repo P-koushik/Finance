@@ -36,10 +36,18 @@ export function useAllExpensesViewModel() {
       await queryClient.invalidateQueries({
         queryKey: financeQueryKeys.expenses,
       });
+      setExpenseToDelete(null);
       showToast({
         type: 'success',
         title: 'Expense deleted',
         message: 'The transaction was removed from your tracker.',
+      });
+    },
+    onError: () => {
+      showToast({
+        type: 'error',
+        title: 'Delete failed',
+        message: 'The transaction could not be removed. Please try again.',
       });
     },
   });
@@ -50,7 +58,6 @@ export function useAllExpensesViewModel() {
     }
 
     await deleteMutation.mutateAsync(expenseToDelete);
-    setExpenseToDelete(null);
   };
 
   return {

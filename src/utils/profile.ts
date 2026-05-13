@@ -7,5 +7,6 @@ export const defaultProfile: UserProfile = {
   availableAmount: 0,
   savingsAmount: 0,
   monthlyCreditDay: 1,
+  incomeDate: null,
   lastMonthlyCreditMonth: null,
 };

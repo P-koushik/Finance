@@ -26,20 +26,28 @@ import type { useProfileViewModel } from '../view-models/useProfileViewModel';
 type ProfileViewProps = ReturnType<typeof useProfileViewModel>;
 
 export function ProfileView({
+  availableAmount,
   dayPickerVisible,
   handleDayPress,
   handleSave,
   keyboardVisible,
   logout,
   monthlyBudget,
+  name,
+  parsedAvailableAmount,
   parsedBudget,
   parsedCreditDay,
+  parsedSavingsAmount,
   profileEmail,
   profileName,
   saving,
   selectedDateKey,
+  setAvailableAmount,
   setDayPickerVisible,
   setMonthlyBudget,
+  setName,
+  setSavingsAmount,
+  savingsAmount,
 }: ProfileViewProps) {
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-[#f4f8fb]">
@@ -95,7 +103,46 @@ export function ProfileView({
             </Text>
           </View>
 
+          <View className="mt-3 flex-row gap-2.5">
+            <View className="flex-1 rounded-[14px] bg-white p-3">
+              <Text className="text-[12px] font-bold text-[#6c7480]">
+                Available
+              </Text>
+              <Text
+                className="mt-1.5 text-[14px] font-extrabold text-[#2c5c8d]"
+                numberOfLines={1}
+              >
+                {formatCurrency(
+                  parsedAvailableAmount > 0 ? parsedAvailableAmount : 0,
+                )}
+              </Text>
+            </View>
+
+            <View className="flex-1 rounded-[14px] bg-white p-3">
+              <Text className="text-[12px] font-bold text-[#6c7480]">
+                Savings
+              </Text>
+              <Text
+                className="mt-1.5 text-[14px] font-extrabold text-[#2c5c8d]"
+                numberOfLines={1}
+              >
+                {formatCurrency(
+                  parsedSavingsAmount > 0 ? parsedSavingsAmount : 0,
+                )}
+              </Text>
+            </View>
+          </View>
+
           <View className="mt-[18px] gap-5 rounded-xl bg-white p-[18px] shadow-md shadow-[color:#d5dae1]">
+            <InputField
+              autoCapitalize="words"
+              icon={User}
+              label="Name"
+              onChangeText={setName}
+              placeholder="Your name"
+              value={name}
+            />
+
             <InputField
               icon={BadgeIndianRupee}
               keyboardType="decimal-pad"
@@ -104,6 +151,26 @@ export function ProfileView({
               placeholder="0"
               prefix="₹"
               value={monthlyBudget}
+            />
+
+            <InputField
+              icon={BadgeIndianRupee}
+              keyboardType="decimal-pad"
+              label="Available Amount"
+              onChangeText={setAvailableAmount}
+              placeholder="0"
+              prefix="₹"
+              value={availableAmount}
+            />
+
+            <InputField
+              icon={BadgeIndianRupee}
+              keyboardType="decimal-pad"
+              label="Savings Amount"
+              onChangeText={setSavingsAmount}
+              placeholder="0"
+              prefix="₹"
+              value={savingsAmount}
             />
 
             <View className="gap-2">

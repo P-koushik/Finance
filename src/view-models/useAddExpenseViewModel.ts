@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '../components/ToastProvider';
 import { financeApi, financeQueryKeys } from '../services/finance-api';
 import type { ExpenseCategory, RootStackParamList } from '../types';
+import { formatDateKey, formatDateTime } from '../utils/format';
 
 type AddExpenseScreenProps = NativeStackScreenProps<
   RootStackParamList,
@@ -79,16 +80,12 @@ export function useAddExpenseViewModel({ navigation }: AddExpenseScreenProps) {
     canSave,
     category,
     customCategory,
-    dateLabel: selectedDate.toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    }),
+    dateLabel: formatDateTime(selectedDate),
     datePickerVisible,
     handleDayPress,
     handleSave,
     saving: createMutation.isPending,
-    selectedDateKey: selectedDate.toISOString().split('T')[0],
+    selectedDateKey: formatDateKey(selectedDate),
     setAmount,
     setCategory,
     setCustomCategory,

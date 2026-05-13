@@ -13,7 +13,10 @@ export function useProfileViewModel() {
   const { logout, user } = useAuth();
   const queryClient = useQueryClient();
   const { showToast } = useToast();
+  const [name, setName] = useState('');
   const [monthlyBudget, setMonthlyBudget] = useState('');
+  const [availableAmount, setAvailableAmount] = useState('');
+  const [savingsAmount, setSavingsAmount] = useState('');
   const [monthlyCreditDay, setMonthlyCreditDay] = useState(
     String(defaultProfile.monthlyCreditDay),
   );
@@ -31,11 +34,20 @@ export function useProfileViewModel() {
   );
 
   useEffect(() => {
+    setName(profileBalance.name || user?.displayName || '');
     setMonthlyBudget(
       profileBalance.monthlyBudget ? String(profileBalance.monthlyBudget) : '',
     );
+    setAvailableAmount(
+      profileBalance.availableAmount
+        ? String(profileBalance.availableAmount)
+        : '',
+    );
+    setSavingsAmount(
+      profileBalance.savingsAmount ? String(profileBalance.savingsAmount) : '',
+    );
     setMonthlyCreditDay(String(profileBalance.monthlyCreditDay));
-  }, [profileBalance]);
+  }, [profileBalance, user?.displayName]);
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
@@ -51,9 +63,12 @@ export function useProfileViewModel() {
     };
   }, []);
 
-  const parsedBudget = Number(monthlyBudget.replace(/,/g, ''));
+  const parseAmount = (value: string) => Number(value.replace(/,/g, ''));
+  const parsedBudget = parseAmount(monthlyBudget);
+  const parsedAvailableAmount = parseAmount(availableAmount);
+  const parsedSavingsAmount = parseAmount(savingsAmount);
   const parsedCreditDay = Number(monthlyCreditDay);
-  const profileName = user?.displayName || profileBalance.name || 'Your Name';
+  const profileName = name.trim() || user?.displayName || 'Your Name';
   const profileEmail =
     user?.email || profileBalance.email || 'email@example.com';
   const today = new Date();
@@ -68,8 +83,12 @@ export function useProfileViewModel() {
   const updateMutation = useMutation({
     mutationFn: () =>
       financeApi.updateProfile({
+        name: name.trim(),
         monthlyBudget: parsedBudget,
+        availableAmount: parsedAvailableAmount,
+        savingsAmount: parsedSavingsAmount,
         monthlyCreditDay: parsedCreditDay,
+        income_date: selectedDateKey,
       }),
     onSuccess: async nextProfile => {
       queryClient.setQueryData(financeQueryKeys.profile, nextProfile);
@@ -85,11 +104,38 @@ export function useProfileViewModel() {
   });
 
   const handleSave = async () => {
-    if (!Number.isFinite(parsedBudget) || parsedBudget <= 0) {
+    if (!name.trim()) {
       showToast({
         type: 'error',
-        title: 'Missing budget',
-        message: 'Enter a positive monthly budget.',
+        title: 'Missing name',
+        message: 'Enter your profile name.',
+      });
+      return;
+    }
+
+    if (!Number.isFinite(parsedBudget) || parsedBudget < 0) {
+      showToast({
+        type: 'error',
+        title: 'Invalid budget',
+        message: 'Enter a monthly amount of 0 or more.',
+      });
+      return;
+    }
+
+    if (!Number.isFinite(parsedAvailableAmount) || parsedAvailableAmount < 0) {
+      showToast({
+        type: 'error',
+        title: 'Invalid available amount',
+        message: 'Enter an available amount of 0 or more.',
+      });
+      return;
+    }
+
+    if (!Number.isFinite(parsedSavingsAmount) || parsedSavingsAmount < 0) {
+      showToast({
+        type: 'error',
+        title: 'Invalid savings amount',
+        message: 'Enter a savings amount of 0 or more.',
       });
       return;
     }
@@ -117,19 +163,27 @@ export function useProfileViewModel() {
 
   return {
     dayPickerVisible,
+    availableAmount,
     handleDayPress,
     handleSave,
     keyboardVisible,
     logout,
     monthlyBudget,
     monthlyCreditDay,
+    name,
+    parsedAvailableAmount,
     parsedBudget,
     parsedCreditDay,
+    parsedSavingsAmount,
     profileEmail,
     profileName,
     saving: updateMutation.isPending,
     selectedDateKey,
+    setAvailableAmount,
     setDayPickerVisible,
     setMonthlyBudget,
+    setName,
+    setSavingsAmount,
+    savingsAmount,
   };
 }
