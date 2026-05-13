@@ -23,7 +23,7 @@ export function ExpenseCard({ expense, onDelete, onPress }: ExpenseCardProps) {
           {expense.title}
         </Text>
         <Text numberOfLines={1} style={styles.date}>
-          {formatDateTime(expense.createdAt)}
+          {formatDateTime(expense.date)}
         </Text>
       </View>
 
@@ -47,7 +47,7 @@ export function ExpenseCard({ expense, onDelete, onPress }: ExpenseCardProps) {
         accessibilityLabel={`Delete ${expense.title}`}
         accessibilityRole="button"
         hitSlop={10}
-        onPress={() => onDelete(expense.id)}
+        onPress={() => onDelete(expense._id)}
         style={({ pressed }) => [
           styles.deleteButton,
           pressed && styles.pressed,

@@ -1,11 +1,13 @@
 export type ExpenseCategory = 'Food' | 'Travel' | 'Utilities' | 'Other';
 
 export type Expense = {
-  id: string;
+  _id: string;
   title: string;
   amount: number;
   category?: string;
-  createdAt: string;
+  date: Date;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export type UserProfile = {
@@ -15,6 +17,7 @@ export type UserProfile = {
   availableAmount: number;
   savingsAmount: number;
   monthlyCreditDay: number;
+  incomeDate: string | null;
   lastMonthlyCreditMonth: string | null;
 };
 
