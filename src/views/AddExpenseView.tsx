@@ -22,7 +22,6 @@ import {
 import { Calendar } from 'react-native-calendars';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BottomBar } from '../components/BottomBar';
 import { InputField } from '../components/InputField';
 import { PrimaryButton } from '../components/PrimaryButton';
 import type { ExpenseCategory } from '../types';
@@ -223,8 +222,6 @@ export function AddExpenseView({
             </View>
           </View>
         </Modal>
-
-        <BottomBar active="add" />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

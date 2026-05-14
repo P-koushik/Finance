@@ -1,3 +1,5 @@
+import type { NavigatorScreenParams } from '@react-navigation/native';
+
 export type ExpenseCategory = 'Food' | 'Travel' | 'Utilities' | 'Other';
 
 export type Expense = {
@@ -21,13 +23,17 @@ export type UserProfile = {
   lastMonthlyCreditMonth: string | null;
 };
 
-export type RootStackParamList = {
-  Login: undefined;
-  SignUp: undefined;
+export type RootTabParamList = {
   Home: undefined;
   AddExpense: undefined;
   Savings: undefined;
+  Profile: undefined;
+};
+
+export type RootStackParamList = {
+  Login: undefined;
+  SignUp: undefined;
+  MainTabs: NavigatorScreenParams<RootTabParamList> | undefined;
   EditExpense: { expenseId: string };
   AllExpenses: undefined;
-  Profile: undefined;
 };

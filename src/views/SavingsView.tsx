@@ -12,7 +12,6 @@ import {
 import { BadgeIndianRupee, WalletCards } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BottomBar } from '../components/BottomBar';
 import { InputField } from '../components/InputField';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { formatCurrency } from '../utils/format';
@@ -160,8 +159,6 @@ export function SavingsView({
             </>
           )}
         </ScrollView>
-
-        <BottomBar active="savings" />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
