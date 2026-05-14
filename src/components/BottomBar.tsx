@@ -1,60 +1,63 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import {
-  CommonActions,
-  NavigationProp,
-  useNavigation,
-} from '@react-navigation/native';
+import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { CirclePlus, Home, PiggyBank, User } from 'lucide-react-native';
 
-import type { RootStackParamList } from '../types';
+import type { RootTabParamList } from '../types';
 
-type BottomBarProps = {
-  active: 'home' | 'add' | 'savings' | 'profile';
+type TabRouteName = keyof RootTabParamList;
+
+const tabItems: Record<
+  TabRouteName,
+  { key: string; label: string; Icon: typeof Home }
+> = {
+  Home: { key: 'home', label: 'Home', Icon: Home },
+  AddExpense: { key: 'add', label: 'Add', Icon: CirclePlus },
+  Savings: { key: 'savings', label: 'Savings', Icon: PiggyBank },
+  Profile: { key: 'profile', label: 'Profile', Icon: User },
 };
 
-export function BottomBar({ active }: BottomBarProps) {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const items = [
-    { key: 'home', label: 'Home', Icon: Home, route: 'Home' },
-    { key: 'add', label: 'Add', Icon: CirclePlus, route: 'AddExpense' },
-    { key: 'savings', label: 'Savings', Icon: PiggyBank, route: 'Savings' },
-    { key: 'profile', label: 'Profile', Icon: User, route: 'Profile' },
-  ] as const;
-
-  const switchTab = (route: keyof RootStackParamList) => {
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{ name: route }],
-      }),
-    );
-  };
-
+export function BottomBar({
+  descriptors,
+  navigation,
+  state,
+}: BottomTabBarProps) {
   return (
     <View style={styles.container}>
-      {items.map(({ key, label, Icon, route }) => {
-        const selected = active === key;
+      {state.routes.map((route, index) => {
+        const routeName = route.name as TabRouteName;
+        const { Icon, key, label } = tabItems[routeName];
+        const selected = state.index === index;
+        const options = descriptors[route.key]?.options;
 
         return (
           <Pressable
+            accessibilityLabel={options?.tabBarAccessibilityLabel}
             accessibilityRole="button"
+            accessibilityState={selected ? { selected: true } : {}}
             key={key}
             onPress={() => {
-              if (!selected) {
-                switchTab(route);
+              const event = navigation.emit({
+                canPreventDefault: true,
+                target: route.key,
+                type: 'tabPress',
+              });
+
+              if (!selected && !event.defaultPrevented) {
+                navigation.navigate(route.name, route.params);
               }
             }}
             style={({ pressed }) => [styles.item, pressed && styles.pressed]}
             className="items-center gap-1.5 min-w-12"
           >
             <Icon
-              className={`text-[${selected ? '#2e62dd' : '#a8b0bb'}]`}
+              color={selected ? '#2e62dd' : '#a8b0bb'}
               size={22}
               strokeWidth={2.4}
             />
             <Text
-              className={`text-[10px] font-extrabold ${selected && 'text-[#2e62dd]'}`}
+              style={[styles.label, selected && styles.activeLabel]}
+              className="text-[10px] font-extrabold"
             >
               {label}
             </Text>

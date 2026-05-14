@@ -12,7 +12,6 @@ import Carousel from 'react-native-reanimated-carousel';
 import { TrendingUp, WalletCards } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BottomBar } from '../components/BottomBar';
 import { ConfirmCard } from '../components/ConfirmCard';
 import { ExpenseCard } from '../components/ExpenseCard';
 import { formatCurrency } from '../utils/format';
@@ -223,8 +222,6 @@ export function HomeView({
             )}
           </View>
         </ScrollView>
-
-        <BottomBar active="home" />
 
         <ConfirmCard
           confirmLabel="Delete"

@@ -1,12 +1,12 @@
 import React from 'react';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 
 import { AddExpenseView } from '../views/AddExpenseView';
 import { useAddExpenseViewModel } from '../view-models/useAddExpenseViewModel';
-import type { RootStackParamList } from '../types';
+import type { RootTabParamList } from '../types';
 
-type AddExpenseScreenProps = NativeStackScreenProps<
-  RootStackParamList,
+type AddExpenseScreenProps = BottomTabScreenProps<
+  RootTabParamList,
   'AddExpense'
 >;
 

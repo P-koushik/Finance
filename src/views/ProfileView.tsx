@@ -16,7 +16,6 @@ import {
 import { Calendar } from 'react-native-calendars';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BottomBar } from '../components/BottomBar';
 import { InputField } from '../components/InputField';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { formatCurrency } from '../utils/format';
@@ -205,8 +204,6 @@ export function ProfileView({
             onPress={logout}
           />
         </ScrollView>
-
-        {!keyboardVisible ? <BottomBar active="profile" /> : null}
 
         <Modal
           animationType="fade"
