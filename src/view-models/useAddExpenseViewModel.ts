@@ -1,16 +1,15 @@
 import { useMemo, useState } from 'react';
-import { CommonActions } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { DateData } from 'react-native-calendars';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { useToast } from '../components/ToastProvider';
 import { financeApi, financeQueryKeys } from '../services/finance-api';
-import type { ExpenseCategory, RootStackParamList } from '../types';
+import type { ExpenseCategory, RootTabParamList } from '../types';
 import { formatDateKey, formatDateTime } from '../utils/format';
 
-type AddExpenseScreenProps = NativeStackScreenProps<
-  RootStackParamList,
+type AddExpenseScreenProps = BottomTabScreenProps<
+  RootTabParamList,
   'AddExpense'
 >;
 
@@ -37,12 +36,12 @@ export function useAddExpenseViewModel({ navigation }: AddExpenseScreenProps) {
       await queryClient.invalidateQueries({
         queryKey: financeQueryKeys.expenses,
       });
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{ name: 'Home' }],
-        }),
-      );
+      setTitle('');
+      setAmount('');
+      setCategory('Food');
+      setCustomCategory('');
+      setSelectedDate(new Date());
+      navigation.navigate('Home');
     },
   });
 
