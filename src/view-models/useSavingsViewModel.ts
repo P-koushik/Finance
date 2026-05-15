@@ -3,7 +3,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useToast } from '../components/ToastProvider';
-import { financeApi, financeQueryKeys } from '../services/finance-api';
+import { financeApi, financeQueryKeys } from '../hooks/finance-api';
 import { defaultProfile } from '../utils/profile';
 
 export type SavingsAction = 'deposit' | 'withdraw';

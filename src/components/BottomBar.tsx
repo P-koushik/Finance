@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { CirclePlus, Home, PiggyBank, User } from 'lucide-react-native';
+import { CirclePlus, Home, User } from 'lucide-react-native';
 
 import type { RootTabParamList } from '../types';
 
@@ -13,7 +13,6 @@ const tabItems: Record<
 > = {
   Home: { key: 'home', label: 'Home', Icon: Home },
   AddExpense: { key: 'add', label: 'Add', Icon: CirclePlus },
-  Savings: { key: 'savings', label: 'Savings', Icon: PiggyBank },
   Profile: { key: 'profile', label: 'Profile', Icon: User },
 };
 
