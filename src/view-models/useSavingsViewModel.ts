@@ -77,7 +77,7 @@ export function useSavingsViewModel() {
         title: 'Invalid amount',
         message: 'Enter a positive amount.',
       });
-      return;
+      return false;
     }
 
     if (isDeposit && parsedAmount > availableMoney) {
@@ -86,7 +86,7 @@ export function useSavingsViewModel() {
         title: 'Not enough available money',
         message: 'Choose an amount within your available balance.',
       });
-      return;
+      return false;
     }
 
     if (!isDeposit && parsedAmount > profile.savingsAmount) {
@@ -95,10 +95,11 @@ export function useSavingsViewModel() {
         title: 'Not enough savings',
         message: 'Choose an amount within your savings balance.',
       });
-      return;
+      return false;
     }
 
     await savingsMutation.mutateAsync();
+    return true;
   };
 
   return {

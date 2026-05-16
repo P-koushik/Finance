@@ -1,9 +1,6 @@
 import React from 'react';
 import {
   ActivityIndicator,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
   Pressable,
   ScrollView,
   StatusBar,
@@ -15,7 +12,6 @@ import Carousel from 'react-native-reanimated-carousel';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ArrowRight,
-  BadgeIndianRupee,
   PiggyBank,
   TrendingUp,
   WalletCards,
@@ -23,19 +19,10 @@ import {
 
 import { ConfirmCard } from '../components/ConfirmCard';
 import { ExpenseCard } from '../components/ExpenseCard';
-import { InputField } from '../components/InputField';
-import { PrimaryButton } from '../components/PrimaryButton';
+import { SavingsDrawer } from '../components/SavingsDrawer';
 import { formatCurrency } from '../utils/format';
-import {
-  SavingsAction,
-  useSavingsViewModel,
-} from '../view-models/useSavingsViewModel';
+import { useSavingsViewModel } from '../view-models/useSavingsViewModel';
 import { useHomeViewModel } from '../view-models/useHomeViewModel';
-
-const savingsActions: Array<{ key: SavingsAction; label: string }> = [
-  { key: 'deposit', label: 'Add to Savings' },
-  { key: 'withdraw', label: 'Withdraw' },
-];
 
 export function HomeScreen() {
   const { width } = useWindowDimensions();
@@ -62,7 +49,7 @@ export function HomeScreen() {
             loop={false}
             width={width}
             height={220}
-            data={[0]}
+            data={[0, 1]}
             pagingEnabled
             snapEnabled
             mode="parallax"
@@ -70,52 +57,97 @@ export function HomeScreen() {
               parallaxScrollingScale: 0.9,
               parallaxScrollingOffset: 70,
             }}
-            renderItem={() => (
-              <View className="px-2">
-                <View className="h-[220px] rounded-[30px] bg-[#2e5f95] p-6">
-                  <Text className="text-[15px] font-bold text-[#b5cae6]">
-                    Total Spent
-                  </Text>
-
-                  <Text
-                    className="mt-4 text-[36px] font-extrabold text-white"
-                    numberOfLines={1}
-                  >
-                    {formatCurrency(home.totalSpent)}
-                  </Text>
-
-                  <View className="mt-7 flex-row items-center rounded-[24px] bg-white/15 p-4">
-                    <View className="h-12 w-12 items-center justify-center rounded-full bg-[#69bdc1]">
-                      <TrendingUp color="#ffffff" size={24} strokeWidth={2.7} />
-                    </View>
-
-                    <View className="ml-4 flex-1">
-                      <Text className="text-[13px] font-bold text-[#bdd0e7]">
-                        Monthly Budget
+            renderItem={({ item }) => {
+              if (item === 0) {
+                return (
+                  <View className="px-4">
+                    <View className="h-[220px] rounded-[30px] bg-[#2e5f95] p-6">
+                      <Text className="text-[15px] font-bold text-[#b5cae6]">
+                        Total Spent
                       </Text>
+
                       <Text
-                        className="mt-1 text-[15px] font-extrabold text-white"
+                        className="mt-4 text-[36px] font-extrabold text-white"
                         numberOfLines={1}
                       >
-                        {formatCurrency(home.monthlyBudget)}
+                        {formatCurrency(home.totalSpent)}
                       </Text>
-                    </View>
 
-                    <View className="flex-1">
-                      <Text className="text-[13px] font-bold text-[#bdd0e7]">
-                        Available
-                      </Text>
-                      <Text
-                        className="mt-1 text-[15px] font-extrabold text-white"
-                        numberOfLines={1}
-                      >
-                        {formatCurrency(home.availableMoney)}
-                      </Text>
+                      <View className="mt-7 flex-row items-center rounded-[24px] bg-white/15 p-4">
+                        <View className="h-12 w-12 items-center justify-center rounded-full bg-[#69bdc1]">
+                          <TrendingUp
+                            color="#ffffff"
+                            size={24}
+                            strokeWidth={2.7}
+                          />
+                        </View>
+
+                        <View className="ml-4 flex-1">
+                          <Text className="text-[13px] font-bold text-[#bdd0e7]">
+                            Monthly Budget
+                          </Text>
+                          <Text
+                            className="mt-1 text-[15px] font-extrabold text-white"
+                            numberOfLines={1}
+                          >
+                            {formatCurrency(home.monthlyBudget)}
+                          </Text>
+                        </View>
+
+                        <View className="flex-1">
+                          <Text className="text-[13px] font-bold text-[#bdd0e7]">
+                            Available
+                          </Text>
+                          <Text
+                            className="mt-1 text-[15px] font-extrabold text-white"
+                            numberOfLines={1}
+                          >
+                            {formatCurrency(home.availableMoney)}
+                          </Text>
+                        </View>
+                      </View>
                     </View>
                   </View>
+                );
+              }
+
+              return (
+                <View className="px-4">
+                  <Pressable
+                    accessibilityRole="button"
+                    className="h-[220px] justify-between rounded-[30px] bg-[#078f84] p-6 active:opacity-90"
+                    onPress={() => setSavingsOpen(true)}
+                  >
+                    <View className="flex-row items-center justify-between">
+                      <Text className="text-[15px] font-bold text-[#c7f1ec]">
+                        Savings Balance
+                      </Text>
+
+                      <View className="h-11 w-11 items-center justify-center rounded-full bg-white/15">
+                        <PiggyBank
+                          color="#ffffff"
+                          size={23}
+                          strokeWidth={2.7}
+                        />
+                      </View>
+                    </View>
+
+                    <View>
+                      <Text className="text-[15px] font-bold text-[#c7f1ec]">
+                        Current Savings
+                      </Text>
+
+                      <Text
+                        className="mt-1 text-[36px] font-extrabold text-white"
+                        numberOfLines={1}
+                      >
+                        {formatCurrency(home.savingsAmount)}
+                      </Text>
+                    </View>
+                  </Pressable>
                 </View>
-              </View>
-            )}
+              );
+            }}
           />
 
           <View className="px-6 pb-28">
@@ -230,143 +262,5 @@ export function HomeScreen() {
         />
       </View>
     </SafeAreaView>
-  );
-}
-
-type SavingsDrawerProps = {
-  onClose: () => void;
-  open: boolean;
-  savings: ReturnType<typeof useSavingsViewModel>;
-};
-
-function SavingsDrawer({ onClose, open, savings }: SavingsDrawerProps) {
-  return (
-    <Modal
-      animationType="slide"
-      onRequestClose={onClose}
-      transparent
-      visible={open}
-    >
-      <View className="flex-1 justify-end bg-black/25">
-        <Pressable className="flex-1" onPress={onClose} />
-
-        <KeyboardAvoidingView
-          behavior={Platform.select({ ios: 'padding', android: undefined })}
-          className="max-h-[84%] overflow-hidden rounded-t-[32px] bg-[#f4f8fb]"
-        >
-          <ScrollView
-            contentContainerClassName="p-[18px] pt-6 pb-11"
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-          >
-            {savings.loading ? (
-              <View className="items-center py-8">
-                <ActivityIndicator color="#124777" />
-              </View>
-            ) : (
-              <>
-                <View className="h-[112px] justify-end rounded-[8px] bg-[#078f84] p-4">
-                  <Text className="text-[14px] font-bold text-[#bde9e4]">
-                    Savings Balance
-                  </Text>
-                  <Text
-                    className="mt-1.5 text-[30px] font-extrabold text-white"
-                    numberOfLines={1}
-                  >
-                    {formatCurrency(savings.profile.savingsAmount)}
-                  </Text>
-                </View>
-
-                <View className="mt-3 flex-row gap-2.5">
-                  <View className="flex-1 rounded-[8px] bg-white p-3">
-                    <Text className="text-[12px] font-bold text-[#6c7480]">
-                      Available
-                    </Text>
-                    <Text
-                      className="mt-1.5 text-[14px] font-extrabold text-[#2c5c8d]"
-                      numberOfLines={1}
-                    >
-                      {formatCurrency(savings.availableMoney)}
-                    </Text>
-                  </View>
-
-                  <View className="flex-1 rounded-[8px] bg-white p-3">
-                    <Text className="text-[12px] font-bold text-[#6c7480]">
-                      Monthly Amount
-                    </Text>
-                    <Text
-                      className="mt-1.5 text-[14px] font-extrabold text-[#2c5c8d]"
-                      numberOfLines={1}
-                    >
-                      {formatCurrency(savings.profile.monthlyBudget)}
-                    </Text>
-                  </View>
-                </View>
-
-                <View className="mt-3 rounded-[8px] bg-white p-4 shadow-md shadow-[color:#d5dae1]">
-                  <Text className="text-[15px] font-extrabold text-[#2f3742]">
-                    Savings Action
-                  </Text>
-
-                  <View className="mt-3 flex-row gap-2">
-                    {savingsActions.map(option => {
-                      const selected = savings.action === option.key;
-
-                      return (
-                        <Pressable
-                          accessibilityRole="button"
-                          className={`min-h-10 flex-1 items-center justify-center rounded-[8px] px-3 ${
-                            selected ? 'bg-[#078f84]' : 'bg-[#eef1f4]'
-                          }`}
-                          key={option.key}
-                          onPress={() => savings.setAction(option.key)}
-                        >
-                          <Text
-                            className={`text-center text-[12px] font-extrabold ${
-                              selected ? 'text-white' : 'text-[#58616d]'
-                            }`}
-                          >
-                            {option.label}
-                          </Text>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
-
-                  <View className="mt-4">
-                    <InputField
-                      icon={BadgeIndianRupee}
-                      keyboardType="decimal-pad"
-                      label={
-                        savings.isDeposit
-                          ? 'Amount to Add'
-                          : 'Amount to Withdraw'
-                      }
-                      onChangeText={savings.setAmount}
-                      placeholder="0"
-                      prefix="₹"
-                      returnKeyType="done"
-                      value={savings.amount}
-                    />
-                  </View>
-
-                  <PrimaryButton
-                    className="mt-4"
-                    disabled={!savings.canSubmit}
-                    label={
-                      savings.isDeposit
-                        ? 'Add to Savings'
-                        : 'Withdraw from Savings'
-                    }
-                    loading={savings.saving}
-                    onPress={savings.handleSubmit}
-                  />
-                </View>
-              </>
-            )}
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </View>
-    </Modal>
   );
 }
