@@ -6,14 +6,13 @@ import { DateData } from 'react-native-calendars';
 
 import { useToast } from '../components/ToastProvider';
 import { useAuth } from '../contexts/AuthContext';
-import { financeApi, financeQueryKeys } from '../services/finance-api';
+import { financeApi, financeQueryKeys } from '../hooks/finance-api';
 import { defaultProfile } from '../utils/profile';
 
 export function useProfileViewModel() {
   const { logout, user } = useAuth();
   const queryClient = useQueryClient();
   const { showToast } = useToast();
-  const [name, setName] = useState('');
   const [monthlyBudget, setMonthlyBudget] = useState('');
   const [availableAmount, setAvailableAmount] = useState('');
   const [savingsAmount, setSavingsAmount] = useState('');
@@ -22,6 +21,8 @@ export function useProfileViewModel() {
   );
   const [dayPickerVisible, setDayPickerVisible] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+
   const { data: profileBalance = defaultProfile, refetch } = useQuery({
     queryKey: financeQueryKeys.profile,
     queryFn: financeApi.getProfile,
@@ -34,7 +35,6 @@ export function useProfileViewModel() {
   );
 
   useEffect(() => {
-    setName(profileBalance.name || user?.displayName || '');
     setMonthlyBudget(
       profileBalance.monthlyBudget ? String(profileBalance.monthlyBudget) : '',
     );
@@ -68,9 +68,9 @@ export function useProfileViewModel() {
   const parsedAvailableAmount = parseAmount(availableAmount);
   const parsedSavingsAmount = parseAmount(savingsAmount);
   const parsedCreditDay = Number(monthlyCreditDay);
-  const profileName = name.trim() || user?.displayName || 'Your Name';
-  const profileEmail =
-    user?.email || profileBalance.email || 'email@example.com';
+  const profileName = user?.displayName || 'Your Name';
+  const profileEmail = user?.email || 'email@example.com';
+  const profilePicture = user?.photoURL || '';
   const today = new Date();
   const selectedCalendarDay = Math.min(
     parsedCreditDay || defaultProfile.monthlyCreditDay,
@@ -83,7 +83,7 @@ export function useProfileViewModel() {
   const updateMutation = useMutation({
     mutationFn: () =>
       financeApi.updateProfile({
-        name: name.trim(),
+        name: user?.displayName || '',
         monthlyBudget: parsedBudget,
         availableAmount: parsedAvailableAmount,
         savingsAmount: parsedSavingsAmount,
@@ -95,6 +95,7 @@ export function useProfileViewModel() {
       await queryClient.invalidateQueries({
         queryKey: financeQueryKeys.profile,
       });
+      setIsEditing(false);
       showToast({
         type: 'success',
         title: 'Profile saved',
@@ -104,15 +105,6 @@ export function useProfileViewModel() {
   });
 
   const handleSave = async () => {
-    if (!name.trim()) {
-      showToast({
-        type: 'error',
-        title: 'Missing name',
-        message: 'Enter your profile name.',
-      });
-      return;
-    }
-
     if (!Number.isFinite(parsedBudget) || parsedBudget < 0) {
       showToast({
         type: 'error',
@@ -162,27 +154,28 @@ export function useProfileViewModel() {
   };
 
   return {
-    dayPickerVisible,
     availableAmount,
+    dayPickerVisible,
     handleDayPress,
     handleSave,
+    isEditing,
     keyboardVisible,
     logout,
     monthlyBudget,
     monthlyCreditDay,
-    name,
     parsedAvailableAmount,
     parsedBudget,
     parsedCreditDay,
     parsedSavingsAmount,
     profileEmail,
     profileName,
+    profilePicture,
     saving: updateMutation.isPending,
     selectedDateKey,
     setAvailableAmount,
     setDayPickerVisible,
+    setIsEditing,
     setMonthlyBudget,
-    setName,
     setSavingsAmount,
     savingsAmount,
   };

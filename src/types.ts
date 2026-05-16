@@ -26,7 +26,6 @@ export type UserProfile = {
 export type RootTabParamList = {
   Home: undefined;
   AddExpense: undefined;
-  Savings: undefined;
   Profile: undefined;
 };
 

@@ -7,7 +7,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useToast } from '../components/ToastProvider';
-import { financeApi, financeQueryKeys } from '../services/finance-api';
+import { financeApi, financeQueryKeys } from '../hooks/finance-api';
 import type { RootStackParamList } from '../types';
 
 export function useAllExpensesViewModel() {
