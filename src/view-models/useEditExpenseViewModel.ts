@@ -4,7 +4,7 @@ import { DateData } from 'react-native-calendars';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useToast } from '../components/ToastProvider';
-import { financeApi, financeQueryKeys } from '../services/finance-api';
+import { financeApi, financeQueryKeys } from '../hooks/finance-api';
 import type { ExpenseCategory, RootStackParamList } from '../types';
 import { formatDateKey, formatDateTime } from '../utils/format';
 

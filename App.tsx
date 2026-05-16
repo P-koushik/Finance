@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './global.css';
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -6,7 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { ActivityIndicator, View } from 'react-native';
+import { Animated, Easing, Image, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableScreens } from 'react-native-screens';
 
@@ -18,7 +18,6 @@ import { EditExpenseScreen } from './src/screens/EditExpenseScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { ProfileScreen } from './src/screens/ProfileScreen';
-import { SavingsScreen } from './src/screens/SavingsScreen';
 import { SignUpScreen } from './src/screens/SignUpScreen';
 
 import { BottomBar } from './src/components/BottomBar';
@@ -32,6 +31,9 @@ enableScreens();
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<RootTabParamList>();
+const appLogo = require('./src/assets/app-logo.png');
+const SPLASH_HOLD_MS = 10;
+const SPLASH_FADE_MS = 760;
 
 function renderBottomBar(props: BottomTabBarProps) {
   return <BottomBar {...props} />;
@@ -48,7 +50,6 @@ function MainTabs() {
     >
       <Tab.Screen component={HomeScreen} name="Home" />
       <Tab.Screen component={AddExpenseScreen} name="AddExpense" />
-      <Tab.Screen component={SavingsScreen} name="Savings" />
       <Tab.Screen component={ProfileScreen} name="Profile" />
     </Tab.Navigator>
   );
@@ -56,32 +57,87 @@ function MainTabs() {
 
 function AppNavigator() {
   const { initializing, user } = useAuth();
+  const [showSplash, setShowSplash] = useState(true);
+  const splashProgress = useRef(new Animated.Value(0)).current;
 
-  if (initializing) {
-    return (
-      <View className="flex-1 items-center justify-center bg-[#f4f8fb]">
-        <ActivityIndicator color="#124777" size="large" />
-      </View>
-    );
-  }
+  useEffect(() => {
+    if (initializing) {
+      return;
+    }
+
+    const animation = Animated.sequence([
+      Animated.delay(SPLASH_HOLD_MS),
+      Animated.timing(splashProgress, {
+        duration: SPLASH_FADE_MS,
+        easing: Easing.inOut(Easing.cubic),
+        toValue: 1,
+        useNativeDriver: true,
+      }),
+    ]);
+
+    animation.start(({ finished }) => {
+      if (finished) {
+        setShowSplash(false);
+      }
+    });
+
+    return () => animation.stop();
+  }, [initializing, splashProgress]);
+
+  const splashOpacity = splashProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0],
+  });
+  const appOpacity = splashProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.92, 1],
+  });
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {user ? (
-          <>
-            <Stack.Screen component={MainTabs} name="MainTabs" />
-            <Stack.Screen component={EditExpenseScreen} name="EditExpense" />
-            <Stack.Screen component={AllExpensesScreen} name="AllExpenses" />
-          </>
-        ) : (
-          <>
-            <Stack.Screen component={LoginScreen} name="Login" />
-            <Stack.Screen component={SignUpScreen} name="SignUp" />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <View className="flex-1 bg-[#f4f8fb]">
+      {!initializing ? (
+        <Animated.View className="flex-1" style={{ opacity: appOpacity }}>
+          <NavigationContainer>
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+              {user ? (
+                <>
+                  <Stack.Screen component={MainTabs} name="MainTabs" />
+                  <Stack.Screen
+                    component={EditExpenseScreen}
+                    name="EditExpense"
+                  />
+                  <Stack.Screen
+                    component={AllExpensesScreen}
+                    name="AllExpenses"
+                  />
+                </>
+              ) : (
+                <>
+                  <Stack.Screen component={LoginScreen} name="Login" />
+                  <Stack.Screen component={SignUpScreen} name="SignUp" />
+                </>
+              )}
+            </Stack.Navigator>
+          </NavigationContainer>
+        </Animated.View>
+      ) : null}
+
+      {(initializing || showSplash) && (
+        <Animated.View
+          className="absolute inset-0 items-center justify-center bg-[#f4f8fb]"
+          pointerEvents="none"
+          style={{ opacity: splashOpacity }}
+        >
+          <Image
+            accessibilityIgnoresInvertColors
+            accessibilityLabel="Finance"
+            className="h-56 w-56"
+            resizeMode="contain"
+            source={appLogo}
+          />
+        </Animated.View>
+      )}
+    </View>
   );
 }
 

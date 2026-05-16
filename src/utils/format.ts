@@ -1,3 +1,10 @@
+import dayjs from 'dayjs';
+import isToday from 'dayjs/plugin/isToday';
+import isYesterday from 'dayjs/plugin/isYesterday';
+
+dayjs.extend(isToday);
+dayjs.extend(isYesterday);
+
 export const formatCurrency = (amount: number) =>
   `₹${amount.toLocaleString('en-IN', {
     minimumFractionDigits: 2,
@@ -5,32 +12,59 @@ export const formatCurrency = (amount: number) =>
   })}`;
 
 export const formatDateTime = (value: Date | string) => {
-  const date = value instanceof Date ? value : new Date(value);
+  const date = dayjs(value);
 
-  if (Number.isNaN(date.getTime())) {
+  if (!date.isValid()) {
     return '';
   }
 
-  const day = date.getDate();
-  const month = date.toLocaleString('en-IN', { month: 'short' });
-  const year = date.getFullYear();
-  const hour24 = date.getHours();
-  const hour12 = hour24 % 12 || 12;
-  const minute = String(date.getMinutes()).padStart(2, '0');
-  const period = hour24 >= 12 ? 'PM' : 'Am';
-
-  return `${day} ${month} ${year} ${hour12}:${minute} ${period}`;
+  return date.format('D MMM YYYY h:mm A');
 };
 
 export const formatDateKey = (value: Date | string) => {
-  const date = value instanceof Date ? value : new Date(value);
+  const date = dayjs(value);
 
-  if (Number.isNaN(date.getTime())) {
+  if (!date.isValid()) {
     return '';
   }
 
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
-    2,
-    '0',
-  )}-${String(date.getDate()).padStart(2, '0')}`;
+  return date.format('YYYY-MM-DD');
+};
+
+export const formatExpenseTime = (value: Date | string) => {
+  const date = dayjs(value);
+
+  if (!date.isValid()) {
+    return '';
+  }
+
+  return date.format('hh:mm A');
+};
+
+export const formatTransactionGroupTitle = (value: Date | string) => {
+  const date = dayjs(value);
+
+  if (!date.isValid()) {
+    return 'OLDER';
+  }
+
+  if (date.isToday()) {
+    return 'TODAY';
+  }
+
+  if (date.isYesterday()) {
+    return 'YESTERDAY';
+  }
+
+  return date.format('MMMM D').toUpperCase();
+};
+
+export const getTimestamp = (value: Date | string) => {
+  const date = dayjs(value);
+
+  if (!date.isValid()) {
+    return 0;
+  }
+
+  return date.valueOf();
 };
