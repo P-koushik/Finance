@@ -14,11 +14,20 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { AddExpenseScreen } from './src/screens/AddExpenseScreen';
 import { AllExpensesScreen } from './src/screens/AllExpensesScreen';
+import { CreateGroupExpenseScreen } from './src/screens/CreateGroupExpenseScreen';
+import { CreateGroupScreen } from './src/screens/CreateGroupScreen';
+import { CreateSplitExpenseScreen } from './src/screens/CreateSplitExpenseScreen';
+import { CreateSplitGroupScreen } from './src/screens/CreateSplitGroupScreen';
 import { EditExpenseScreen } from './src/screens/EditExpenseScreen';
+import { GroupDetailsScreen } from './src/screens/GroupDetailsScreen';
+import { GroupsScreen } from './src/screens/GroupsScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { ProfileScreen } from './src/screens/ProfileScreen';
 import { SignUpScreen } from './src/screens/SignUpScreen';
+import { SplitBalancesScreen } from './src/screens/SplitBalancesScreen';
+import { SplitGroupDetailsScreen } from './src/screens/SplitGroupDetailsScreen';
+import { SplitGroupsScreen } from './src/screens/SplitGroupsScreen';
 
 import { BottomBar } from './src/components/BottomBar';
 import { ToastProvider } from './src/components/ToastProvider';
@@ -49,7 +58,9 @@ function MainTabs() {
       tabBar={renderBottomBar}
     >
       <Tab.Screen component={HomeScreen} name="Home" />
+      <Tab.Screen component={GroupsScreen} name="Groups" />
       <Tab.Screen component={AddExpenseScreen} name="AddExpense" />
+      <Tab.Screen component={SplitGroupsScreen} name="SplitGroups" />
       <Tab.Screen component={ProfileScreen} name="Profile" />
     </Tab.Navigator>
   );
@@ -109,6 +120,34 @@ function AppNavigator() {
                   <Stack.Screen
                     component={AllExpensesScreen}
                     name="AllExpenses"
+                  />
+                  <Stack.Screen
+                    component={GroupDetailsScreen}
+                    name="GroupDetails"
+                  />
+                  <Stack.Screen
+                    component={CreateGroupScreen}
+                    name="CreateGroup"
+                  />
+                  <Stack.Screen
+                    component={CreateGroupExpenseScreen}
+                    name="CreateGroupExpense"
+                  />
+                  <Stack.Screen
+                    component={SplitGroupDetailsScreen}
+                    name="SplitGroupDetails"
+                  />
+                  <Stack.Screen
+                    component={CreateSplitGroupScreen}
+                    name="CreateSplitGroup"
+                  />
+                  <Stack.Screen
+                    component={CreateSplitExpenseScreen}
+                    name="CreateSplitExpense"
+                  />
+                  <Stack.Screen
+                    component={SplitBalancesScreen}
+                    name="SplitBalances"
                   />
                 </>
               ) : (

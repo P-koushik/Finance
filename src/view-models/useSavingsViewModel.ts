@@ -41,7 +41,7 @@ export function useSavingsViewModel() {
     () => expenses.reduce((total, expense) => total + expense.amount, 0),
     [expenses],
   );
-  const availableMoney = Math.max(profile.availableAmount - totalSpent, 0);
+  const availableMoney = Math.max(profile.balance - totalSpent, 0);
   const parsedAmount = useMemo(
     () => Number(amount.replace(/,/g, '')),
     [amount],
@@ -89,7 +89,7 @@ export function useSavingsViewModel() {
       return false;
     }
 
-    if (!isDeposit && parsedAmount > profile.savingsAmount) {
+    if (!isDeposit && parsedAmount > profile.savings) {
       showToast({
         type: 'error',
         title: 'Not enough savings',

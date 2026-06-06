@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { CirclePlus, Home, User } from 'lucide-react-native';
+import { CirclePlus, Home, Scale, User, UsersRound } from 'lucide-react-native';
 
 import type { RootTabParamList } from '../types';
 
@@ -12,7 +12,9 @@ const tabItems: Record<
   { key: string; label: string; Icon: typeof Home }
 > = {
   Home: { key: 'home', label: 'Home', Icon: Home },
+  Groups: { key: 'groups', label: 'Groups', Icon: UsersRound },
   AddExpense: { key: 'add', label: 'Add', Icon: CirclePlus },
+  SplitGroups: { key: 'splits', label: 'Splits', Icon: Scale },
   Profile: { key: 'profile', label: 'Profile', Icon: User },
 };
 
@@ -80,7 +82,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 74,
     justifyContent: 'space-around',
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     shadowColor: '#d3d8df',
     shadowOffset: { width: 0, height: -5 },
     shadowOpacity: 0.55,
@@ -89,7 +91,7 @@ const styles = StyleSheet.create({
   item: {
     alignItems: 'center',
     gap: 5,
-    minWidth: 50,
+    minWidth: 44,
   },
   label: {
     color: '#9aa3af',

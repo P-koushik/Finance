@@ -72,7 +72,7 @@ export function SavingsDrawer({ onClose, open, savings }: SavingsDrawerProps) {
                     className="mt-1.5 text-[30px] font-extrabold text-white"
                     numberOfLines={1}
                   >
-                    {formatCurrency(savings.profile.savingsAmount)}
+                    {formatCurrency(savings.profile.savings)}
                   </Text>
                 </View>
 
@@ -97,7 +97,7 @@ export function SavingsDrawer({ onClose, open, savings }: SavingsDrawerProps) {
                       className="mt-1.5 text-[14px] font-extrabold text-[#2c5c8d]"
                       numberOfLines={1}
                     >
-                      {formatCurrency(savings.profile.monthlyBudget)}
+                      {formatCurrency(savings.profile.monthly_income)}
                     </Text>
                   </View>
                 </View>

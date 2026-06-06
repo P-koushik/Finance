@@ -196,8 +196,8 @@ export function ProfileScreen() {
               >
                 <CalendarDays color="#747c88" size={22} strokeWidth={2.4} />
                 <Text className="text-[15px] font-bold text-[#626a75]">
-                  Day {parsedCreditDay || defaultProfile.monthlyCreditDay} of
-                  every month
+                  Day {parsedCreditDay || defaultProfile.income_day} of every
+                  month
                 </Text>
               </Pressable>
             </View>

@@ -95,8 +95,8 @@ export function AllExpensesScreen() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const groupedExpenses = useMemo<ExpenseGroup[]>(() => {
-    const normalizedSearch = searchQuery.trim().toLowerCase();
-    const filteredExpenses = normalizedSearch
+    const trimmedSearch = searchQuery.trim().toLowerCase();
+    const filteredExpenses = trimmedSearch
       ? expenses.filter(expense => {
           const searchable = [
             expense.title,
@@ -108,7 +108,7 @@ export function AllExpensesScreen() {
             .join(' ')
             .toLowerCase();
 
-          return searchable.includes(normalizedSearch);
+          return searchable.includes(trimmedSearch);
         })
       : expenses;
 

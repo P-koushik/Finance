@@ -89,15 +89,15 @@ export function useHomeViewModel() {
   };
 
   return {
-    availableMoney: Math.max(profile.availableAmount - totalSpent, 0),
+    availableMoney: Math.max(profile.balance - totalSpent, 0),
     confirmDelete,
     expenseToDelete,
     expenses,
     handleDelete: setExpenseToDelete,
     loading: expensesLoading || profileLoading,
-    monthlyBudget: profile.monthlyBudget,
+    monthlyBudget: profile.monthly_income,
     navigation,
-    savingsAmount: profile.savingsAmount,
+    savingsAmount: profile.savings,
     setExpenseToDelete,
     topCategory,
     totalSpent,

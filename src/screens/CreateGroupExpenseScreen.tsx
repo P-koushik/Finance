@@ -1,0 +1,229 @@
+import React, { useMemo, useState } from 'react';
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  StatusBar,
+  Text,
+  View,
+} from 'react-native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  CalendarDays,
+  CirclePlus,
+  ReceiptText,
+  Tag,
+  Trash2,
+  Wallet,
+} from 'lucide-react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { InputField } from '../components/InputField';
+import { PrimaryButton } from '../components/PrimaryButton';
+import { financeApi, financeQueryKeys } from '../hooks/finance-api';
+import type { GroupExpenseItem, RootStackParamList } from '../types';
+import { formatMoneyString } from '../utils/format';
+
+type Navigation = NativeStackNavigationProp<RootStackParamList>;
+type Route = RouteProp<RootStackParamList, 'CreateGroupExpense'>;
+
+type DraftItem = Pick<GroupExpenseItem, 'title' | 'amount'>;
+
+const parseAmount = (value: string) => Number(value.replace(/,/g, ''));
+
+export function CreateGroupExpenseScreen() {
+  const navigation = useNavigation<Navigation>();
+  const route = useRoute<Route>();
+  const queryClient = useQueryClient();
+  const { groupId } = route.params;
+  const [title, setTitle] = useState('');
+  const [amount, setAmount] = useState('');
+  const [category, setCategory] = useState('Other');
+  const [notes, setNotes] = useState('');
+  const [items, setItems] = useState<DraftItem[]>([]);
+
+  const groupQuery = useQuery({
+    queryKey: financeQueryKeys.group(groupId),
+    queryFn: () => financeApi.getGroup(groupId),
+  });
+  const paid_by =
+    groupQuery.data?.members.find(member => member.status === 'active')?.user ??
+    '';
+  const parsedAmount = parseAmount(amount);
+  const itemSubtotal = useMemo(
+    () =>
+      items.reduce((total, item) => total + (parseAmount(item.amount) || 0), 0),
+    [items],
+  );
+  const hasItems = items.some(item => item.title.trim() || item.amount.trim());
+  const usableItems = items
+    .filter(item => item.title.trim() && parseAmount(item.amount) > 0)
+    .map(item => ({
+      title: item.title.trim(),
+      amount: item.amount.trim(),
+    }));
+  const itemSubtotalMatches =
+    !hasItems || Math.abs(itemSubtotal - parsedAmount) < 0.01;
+  const canSave =
+    Boolean(title.trim()) &&
+    Boolean(category.trim()) &&
+    parsedAmount > 0 &&
+    Boolean(paid_by) &&
+    itemSubtotalMatches &&
+    !groupQuery.isLoading;
+
+  const createExpense = useMutation({
+    mutationFn: () =>
+      financeApi.createGroupExpense(groupId, {
+        title: title.trim(),
+        amount: amount.trim(),
+        paid_by,
+        date: new Date().toISOString(),
+        category: category.trim(),
+        notes: notes.trim(),
+        items: usableItems,
+      }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: financeQueryKeys.groupExpenses(groupId),
+      });
+      navigation.goBack();
+    },
+    onError: () => Alert.alert('Group expense', 'Could not create expense.'),
+  });
+
+  const updateItem = (
+    index: number,
+    key: keyof DraftItem,
+    nextValue: string,
+  ) => {
+    setItems(current =>
+      current.map((item, itemIndex) =>
+        itemIndex === index ? { ...item, [key]: nextValue } : item,
+      ),
+    );
+  };
+
+  return (
+    <SafeAreaView edges={['top']} className="flex-1 bg-[#f4f8fb]">
+      <StatusBar barStyle="dark-content" backgroundColor="#f4f8fb" />
+      <ScrollView
+        contentContainerClassName="gap-5 px-5 pb-10 py-5"
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <InputField
+          icon={ReceiptText}
+          label="Title"
+          onChangeText={setTitle}
+          placeholder="Groceries"
+          value={title}
+        />
+        <InputField
+          icon={Wallet}
+          keyboardType="decimal-pad"
+          label="Amount"
+          onChangeText={setAmount}
+          placeholder="3000.00"
+          prefix="₹"
+          value={amount}
+        />
+        <InputField
+          icon={Tag}
+          label="Category"
+          onChangeText={setCategory}
+          placeholder="Household"
+          value={category}
+        />
+        <InputField
+          icon={ReceiptText}
+          label="Notes"
+          onChangeText={setNotes}
+          placeholder="Optional"
+          value={notes}
+        />
+        <InputField
+          editable={false}
+          icon={CalendarDays}
+          label="Date"
+          onChangeText={() => undefined}
+          placeholder=""
+          value={new Date().toLocaleDateString()}
+        />
+
+        <View className="gap-3 rounded-[8px] bg-white p-4">
+          <View className="flex-row items-center justify-between">
+            <View>
+              <Text className="text-[15px] font-black text-[#263241]">
+                Sub Expenses
+              </Text>
+              <Text className="mt-1 text-[12px] font-semibold text-[#68717d]">
+                Item subtotal {formatMoneyString(itemSubtotal)}
+              </Text>
+            </View>
+            <Pressable
+              accessibilityRole="button"
+              className="h-10 w-10 items-center justify-center rounded-full bg-[#e0f6f3] active:opacity-80"
+              onPress={() =>
+                setItems(current => [...current, { title: '', amount: '' }])
+              }
+            >
+              <CirclePlus color="#078f84" size={21} strokeWidth={2.5} />
+            </Pressable>
+          </View>
+
+          {items.map((item, index) => (
+            <View className="gap-3 rounded-[8px] bg-[#f6f8fa] p-3" key={index}>
+              <InputField
+                icon={ReceiptText}
+                label="Item"
+                onChangeText={value => updateItem(index, 'title', value)}
+                placeholder="Milk"
+                value={item.title}
+              />
+              <View className="flex-row items-end gap-3">
+                <View className="flex-1">
+                  <InputField
+                    icon={Wallet}
+                    keyboardType="decimal-pad"
+                    label="Amount"
+                    onChangeText={value => updateItem(index, 'amount', value)}
+                    placeholder="100.00"
+                    prefix="₹"
+                    value={item.amount}
+                  />
+                </View>
+                <Pressable
+                  accessibilityRole="button"
+                  className="mb-1 h-[54px] w-12 items-center justify-center rounded-[8px] bg-[#fee2e2] active:opacity-80"
+                  onPress={() =>
+                    setItems(current =>
+                      current.filter((_, itemIndex) => itemIndex !== index),
+                    )
+                  }
+                >
+                  <Trash2 color="#be123c" size={19} strokeWidth={2.5} />
+                </Pressable>
+              </View>
+            </View>
+          ))}
+
+          {!itemSubtotalMatches ? (
+            <Text className="text-[12px] font-bold text-[#be123c]">
+              Item subtotal must match the expense amount.
+            </Text>
+          ) : null}
+        </View>
+
+        <PrimaryButton
+          disabled={!canSave}
+          label="Create Expense"
+          loading={createExpense.isPending}
+          onPress={() => createExpense.mutate()}
+        />
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
