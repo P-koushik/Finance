@@ -181,10 +181,14 @@ export type RootStackParamList = {
   EditExpense: { expenseId: string };
   AllExpenses: undefined;
   GroupDetails: { groupId: string };
+  GroupSettings: { groupId: string };
   CreateGroup: undefined;
   CreateGroupExpense: { groupId: string };
+  AddGroupMembers: { groupId: string };
   SplitGroupDetails: { splitGroupId: string };
+  SplitGroupSettings: { splitGroupId: string };
   CreateSplitGroup: undefined;
   CreateSplitExpense: { splitGroupId: string };
+  AddSplitGroupMembers: { splitGroupId: string };
   SplitBalances: { splitGroupId: string };
 };

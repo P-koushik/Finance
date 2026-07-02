@@ -11,6 +11,7 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  ArrowLeft,
   CalendarDays,
   CirclePlus,
   ReceiptText,
@@ -107,16 +108,42 @@ export function CreateGroupExpenseScreen() {
   };
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-[#f4f8fb]">
-      <StatusBar barStyle="dark-content" backgroundColor="#f4f8fb" />
+    <SafeAreaView edges={['top']} className="flex-1 bg-[#EEF4EE]">
+      <StatusBar barStyle="dark-content" backgroundColor="#EEF4EE" />
       <ScrollView
-        contentContainerClassName="gap-5 px-5 pb-10 py-5"
+        contentContainerClassName="gap-5 px-5 pb-10 py-3"
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
+        <View className="mb-1 flex-row items-center gap-3">
+          <Pressable
+            accessibilityLabel="Go back"
+            accessibilityRole="button"
+            className="h-10 w-10 items-center justify-center rounded-[13px] bg-white active:opacity-80"
+            onPress={() => navigation.goBack()}
+          >
+            <ArrowLeft color="#24352E" size={21} strokeWidth={2.5} />
+          </Pressable>
+          <Text className="text-[20px] font-black text-[#24352E]">
+            Add expense
+          </Text>
+        </View>
+
+        <View className="items-center py-3">
+          <Text className="text-[13px] font-extrabold text-[#8D9B93]">
+            Amount
+          </Text>
+          <Text
+            className="mt-1 text-[44px] font-black text-[#24352E]"
+            numberOfLines={1}
+          >
+            {formatMoneyString(parsedAmount || 0)}
+          </Text>
+        </View>
+
         <InputField
           icon={ReceiptText}
-          label="Title"
+          label="What for?"
           onChangeText={setTitle}
           placeholder="Groceries"
           value={title}
@@ -153,29 +180,29 @@ export function CreateGroupExpenseScreen() {
           value={new Date().toLocaleDateString()}
         />
 
-        <View className="gap-3 rounded-[8px] bg-white p-4">
+        <View className="gap-3 rounded-[22px] border border-[#EDF3ED] bg-white p-4">
           <View className="flex-row items-center justify-between">
             <View>
-              <Text className="text-[15px] font-black text-[#263241]">
+              <Text className="text-[15px] font-black text-[#24352E]">
                 Sub Expenses
               </Text>
-              <Text className="mt-1 text-[12px] font-semibold text-[#68717d]">
+              <Text className="mt-1 text-[12px] font-bold text-[#8D9B93]">
                 Item subtotal {formatMoneyString(itemSubtotal)}
               </Text>
             </View>
             <Pressable
               accessibilityRole="button"
-              className="h-10 w-10 items-center justify-center rounded-full bg-[#e0f6f3] active:opacity-80"
+              className="h-10 w-10 items-center justify-center rounded-[14px] bg-[#EAF2EA] active:opacity-80"
               onPress={() =>
                 setItems(current => [...current, { title: '', amount: '' }])
               }
             >
-              <CirclePlus color="#078f84" size={21} strokeWidth={2.5} />
+              <CirclePlus color="#2E5D4B" size={21} strokeWidth={2.5} />
             </Pressable>
           </View>
 
           {items.map((item, index) => (
-            <View className="gap-3 rounded-[8px] bg-[#f6f8fa] p-3" key={index}>
+            <View className="gap-3 rounded-[18px] bg-[#F6FAF6] p-3" key={index}>
               <InputField
                 icon={ReceiptText}
                 label="Item"
@@ -197,29 +224,30 @@ export function CreateGroupExpenseScreen() {
                 </View>
                 <Pressable
                   accessibilityRole="button"
-                  className="mb-1 h-[54px] w-12 items-center justify-center rounded-[8px] bg-[#fee2e2] active:opacity-80"
+                  className="mb-1 h-[54px] w-12 items-center justify-center rounded-[16px] bg-[#F8E9E5] active:opacity-80"
                   onPress={() =>
                     setItems(current =>
                       current.filter((_, itemIndex) => itemIndex !== index),
                     )
                   }
                 >
-                  <Trash2 color="#be123c" size={19} strokeWidth={2.5} />
+                  <Trash2 color="#C4614E" size={19} strokeWidth={2.5} />
                 </Pressable>
               </View>
             </View>
           ))}
 
           {!itemSubtotalMatches ? (
-            <Text className="text-[12px] font-bold text-[#be123c]">
+            <Text className="text-[12px] font-bold text-[#C4614E]">
               Item subtotal must match the expense amount.
             </Text>
           ) : null}
         </View>
 
         <PrimaryButton
+          className="rounded-[18px] bg-[#2E5D4B]"
           disabled={!canSave}
-          label="Create Expense"
+          label="Add expense"
           loading={createExpense.isPending}
           onPress={() => createExpense.mutate()}
         />

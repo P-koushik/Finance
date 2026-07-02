@@ -19,6 +19,50 @@ type ApiEnvelope<T> = {
   data: T;
 };
 
+type WithMongoId<T> = T & {
+  _id?: string;
+  id?: string;
+};
+
+type MongoRef = string | { _id?: string; id?: string };
+
+const withId = <T extends { id: string }>(value: WithMongoId<T>): T => ({
+  ...value,
+  id: value.id ?? value._id ?? '',
+});
+
+const withIds = <T extends { id: string }>(values: Array<WithMongoId<T>>) =>
+  values.map(withId);
+
+const refId = (value: MongoRef) =>
+  typeof value === 'string' ? value : (value.id ?? value._id ?? '');
+
+const normalizeGroup = (group: WithMongoId<Group>): Group => ({
+  ...withId(group),
+  owner: refId(group.owner as MongoRef),
+  members: (group.members ?? []).map(member => ({
+    ...member,
+    user: refId(member.user as MongoRef),
+  })),
+});
+
+const normalizeGroups = (groups: Array<WithMongoId<Group>>) =>
+  groups.map(normalizeGroup);
+
+const normalizeSplitGroup = (
+  splitGroup: WithMongoId<SplitGroup>,
+): SplitGroup => ({
+  ...withId(splitGroup),
+  owner: refId(splitGroup.owner as MongoRef),
+  members: (splitGroup.members ?? []).map(member => ({
+    ...member,
+    user: refId(member.user as MongoRef),
+  })),
+});
+
+const normalizeSplitGroups = (splitGroups: Array<WithMongoId<SplitGroup>>) =>
+  splitGroups.map(normalizeSplitGroup);
+
 type TransactionPayload = {
   title: string;
   amount: number;
@@ -32,6 +76,8 @@ type SharedGroupPayload = {
   category: SharedGroupCategory;
   default_currency: string;
 };
+
+type SharedGroupUpdatePayload = Partial<SharedGroupPayload>;
 
 type GroupExpensePayload = {
   title: string;
@@ -202,19 +248,32 @@ export const financeApi = {
   async getGroups() {
     const response = await api.get<ApiEnvelope<Group[]>>('/groups');
 
-    return response.data.data;
+    return normalizeGroups(response.data.data);
   },
 
   async createGroup(payload: SharedGroupPayload) {
     const response = await api.post<ApiEnvelope<Group>>('/groups', payload);
 
-    return response.data.data;
+    return normalizeGroup(response.data.data);
   },
 
   async getGroup(groupId: string) {
     const response = await api.get<ApiEnvelope<Group>>(`/groups/${groupId}`);
 
-    return response.data.data;
+    return normalizeGroup(response.data.data);
+  },
+
+  async updateGroup(groupId: string, payload: SharedGroupUpdatePayload) {
+    const response = await api.put<ApiEnvelope<Group>>(
+      `/groups/${groupId}`,
+      payload,
+    );
+
+    return normalizeGroup(response.data.data);
+  },
+
+  async deleteGroup(groupId: string) {
+    await api.delete(`/groups/${groupId}`);
   },
 
   async addGroupMember(groupId: string, userId: string) {
@@ -223,7 +282,7 @@ export const financeApi = {
       { user_id: userId },
     );
 
-    return response.data.data;
+    return normalizeGroup(response.data.data);
   },
 
   async getGroupExpenses(groupId: string) {
@@ -231,7 +290,7 @@ export const financeApi = {
       `/groups/${groupId}/expenses`,
     );
 
-    return response.data.data;
+    return withIds(response.data.data);
   },
 
   async createGroupExpense(groupId: string, payload: GroupExpensePayload) {
@@ -240,13 +299,13 @@ export const financeApi = {
       payload,
     );
 
-    return response.data.data;
+    return withId(response.data.data);
   },
 
   async getSplitGroups() {
     const response = await api.get<ApiEnvelope<SplitGroup[]>>('/split-groups');
 
-    return response.data.data;
+    return normalizeSplitGroups(response.data.data);
   },
 
   async createSplitGroup(payload: SharedGroupPayload) {
@@ -255,7 +314,7 @@ export const financeApi = {
       payload,
     );
 
-    return response.data.data;
+    return normalizeSplitGroup(response.data.data);
   },
 
   async getSplitGroup(splitGroupId: string) {
@@ -263,7 +322,23 @@ export const financeApi = {
       `/split-groups/${splitGroupId}`,
     );
 
-    return response.data.data;
+    return normalizeSplitGroup(response.data.data);
+  },
+
+  async updateSplitGroup(
+    splitGroupId: string,
+    payload: SharedGroupUpdatePayload,
+  ) {
+    const response = await api.put<ApiEnvelope<SplitGroup>>(
+      `/split-groups/${splitGroupId}`,
+      payload,
+    );
+
+    return normalizeSplitGroup(response.data.data);
+  },
+
+  async deleteSplitGroup(splitGroupId: string) {
+    await api.delete(`/split-groups/${splitGroupId}`);
   },
 
   async addSplitGroupMember(splitGroupId: string, userId: string) {
@@ -272,7 +347,7 @@ export const financeApi = {
       { user_id: userId },
     );
 
-    return response.data.data;
+    return normalizeSplitGroup(response.data.data);
   },
 
   async getSplitExpenses(splitGroupId: string) {
@@ -280,7 +355,7 @@ export const financeApi = {
       `/split-groups/${splitGroupId}/expenses`,
     );
 
-    return response.data.data;
+    return withIds(response.data.data);
   },
 
   async createSplitExpense(splitGroupId: string, payload: SplitExpensePayload) {
@@ -289,7 +364,7 @@ export const financeApi = {
       payload,
     );
 
-    return response.data.data;
+    return withId(response.data.data);
   },
 
   async getSplitBalances(splitGroupId: string) {

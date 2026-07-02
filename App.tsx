@@ -13,6 +13,8 @@ import { enableScreens } from 'react-native-screens';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { AddExpenseScreen } from './src/screens/AddExpenseScreen';
+import { AddGroupMembersScreen } from './src/screens/AddGroupMembersScreen';
+import { AddSplitGroupMembersScreen } from './src/screens/AddSplitGroupMembersScreen';
 import { AllExpensesScreen } from './src/screens/AllExpensesScreen';
 import { CreateGroupExpenseScreen } from './src/screens/CreateGroupExpenseScreen';
 import { CreateGroupScreen } from './src/screens/CreateGroupScreen';
@@ -20,6 +22,7 @@ import { CreateSplitExpenseScreen } from './src/screens/CreateSplitExpenseScreen
 import { CreateSplitGroupScreen } from './src/screens/CreateSplitGroupScreen';
 import { EditExpenseScreen } from './src/screens/EditExpenseScreen';
 import { GroupDetailsScreen } from './src/screens/GroupDetailsScreen';
+import { GroupSettingsScreen } from './src/screens/GroupSettingsScreen';
 import { GroupsScreen } from './src/screens/GroupsScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { LoginScreen } from './src/screens/LoginScreen';
@@ -27,6 +30,7 @@ import { ProfileScreen } from './src/screens/ProfileScreen';
 import { SignUpScreen } from './src/screens/SignUpScreen';
 import { SplitBalancesScreen } from './src/screens/SplitBalancesScreen';
 import { SplitGroupDetailsScreen } from './src/screens/SplitGroupDetailsScreen';
+import { SplitGroupSettingsScreen } from './src/screens/SplitGroupSettingsScreen';
 import { SplitGroupsScreen } from './src/screens/SplitGroupsScreen';
 
 import { BottomBar } from './src/components/BottomBar';
@@ -126,6 +130,10 @@ function AppNavigator() {
                     name="GroupDetails"
                   />
                   <Stack.Screen
+                    component={GroupSettingsScreen}
+                    name="GroupSettings"
+                  />
+                  <Stack.Screen
                     component={CreateGroupScreen}
                     name="CreateGroup"
                   />
@@ -134,8 +142,16 @@ function AppNavigator() {
                     name="CreateGroupExpense"
                   />
                   <Stack.Screen
+                    component={AddGroupMembersScreen}
+                    name="AddGroupMembers"
+                  />
+                  <Stack.Screen
                     component={SplitGroupDetailsScreen}
                     name="SplitGroupDetails"
+                  />
+                  <Stack.Screen
+                    component={SplitGroupSettingsScreen}
+                    name="SplitGroupSettings"
                   />
                   <Stack.Screen
                     component={CreateSplitGroupScreen}
@@ -144,6 +160,10 @@ function AppNavigator() {
                   <Stack.Screen
                     component={CreateSplitExpenseScreen}
                     name="CreateSplitExpense"
+                  />
+                  <Stack.Screen
+                    component={AddSplitGroupMembersScreen}
+                    name="AddSplitGroupMembers"
                   />
                   <Stack.Screen
                     component={SplitBalancesScreen}

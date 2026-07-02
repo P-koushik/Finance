@@ -8,20 +8,24 @@ import {
   Text,
   View,
 } from 'react-native';
-import { RouteProp, useRoute } from '@react-navigation/native';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { ArrowLeft, Check, X } from 'lucide-react-native';
 
 import { financeApi, financeQueryKeys } from '../hooks/finance-api';
 import type { RootStackParamList, SettlementSuggestion } from '../types';
 import { formatMoneyString } from '../utils/format';
 
+type Navigation = NativeStackNavigationProp<RootStackParamList>;
 type Route = RouteProp<RootStackParamList, 'SplitBalances'>;
 
 const shortId = (value: string) =>
   value.length > 8 ? `${value.slice(0, 4)}...${value.slice(-4)}` : value;
 
 export function SplitBalancesScreen() {
+  const navigation = useNavigation<Navigation>();
   const route = useRoute<Route>();
   const queryClient = useQueryClient();
   const { splitGroupId } = route.params;
@@ -85,17 +89,25 @@ export function SplitBalancesScreen() {
     paymentsQuery.data?.filter(payment => payment.status === 'pending') ?? [];
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-[#f4f8fb]">
-      <StatusBar barStyle="dark-content" backgroundColor="#f4f8fb" />
-      <Text className="px-5 py-4 text-[24px] font-black text-[#123f70]">
-        Balances
-      </Text>
+    <SafeAreaView edges={['top']} className="flex-1 bg-[#EEF4EE]">
+      <StatusBar barStyle="dark-content" backgroundColor="#EEF4EE" />
+      <View className="flex-row items-center gap-3 px-5 py-3">
+        <Pressable
+          accessibilityLabel="Go back"
+          accessibilityRole="button"
+          className="h-10 w-10 items-center justify-center rounded-[13px] bg-white active:opacity-80"
+          onPress={() => navigation.goBack()}
+        >
+          <ArrowLeft color="#24352E" size={21} strokeWidth={2.5} />
+        </Pressable>
+        <Text className="text-[20px] font-black text-[#24352E]">Balances</Text>
+      </View>
 
       {balancesQuery.isLoading ||
       suggestionsQuery.isLoading ||
       paymentsQuery.isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color="#124777" />
+          <ActivityIndicator color="#2E5D4B" />
         </View>
       ) : (
         <ScrollView
@@ -103,18 +115,18 @@ export function SplitBalancesScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View className="gap-2">
-            <Text className="text-[14px] font-black text-[#68717d]">
+            <Text className="text-[16px] font-black text-[#24352E]">
               Net Balance
             </Text>
             {balancesQuery.data?.map(balance => {
               const amountValue = Number(balance.net_amount);
               return (
                 <View
-                  className="flex-row items-center justify-between rounded-[8px] bg-white p-4"
+                  className="flex-row items-center justify-between rounded-[18px] border border-[#EDF3ED] bg-white p-4"
                   key={balance.user}
                 >
                   <Text
-                    className="max-w-[190px] text-[13px] font-bold text-[#38414d]"
+                    className="max-w-[190px] text-[13px] font-bold text-[#24352E]"
                     numberOfLines={1}
                   >
                     {shortId(balance.user)}
@@ -132,29 +144,29 @@ export function SplitBalancesScreen() {
           </View>
 
           <View className="gap-2">
-            <Text className="text-[14px] font-black text-[#68717d]">
+            <Text className="text-[16px] font-black text-[#24352E]">
               Settlement Suggestions
             </Text>
             {suggestionsQuery.data?.map(suggestion => (
               <Pressable
                 accessibilityRole="button"
-                className="rounded-[8px] bg-white p-4 active:opacity-80"
+                className="rounded-[18px] border border-[#EDF3ED] bg-white p-4 active:opacity-80"
                 key={`${suggestion.paid_by}-${suggestion.paid_to}`}
                 onPress={() => createPayment.mutate(suggestion)}
               >
-                <Text className="text-[13px] font-bold text-[#38414d]">
+                <Text className="text-[13px] font-bold text-[#24352E]">
                   {shortId(suggestion.paid_by)} pays{' '}
                   {shortId(suggestion.paid_to)}
                 </Text>
-                <Text className="mt-1 text-[16px] font-black text-[#9f6a05]">
+                <Text className="mt-1 text-[16px] font-black text-[#2E5D4B]">
                   {formatMoneyString(suggestion.amount)}
                 </Text>
               </Pressable>
             ))}
 
             {!suggestionsQuery.data?.length ? (
-              <View className="items-center rounded-[8px] bg-white p-8">
-                <Text className="text-[16px] font-extrabold text-[#343b45]">
+              <View className="items-center rounded-[22px] border border-[#EDF3ED] bg-white p-8">
+                <Text className="text-[16px] font-black text-[#24352E]">
                   Settled up
                 </Text>
               </View>
@@ -162,33 +174,38 @@ export function SplitBalancesScreen() {
           </View>
 
           <View className="gap-2">
-            <Text className="text-[14px] font-black text-[#68717d]">
+            <Text className="text-[16px] font-black text-[#24352E]">
               Pending Payments
             </Text>
             {pendingPayments.map(payment => (
-              <View className="rounded-[8px] bg-white p-4" key={payment.id}>
-                <Text className="text-[13px] font-bold text-[#38414d]">
+              <View
+                className="rounded-[18px] border border-[#EDF3ED] bg-white p-4"
+                key={payment.id}
+              >
+                <Text className="text-[13px] font-bold text-[#24352E]">
                   {shortId(payment.paid_by)} paid {shortId(payment.paid_to)}
                 </Text>
-                <Text className="mt-1 text-[16px] font-black text-[#2e62dd]">
+                <Text className="mt-1 text-[16px] font-black text-[#2E5D4B]">
                   {formatMoneyString(payment.amount)}
                 </Text>
                 <View className="mt-3 flex-row gap-2">
                   <Pressable
                     accessibilityRole="button"
-                    className="flex-1 items-center rounded-[8px] bg-[#078f84] px-3 py-3 active:opacity-80"
+                    className="flex-1 flex-row items-center justify-center gap-2 rounded-[14px] bg-[#2E5D4B] px-3 py-3 active:opacity-80"
                     onPress={() => confirmPayment.mutate(payment.id)}
                   >
+                    <Check color="#ffffff" size={16} strokeWidth={2.6} />
                     <Text className="text-[13px] font-extrabold text-white">
                       Confirm
                     </Text>
                   </Pressable>
                   <Pressable
                     accessibilityRole="button"
-                    className="flex-1 items-center rounded-[8px] bg-[#e8edf2] px-3 py-3 active:opacity-80"
+                    className="flex-1 flex-row items-center justify-center gap-2 rounded-[14px] bg-[#F8E9E5] px-3 py-3 active:opacity-80"
                     onPress={() => rejectPayment.mutate(payment.id)}
                   >
-                    <Text className="text-[13px] font-extrabold text-[#39424e]">
+                    <X color="#C4614E" size={16} strokeWidth={2.6} />
+                    <Text className="text-[13px] font-extrabold text-[#C4614E]">
                       Reject
                     </Text>
                   </Pressable>
@@ -197,8 +214,8 @@ export function SplitBalancesScreen() {
             ))}
 
             {!pendingPayments.length ? (
-              <View className="items-center rounded-[8px] bg-white p-8">
-                <Text className="text-[16px] font-extrabold text-[#343b45]">
+              <View className="items-center rounded-[22px] border border-[#EDF3ED] bg-white p-8">
+                <Text className="text-[16px] font-black text-[#24352E]">
                   No pending payments
                 </Text>
               </View>
