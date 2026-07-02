@@ -14,14 +14,6 @@ export function useSavingsViewModel() {
   const [action, setAction] = useState<SavingsAction>('deposit');
   const [amount, setAmount] = useState('');
   const {
-    data: expenses = [],
-    isLoading: expensesLoading,
-    refetch: refetchExpenses,
-  } = useQuery({
-    queryKey: financeQueryKeys.expenses,
-    queryFn: financeApi.getExpenses,
-  });
-  const {
     data: profile = defaultProfile,
     isLoading: profileLoading,
     refetch: refetchProfile,
@@ -32,22 +24,17 @@ export function useSavingsViewModel() {
 
   useFocusEffect(
     useCallback(() => {
-      refetchExpenses();
       refetchProfile();
-    }, [refetchExpenses, refetchProfile]),
+    }, [refetchProfile]),
   );
 
-  const totalSpent = useMemo(
-    () => expenses.reduce((total, expense) => total + expense.amount, 0),
-    [expenses],
-  );
-  const availableMoney = Math.max(profile.balance - totalSpent, 0);
+  const availableMoney = profile.balance;
   const parsedAmount = useMemo(
     () => Number(amount.replace(/,/g, '')),
     [amount],
   );
   const isDeposit = action === 'deposit';
-  const loading = expensesLoading || profileLoading;
+  const loading = profileLoading;
 
   const savingsMutation = useMutation({
     mutationFn: () =>

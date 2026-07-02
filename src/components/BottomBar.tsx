@@ -4,6 +4,7 @@ import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { CirclePlus, Home, Scale, User, UsersRound } from 'lucide-react-native';
 
 import type { RootTabParamList } from '../types';
+import { appTheme } from '../styles/theme';
 
 type TabRouteName = keyof RootTabParamList;
 
@@ -30,12 +31,14 @@ export function BottomBar({
         const { Icon, key, label } = tabItems[routeName];
         const selected = state.index === index;
         const options = descriptors[route.key]?.options;
+        const isAdd = routeName === 'AddExpense';
 
         return (
           <Pressable
             accessibilityLabel={options?.tabBarAccessibilityLabel}
             accessibilityRole="button"
             accessibilityState={selected ? { selected: true } : {}}
+            className="items-center"
             key={key}
             onPress={() => {
               const event = navigation.emit({
@@ -48,20 +51,31 @@ export function BottomBar({
                 navigation.navigate(route.name, route.params);
               }
             }}
-            style={({ pressed }) => [styles.item, pressed && styles.pressed]}
-            className="items-center gap-1.5 min-w-12"
+            style={({ pressed }) => [
+              styles.item,
+              isAdd && styles.addItem,
+              pressed && styles.pressed,
+            ]}
           >
-            <Icon
-              color={selected ? '#2e62dd' : '#a8b0bb'}
-              size={22}
-              strokeWidth={2.4}
-            />
-            <Text
-              style={[styles.label, selected && styles.activeLabel]}
-              className="text-[10px] font-extrabold"
-            >
-              {label}
-            </Text>
+            {isAdd ? (
+              <View style={styles.fab}>
+                <Icon color="#ffffff" size={28} strokeWidth={2.8} />
+              </View>
+            ) : (
+              <>
+                <Icon
+                  color={selected ? appTheme.green : '#B4C2BA'}
+                  size={22}
+                  strokeWidth={2.4}
+                />
+                <Text
+                  className="text-[10px] font-extrabold"
+                  style={[styles.label, selected && styles.activeLabel]}
+                >
+                  {label}
+                </Text>
+              </>
+            )}
           </Pressable>
         );
       })}
@@ -71,30 +85,52 @@ export function BottomBar({
 
 const styles = StyleSheet.create({
   activeLabel: {
-    color: '#2e62dd',
+    color: appTheme.green,
   },
   container: {
     alignItems: 'center',
-    backgroundColor: '#ffffff',
-    borderTopLeftRadius: 18,
-    borderTopRightRadius: 18,
+    backgroundColor: appTheme.card,
+    borderColor: appTheme.border,
+    borderRadius: 26,
+    borderWidth: 1,
+    bottom: 12,
     elevation: 8,
     flexDirection: 'row',
-    height: 74,
+    height: 66,
     justifyContent: 'space-around',
+    left: 16,
     paddingHorizontal: 8,
-    shadowColor: '#d3d8df',
-    shadowOffset: { width: 0, height: -5 },
-    shadowOpacity: 0.55,
+    position: 'absolute',
+    right: 16,
+    shadowColor: appTheme.green,
+    shadowOffset: { width: 0, height: -8 },
+    shadowOpacity: 0.16,
+    shadowRadius: 20,
+  },
+  addItem: {
+    marginTop: -38,
+  },
+  fab: {
+    alignItems: 'center',
+    backgroundColor: appTheme.green,
+    borderColor: appTheme.background,
+    borderRadius: 22,
+    borderWidth: 4,
+    height: 62,
+    justifyContent: 'center',
+    shadowColor: appTheme.green,
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.42,
     shadowRadius: 12,
+    width: 62,
   },
   item: {
     alignItems: 'center',
     gap: 5,
-    minWidth: 44,
+    minWidth: 56,
   },
   label: {
-    color: '#9aa3af',
+    color: '#B4C2BA',
     fontSize: 10,
     fontWeight: '800',
   },

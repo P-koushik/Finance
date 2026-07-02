@@ -9,7 +9,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { BadgeIndianRupee } from 'lucide-react-native';
+import { BadgeIndianRupee, PiggyBank, X } from 'lucide-react-native';
 
 import { formatCurrency } from '../utils/format';
 import {
@@ -26,7 +26,7 @@ type SavingsDrawerProps = {
 };
 
 const savingsActions: Array<{ key: SavingsAction; label: string }> = [
-  { key: 'deposit', label: 'Add to Savings' },
+  { key: 'deposit', label: 'Transfer in' },
   { key: 'withdraw', label: 'Withdraw' },
 ];
 
@@ -46,83 +46,72 @@ export function SavingsDrawer({ onClose, open, savings }: SavingsDrawerProps) {
       transparent
       visible={open}
     >
-      <View className="flex-1 justify-end bg-black/25">
+      <View className="flex-1 justify-end bg-[#1D2A24]/40">
         <Pressable className="flex-1" onPress={onClose} />
 
         <KeyboardAvoidingView
           behavior={Platform.select({ ios: 'padding', android: undefined })}
-          className="max-h-[84%] overflow-hidden rounded-t-[32px] bg-[#f4f8fb]"
+          className="max-h-[84%] overflow-hidden rounded-t-[32px] bg-white"
         >
           <ScrollView
-            contentContainerClassName="p-[18px] pt-6 pb-11"
+            contentContainerClassName="px-[22px] pb-8 pt-2"
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
           >
             {savings.loading ? (
               <View className="items-center py-8">
-                <ActivityIndicator color="#124777" />
+                <ActivityIndicator color="#2E5D4B" />
               </View>
             ) : (
               <>
-                <View className="h-[112px] justify-end rounded-[8px] bg-[#078f84] p-4">
-                  <Text className="text-[14px] font-bold text-[#bde9e4]">
-                    Savings Balance
+                <View className="mx-auto mb-4 h-[5px] w-[42px] rounded-full bg-[#DCE6DC]" />
+
+                <View className="mb-4 flex-row items-center justify-between">
+                  <Text className="text-[20px] font-black text-[#24352E]">
+                    Move money
                   </Text>
-                  <Text
-                    className="mt-1.5 text-[30px] font-extrabold text-white"
-                    numberOfLines={1}
+                  <Pressable
+                    accessibilityLabel="Close savings drawer"
+                    accessibilityRole="button"
+                    className="h-[34px] w-[34px] items-center justify-center rounded-[12px] bg-[#F1F6F1]"
+                    onPress={onClose}
                   >
-                    {formatCurrency(savings.profile.savings)}
-                  </Text>
+                    <X color="#6E9081" size={20} strokeWidth={2.5} />
+                  </Pressable>
                 </View>
 
-                <View className="mt-3 flex-row gap-2.5">
-                  <View className="flex-1 rounded-[8px] bg-white p-3">
-                    <Text className="text-[12px] font-bold text-[#6c7480]">
-                      Available
+                <View className="mb-[18px] flex-row items-center justify-between rounded-[18px] bg-[#EAF2EA] px-4 py-[14px]">
+                  <View>
+                    <Text className="text-[12px] font-extrabold text-[#6E9081]">
+                      Current savings
                     </Text>
                     <Text
-                      className="mt-1.5 text-[14px] font-extrabold text-[#2c5c8d]"
+                      className="text-[22px] font-black text-[#2E5D4B]"
                       numberOfLines={1}
                     >
-                      {formatCurrency(savings.availableMoney)}
+                      {formatCurrency(savings.profile.savings)}
                     </Text>
                   </View>
-
-                  <View className="flex-1 rounded-[8px] bg-white p-3">
-                    <Text className="text-[12px] font-bold text-[#6c7480]">
-                      Monthly Amount
-                    </Text>
-                    <Text
-                      className="mt-1.5 text-[14px] font-extrabold text-[#2c5c8d]"
-                      numberOfLines={1}
-                    >
-                      {formatCurrency(savings.profile.monthly_income)}
-                    </Text>
-                  </View>
+                  <PiggyBank color="#7FA968" size={28} strokeWidth={2.5} />
                 </View>
 
-                <View className="mt-3 rounded-[8px] bg-white p-4 shadow-md shadow-[color:#d5dae1]">
-                  <Text className="text-[15px] font-extrabold text-[#2f3742]">
-                    Savings Action
-                  </Text>
-
-                  <View className="mt-3 flex-row gap-2">
+                <View className="rounded-[22px] border border-[#EDF3ED] bg-white p-4">
+                  <View className="mb-[18px] flex-row rounded-[16px] bg-[#F1F6F1] p-1">
                     {savingsActions.map(option => {
                       const selected = savings.action === option.key;
 
                       return (
                         <Pressable
                           accessibilityRole="button"
-                          className={`min-h-10 flex-1 items-center justify-center rounded-[8px] px-3 ${
-                            selected ? 'bg-[#078f84]' : 'bg-[#eef1f4]'
+                          className={`flex-1 items-center justify-center rounded-[12px] px-3 py-[11px] ${
+                            selected ? 'bg-white' : ''
                           }`}
                           key={option.key}
                           onPress={() => savings.setAction(option.key)}
                         >
                           <Text
                             className={`text-center text-[12px] font-extrabold ${
-                              selected ? 'text-white' : 'text-[#58616d]'
+                              selected ? 'text-[#2E5D4B]' : 'text-[#6E9081]'
                             }`}
                           >
                             {option.label}
@@ -132,7 +121,7 @@ export function SavingsDrawer({ onClose, open, savings }: SavingsDrawerProps) {
                     })}
                   </View>
 
-                  <View className="mt-4">
+                  <View>
                     <InputField
                       icon={BadgeIndianRupee}
                       keyboardType="decimal-pad"
@@ -150,7 +139,7 @@ export function SavingsDrawer({ onClose, open, savings }: SavingsDrawerProps) {
                   </View>
 
                   <PrimaryButton
-                    className="mt-4"
+                    className="mt-4 rounded-[18px] bg-[#2E5D4B]"
                     disabled={!savings.canSubmit}
                     label={
                       savings.isDeposit

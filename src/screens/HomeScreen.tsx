@@ -1,6 +1,8 @@
 import React from 'react';
 import {
   ActivityIndicator,
+  DimensionValue,
+  Image,
   Pressable,
   ScrollView,
   StatusBar,
@@ -11,204 +13,221 @@ import {
 import Carousel from 'react-native-reanimated-carousel';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  ArrowRight,
+  Bell,
+  CirclePlus,
   PiggyBank,
+  Repeat2,
+  Scale,
   TrendingUp,
+  UsersRound,
   WalletCards,
 } from 'lucide-react-native';
 
 import { ConfirmCard } from '../components/ConfirmCard';
 import { ExpenseCard } from '../components/ExpenseCard';
 import { SavingsDrawer } from '../components/SavingsDrawer';
+import { appTheme } from '../styles/theme';
 import { formatCurrency } from '../utils/format';
-import { useSavingsViewModel } from '../view-models/useSavingsViewModel';
 import { useHomeViewModel } from '../view-models/useHomeViewModel';
+import { useSavingsViewModel } from '../view-models/useSavingsViewModel';
+
+const appLogo = require('../assets/app-logo.png');
 
 export function HomeScreen() {
   const { width } = useWindowDimensions();
   const [savingsOpen, setSavingsOpen] = React.useState(false);
   const home = useHomeViewModel();
   const savings = useSavingsViewModel();
+  const spentPct =
+    home.monthlyBudget > 0
+      ? `${Math.min((home.totalSpent / home.monthlyBudget) * 100, 100)}%`
+      : '0%';
+  const spentPctWidth = spentPct as DimensionValue;
+  const savingsPct =
+    (savings.profile.savings_goal ?? 0) > 0
+      ? `${Math.min(
+          (home.savingsAmount / (savings.profile.savings_goal ?? 0)) * 100,
+          100,
+        )}%`
+      : '0%';
+  const savingsPctWidth = savingsPct as DimensionValue;
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-[#f4f8fb]">
-      <StatusBar barStyle="dark-content" backgroundColor="#f4f8fb" />
+    <SafeAreaView edges={['top']} className="flex-1 bg-[#EEF4EE]">
+      <StatusBar barStyle="dark-content" backgroundColor="#EEF4EE" />
 
-      <View className="flex-1 bg-[#f4f8fb]">
-        <View className="h-16 flex-row items-center justify-between bg-white px-6">
-          <View className="flex-row items-center gap-2.5">
-            <WalletCards color="#2e62dd" size={24} strokeWidth={2.7} />
-            <Text className="text-[20px] font-extrabold text-[#2b5fd7]">
-              Finance
-            </Text>
-          </View>
-        </View>
-
+      <View className="flex-1 bg-[#EEF4EE]">
         <ScrollView showsVerticalScrollIndicator={false}>
-          <Carousel
-            loop={false}
-            width={width}
-            height={220}
-            data={[0, 1]}
-            pagingEnabled
-            snapEnabled
-            mode="parallax"
-            modeConfig={{
-              parallaxScrollingScale: 0.9,
-              parallaxScrollingOffset: 70,
-            }}
-            renderItem={({ item }) => {
-              if (item === 0) {
-                return (
-                  <View className="px-4">
-                    <View className="h-[220px] rounded-[30px] bg-[#2e5f95] p-6">
-                      <Text className="text-[15px] font-bold text-[#b5cae6]">
-                        Total Spent
-                      </Text>
+          <View className="px-5 pb-44 pt-2">
+            <View className="flex-row items-center gap-3 pb-5">
+              <Image
+                className="h-[42px] w-[42px] rounded-[13px]"
+                source={appLogo}
+              />
+              <View className="min-w-0 flex-1">
+                <Text className="text-[13px] font-bold text-[#8D9B93]">
+                  Good afternoon
+                </Text>
+                <Text
+                  className="mt-[-1px] text-[19px] font-black text-[#24352E]"
+                  numberOfLines={1}
+                >
+                  Finance
+                </Text>
+              </View>
+              <Pressable
+                accessibilityLabel="Notifications"
+                accessibilityRole="button"
+                className="h-[42px] w-[42px] items-center justify-center rounded-[14px] bg-white active:opacity-80"
+              >
+                <Bell color={appTheme.greenDark} size={21} strokeWidth={2.5} />
+              </Pressable>
+            </View>
 
+            <Carousel
+              data={[0, 1]}
+              height={224}
+              loop={false}
+              pagingEnabled
+              renderItem={({ item }) => {
+                if (item === 0) {
+                  return (
+                    <View className="h-[212px] rounded-[28px] bg-[#2E5D4B] p-[22px]">
+                      <View className="flex-row items-center justify-between">
+                        <Text className="text-[14px] font-extrabold text-white/85">
+                          Spendable this month
+                        </Text>
+                        <WalletCards
+                          color="#DDECE2"
+                          size={22}
+                          strokeWidth={2.5}
+                        />
+                      </View>
                       <Text
-                        className="mt-4 text-[36px] font-extrabold text-white"
+                        className="mt-3 text-[40px] font-black text-white"
                         numberOfLines={1}
                       >
-                        {formatCurrency(home.totalSpent)}
+                        {formatCurrency(home.availableMoney)}
                       </Text>
-
-                      <View className="mt-7 flex-row items-center rounded-[24px] bg-white/15 p-4">
-                        <View className="h-12 w-12 items-center justify-center rounded-full bg-[#69bdc1]">
-                          <TrendingUp
-                            color="#ffffff"
-                            size={24}
-                            strokeWidth={2.7}
-                          />
-                        </View>
-
-                        <View className="ml-4 flex-1">
-                          <Text className="text-[13px] font-bold text-[#bdd0e7]">
-                            Monthly Budget
-                          </Text>
-                          <Text
-                            className="mt-1 text-[15px] font-extrabold text-white"
-                            numberOfLines={1}
-                          >
-                            {formatCurrency(home.monthlyBudget)}
-                          </Text>
-                        </View>
-
-                        <View className="flex-1">
-                          <Text className="text-[13px] font-bold text-[#bdd0e7]">
-                            Available
-                          </Text>
-                          <Text
-                            className="mt-1 text-[15px] font-extrabold text-white"
-                            numberOfLines={1}
-                          >
-                            {formatCurrency(home.availableMoney)}
-                          </Text>
-                        </View>
+                      <Text className="mt-0.5 text-[13px] font-bold text-white/80">
+                        of {formatCurrency(home.monthlyBudget)} budget left
+                      </Text>
+                      <View className="mt-[18px] h-2 overflow-hidden rounded-md bg-white/20">
+                        <View
+                          className="h-full rounded-md bg-[#C9E8B4]"
+                          style={{ width: spentPctWidth }}
+                        />
                       </View>
+                      <Text className="mt-2 text-[12.5px] font-bold text-white/80">
+                        {formatCurrency(home.totalSpent)} spent so far
+                      </Text>
                     </View>
-                  </View>
-                );
-              }
+                  );
+                }
 
-              return (
-                <View className="px-4">
+                return (
                   <Pressable
                     accessibilityRole="button"
-                    className="h-[220px] justify-between rounded-[30px] bg-[#078f84] p-6 active:opacity-90"
+                    className="h-[212px] rounded-[28px] border border-[#E7EFE7] bg-white p-[22px] active:opacity-90"
                     onPress={() => setSavingsOpen(true)}
                   >
                     <View className="flex-row items-center justify-between">
-                      <Text className="text-[15px] font-bold text-[#c7f1ec]">
-                        Savings Balance
+                      <Text className="text-[14px] font-extrabold text-[#6E9081]">
+                        Total savings
                       </Text>
-
-                      <View className="h-11 w-11 items-center justify-center rounded-full bg-white/15">
-                        <PiggyBank
-                          color="#ffffff"
-                          size={23}
-                          strokeWidth={2.7}
-                        />
-                      </View>
+                      <PiggyBank color="#7FA968" size={23} strokeWidth={2.5} />
                     </View>
-
-                    <View>
-                      <Text className="text-[15px] font-bold text-[#c7f1ec]">
-                        Current Savings
-                      </Text>
-
-                      <Text
-                        className="mt-1 text-[36px] font-extrabold text-white"
-                        numberOfLines={1}
-                      >
-                        {formatCurrency(home.savingsAmount)}
+                    <Text
+                      className="mt-3 text-[40px] font-black text-[#24352E]"
+                      numberOfLines={1}
+                    >
+                      {formatCurrency(home.savingsAmount)}
+                    </Text>
+                    <Text className="mt-0.5 text-[13px] font-bold text-[#8D9B93]">
+                      Goal {formatCurrency(savings.profile.savings_goal ?? 0)}
+                    </Text>
+                    <View className="mt-[18px] h-2 overflow-hidden rounded-md bg-[#EAF2EA]">
+                      <View
+                        className="h-full rounded-md bg-[#3C7A5E]"
+                        style={{ width: savingsPctWidth }}
+                      />
+                    </View>
+                    <View className="mt-4 flex-row items-center justify-center gap-2 rounded-[14px] bg-[#EAF2EA] py-[11px]">
+                      <Repeat2 color="#2E5D4B" size={17} strokeWidth={2.6} />
+                      <Text className="text-[14px] font-extrabold text-[#2E5D4B]">
+                        Manage savings
                       </Text>
                     </View>
                   </Pressable>
-                </View>
-              );
-            }}
-          />
+                );
+              }}
+              snapEnabled
+              width={width - 40}
+            />
 
-          <View className="px-6 pb-28">
-            <View className="mt-6 flex-row gap-[18px]">
-              <View className="flex-1 rounded-[8px] bg-white p-[18px] shadow-sm shadow-[color:#d5dae1]">
-                <Text className="text-[14px] font-bold text-[#6c7480]">
-                  Top Category
-                </Text>
-                <Text className="mt-2 text-[16px] font-extrabold text-[#2c5c8d]">
-                  {home.topCategory}
-                </Text>
-              </View>
-
-              <View className="flex-1 rounded-[8px] bg-white p-[18px] shadow-sm shadow-[color:#d5dae1]">
-                <Text className="text-[14px] font-bold text-[#6c7480]">
-                  Daily Average
-                </Text>
-                <Text className="mt-2 text-[16px] font-extrabold text-[#2c5c8d]">
-                  {formatCurrency(
-                    home.expenses.length ? home.totalSpent / 30 : 0,
-                  )}
-                </Text>
-              </View>
+            <View className="mb-5 mt-2 flex-row justify-center gap-1.5">
+              <View className="h-1.5 w-[18px] rounded-full bg-[#2E5D4B]" />
+              <View className="h-1.5 w-1.5 rounded-full bg-[#C4D6C4]" />
             </View>
 
-            <Pressable
-              accessibilityRole="button"
-              className="mt-5 min-h-[76px] flex-row items-center rounded-[8px] bg-white px-6 shadow-sm shadow-[color:#d5dae1] active:opacity-80"
-              onPress={() => setSavingsOpen(true)}
-            >
-              <View className="h-12 w-12 items-center justify-center rounded-full bg-[#c9fbf2]">
-                <PiggyBank color="#139b92" size={24} strokeWidth={2.7} />
-              </View>
+            <View className="mb-6 flex-row justify-between gap-2">
+              {[
+                {
+                  label: 'Add',
+                  Icon: CirclePlus,
+                  onPress: () =>
+                    home.navigation.navigate('MainTabs', {
+                      screen: 'AddExpense',
+                    }),
+                },
+                {
+                  label: 'Groups',
+                  Icon: UsersRound,
+                  onPress: () =>
+                    home.navigation.navigate('MainTabs', { screen: 'Groups' }),
+                },
+                {
+                  label: 'Split',
+                  Icon: Scale,
+                  onPress: () =>
+                    home.navigation.navigate('MainTabs', {
+                      screen: 'SplitGroups',
+                    }),
+                },
+                {
+                  label: 'Insights',
+                  Icon: TrendingUp,
+                  onPress: () => home.navigation.navigate('AllExpenses'),
+                },
+              ].map(({ Icon, label, onPress }) => (
+                <Pressable
+                  accessibilityRole="button"
+                  className="flex-1 items-center gap-2 active:opacity-80"
+                  key={label}
+                  onPress={onPress}
+                >
+                  <View className="h-[52px] w-[52px] items-center justify-center rounded-[18px] bg-white">
+                    <Icon color="#2E5D4B" size={23} strokeWidth={2.5} />
+                  </View>
+                  <Text className="text-[11.5px] font-extrabold text-[#5B6B63]">
+                    {label}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
 
-              <View className="ml-4 flex-1">
-                <Text className="text-[15px] font-extrabold text-[#3c5f93]">
-                  Grow Your Savings
-                </Text>
-                <Text className="text-[12px] font-semibold text-[#7d8794]">
-                  Transfer funds to your goal
-                </Text>
-              </View>
-
-              <View className="h-10 w-10 items-center justify-center rounded-full bg-[#f1f3f5]">
-                <ArrowRight color="#4f5965" size={20} strokeWidth={2.6} />
-              </View>
-            </Pressable>
-
-            <View className="mb-3.5 mt-6 flex-row items-center justify-between">
-              <Text className="text-[16px] font-extrabold text-[#666e78]">
-                Recent Expenses
+            <View className="mb-2 flex-row items-center justify-between">
+              <Text className="text-[17px] font-black text-[#24352E]">
+                Recent activity
               </Text>
-
               {home.expenses.length > 10 ? (
                 <Pressable
                   accessibilityRole="button"
                   hitSlop={8}
                   onPress={() => home.navigation.navigate('AllExpenses')}
                 >
-                  <Text className="text-[15px] font-extrabold text-[#088b84]">
-                    View All
+                  <Text className="text-[13px] font-extrabold text-[#6E9081]">
+                    See all
                   </Text>
                 </Pressable>
               ) : null}
@@ -216,10 +235,10 @@ export function HomeScreen() {
 
             {home.loading ? (
               <View className="items-center py-8">
-                <ActivityIndicator color="#124777" />
+                <ActivityIndicator color="#2E5D4B" />
               </View>
             ) : home.expenses.length ? (
-              <View className="gap-3.5">
+              <View className="gap-2 rounded-[24px] border border-[#EDF3ED] bg-white p-3">
                 {home.visibleExpenses.map(expense => (
                   <ExpenseCard
                     expense={expense}
@@ -234,11 +253,12 @@ export function HomeScreen() {
                 ))}
               </View>
             ) : (
-              <View className="items-center rounded-[22px] bg-white p-7">
-                <Text className="mb-2 text-[17px] font-extrabold text-[#343b45]">
+              <View className="items-center rounded-[24px] border border-[#EDF3ED] bg-white p-7">
+                <TrendingUp color="#7FA968" size={30} strokeWidth={2.5} />
+                <Text className="mb-2 mt-3 text-[17px] font-extrabold text-[#24352E]">
                   No expenses yet
                 </Text>
-                <Text className="text-center text-[14px] leading-[21px] text-[#7a828d]">
+                <Text className="text-center text-[14px] leading-[21px] text-[#8D9B93]">
                   Add your first expense to start tracking total spending.
                 </Text>
               </View>

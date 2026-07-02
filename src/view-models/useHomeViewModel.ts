@@ -89,7 +89,7 @@ export function useHomeViewModel() {
   };
 
   return {
-    availableMoney: Math.max(profile.balance - totalSpent, 0),
+    availableMoney: profile.balance,
     confirmDelete,
     expenseToDelete,
     expenses,
