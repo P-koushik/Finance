@@ -34,6 +34,10 @@ export function SplitBalancesScreen() {
     queryKey: financeQueryKeys.splitBalances(splitGroupId),
     queryFn: () => financeApi.getSplitBalances(splitGroupId),
   });
+  const splitGroupQuery = useQuery({
+    queryKey: financeQueryKeys.splitGroup(splitGroupId),
+    queryFn: () => financeApi.getSplitGroup(splitGroupId),
+  });
   const suggestionsQuery = useQuery({
     queryKey: financeQueryKeys.settlementSuggestions(splitGroupId),
     queryFn: () => financeApi.getSettlementSuggestions(splitGroupId),
@@ -87,6 +91,13 @@ export function SplitBalancesScreen() {
 
   const pendingPayments =
     paymentsQuery.data?.filter(payment => payment.status === 'pending') ?? [];
+  const memberName = (userId: string) => {
+    const user = splitGroupQuery.data?.members.find(
+      member => member.user.id === userId,
+    )?.user;
+
+    return user?.name || user?.email || shortId(userId);
+  };
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-[#EEF4EE]">
@@ -105,7 +116,8 @@ export function SplitBalancesScreen() {
 
       {balancesQuery.isLoading ||
       suggestionsQuery.isLoading ||
-      paymentsQuery.isLoading ? (
+      paymentsQuery.isLoading ||
+      splitGroupQuery.isLoading ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator color="#2E5D4B" />
         </View>
@@ -129,7 +141,7 @@ export function SplitBalancesScreen() {
                     className="max-w-[190px] text-[13px] font-bold text-[#24352E]"
                     numberOfLines={1}
                   >
-                    {shortId(balance.user)}
+                    {memberName(balance.user)}
                   </Text>
                   <Text
                     className={`text-[14px] font-black ${
@@ -155,8 +167,8 @@ export function SplitBalancesScreen() {
                 onPress={() => createPayment.mutate(suggestion)}
               >
                 <Text className="text-[13px] font-bold text-[#24352E]">
-                  {shortId(suggestion.paid_by)} pays{' '}
-                  {shortId(suggestion.paid_to)}
+                  {memberName(suggestion.paid_by)} pays{' '}
+                  {memberName(suggestion.paid_to)}
                 </Text>
                 <Text className="mt-1 text-[16px] font-black text-[#2E5D4B]">
                   {formatMoneyString(suggestion.amount)}
@@ -183,7 +195,8 @@ export function SplitBalancesScreen() {
                 key={payment.id}
               >
                 <Text className="text-[13px] font-bold text-[#24352E]">
-                  {shortId(payment.paid_by)} paid {shortId(payment.paid_to)}
+                  {memberName(payment.paid_by)} paid{' '}
+                  {memberName(payment.paid_to)}
                 </Text>
                 <Text className="mt-1 text-[16px] font-black text-[#2E5D4B]">
                   {formatMoneyString(payment.amount)}

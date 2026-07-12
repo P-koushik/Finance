@@ -52,9 +52,7 @@ const memberPreview = (group: Group) => {
   const preview = group.members
     .filter(member => member.status === 'active')
     .slice(0, 3)
-    .map(member =>
-      member.user.length > 6 ? `${member.user.slice(0, 4)}...` : member.user,
-    );
+    .map(member => member.user.name || member.user.email || 'Member');
 
   return `${count} members · ${['You', ...preview].slice(0, 4).join(', ')}`;
 };

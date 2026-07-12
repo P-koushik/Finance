@@ -9,12 +9,13 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { ArrowLeft, Search, UsersRound } from 'lucide-react-native';
+import { ArrowLeft, Search, UserMinus, UsersRound } from 'lucide-react-native';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ConfirmCard } from '../components/ConfirmCard';
 import { financeApi, financeQueryKeys } from '../hooks/finance-api';
 import type { RootStackParamList, UserSearchResult } from '../types';
 
@@ -31,6 +32,10 @@ export function AddGroupMembersScreen() {
   const queryClient = useQueryClient();
   const { groupId } = route.params;
   const [search, setSearch] = useState('');
+  const [memberToRemove, setMemberToRemove] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   const groupQuery = useQuery({
     queryKey: financeQueryKeys.group(groupId),
@@ -46,8 +51,14 @@ export function AddGroupMembersScreen() {
       new Set(
         groupQuery.data?.members
           .filter(member => member.status === 'active')
-          .map(member => member.user) ?? [],
+          .map(member => member.user.id) ?? [],
       ),
+    [groupQuery.data?.members],
+  );
+  const activeMembers = useMemo(
+    () =>
+      groupQuery.data?.members.filter(member => member.status === 'active') ??
+      [],
     [groupQuery.data?.members],
   );
   const results = searchQuery.data ?? [];
@@ -62,6 +73,28 @@ export function AddGroupMembersScreen() {
     },
     onError: () => Alert.alert('Member', 'Could not add member.'),
   });
+  const removeMember = useMutation({
+    mutationFn: (userId: string) =>
+      financeApi.removeGroupMember(groupId, userId),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: financeQueryKeys.group(groupId),
+        }),
+        queryClient.invalidateQueries({ queryKey: financeQueryKeys.groups }),
+      ]);
+    },
+    onError: () => Alert.alert('Member', 'Could not remove member.'),
+  });
+
+  const confirmRemove = () => {
+    if (!memberToRemove) {
+      return;
+    }
+
+    removeMember.mutate(memberToRemove.id);
+    setMemberToRemove(null);
+  };
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-[#EEF4EE]">
@@ -77,7 +110,7 @@ export function AddGroupMembersScreen() {
           <ArrowLeft color="#2D463A" size={21} strokeWidth={2.5} />
         </Pressable>
         <Text className="text-[20px] font-black text-[#24352E]">
-          Add members
+          Manage members
         </Text>
       </View>
       <Text className="px-5 text-[13.5px] font-bold text-[#8D9B93]">
@@ -101,6 +134,69 @@ export function AddGroupMembersScreen() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
+        <Text className="text-[14px] font-black text-[#24352E]">
+          Current members
+        </Text>
+        {activeMembers.map((member, index) => {
+          const displayName = member.user.name || member.user.email || 'Member';
+          const isOwner = member.role === 'owner';
+
+          return (
+            <View
+              className="flex-row items-center gap-3 rounded-[14px] bg-white px-[14px] py-[11px]"
+              key={member.user.id}
+            >
+              <View
+                className="h-10 w-10 items-center justify-center rounded-[13px]"
+                style={{
+                  backgroundColor: avatarColors[index % avatarColors.length],
+                }}
+              >
+                <Text className="text-[15px] font-black text-white">
+                  {mono(displayName)}
+                </Text>
+              </View>
+              <View className="min-w-0 flex-1">
+                <Text
+                  className="text-[15px] font-black text-[#24352E]"
+                  numberOfLines={1}
+                >
+                  {displayName}
+                </Text>
+                <Text className="text-[11.5px] font-bold capitalize text-[#9AA8A0]">
+                  {member.role}
+                </Text>
+              </View>
+              {isOwner ? (
+                <Text className="text-[12px] font-black text-[#6E9081]">
+                  Owner
+                </Text>
+              ) : (
+                <Pressable
+                  accessibilityLabel={`Remove ${displayName}`}
+                  accessibilityRole="button"
+                  className="flex-row items-center gap-1.5 rounded-[12px] bg-[#F8E9E5] px-3 py-2.5 active:opacity-80"
+                  disabled={removeMember.isPending}
+                  onPress={() =>
+                    setMemberToRemove({
+                      id: member.user.id,
+                      name: displayName,
+                    })
+                  }
+                >
+                  <UserMinus color="#C4614E" size={15} strokeWidth={2.5} />
+                  <Text className="text-[12px] font-black text-[#C4614E]">
+                    Remove
+                  </Text>
+                </Pressable>
+              )}
+            </View>
+          );
+        })}
+
+        <Text className="mt-2 text-[14px] font-black text-[#24352E]">
+          Add members
+        </Text>
         {groupQuery.isLoading || searchQuery.isFetching ? (
           <View className="items-center py-8">
             <ActivityIndicator color="#2E5D4B" />
@@ -178,6 +274,16 @@ export function AddGroupMembersScreen() {
           <Text className="text-[16px] font-black text-white">Done</Text>
         </Pressable>
       </View>
+
+      <ConfirmCard
+        cancelLabel="Cancel"
+        confirmLabel="Remove"
+        message={`${memberToRemove?.name ?? 'This member'} will be removed from this group.`}
+        onCancel={() => setMemberToRemove(null)}
+        onConfirm={confirmRemove}
+        title="Remove member?"
+        visible={Boolean(memberToRemove)}
+      />
     </SafeAreaView>
   );
 }

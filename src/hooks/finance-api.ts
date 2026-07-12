@@ -6,9 +6,12 @@ import type {
   SettlementPayment,
   SettlementSuggestion,
   SharedGroupCategory,
+  SharedMember,
+  SpendingCategoryAnalytics,
   SplitBalance,
   SplitExpense,
   SplitGroup,
+  MonthlySpendingAnalytics,
   UserProfile,
   UserSearchResult,
 } from '../types';
@@ -25,6 +28,15 @@ type WithMongoId<T> = T & {
 };
 
 type MongoRef = string | { _id?: string; id?: string };
+type PopulatedUserRef =
+  | string
+  | {
+      _id?: string;
+      id?: string;
+      name?: string;
+      email?: string;
+      profilePicture?: string;
+    };
 
 const withId = <T extends { id: string }>(value: WithMongoId<T>): T => ({
   ...value,
@@ -37,13 +49,29 @@ const withIds = <T extends { id: string }>(values: Array<WithMongoId<T>>) =>
 const refId = (value: MongoRef) =>
   typeof value === 'string' ? value : (value.id ?? value._id ?? '');
 
+const normalizeMember = (
+  member: Omit<SharedMember, 'user'> & { user: PopulatedUserRef },
+): SharedMember => {
+  const populatedUser =
+    typeof member.user === 'string' ? undefined : member.user;
+
+  return {
+    ...member,
+    user: {
+      id: refId(member.user),
+      name: populatedUser?.name ?? '',
+      email: populatedUser?.email,
+      profilePicture: populatedUser?.profilePicture,
+    },
+  };
+};
+
 const normalizeGroup = (group: WithMongoId<Group>): Group => ({
   ...withId(group),
   owner: refId(group.owner as MongoRef),
-  members: (group.members ?? []).map(member => ({
-    ...member,
-    user: refId(member.user as MongoRef),
-  })),
+  members: (group.members ?? []).map(member =>
+    normalizeMember(member as unknown as Parameters<typeof normalizeMember>[0]),
+  ),
 });
 
 const normalizeGroups = (groups: Array<WithMongoId<Group>>) =>
@@ -54,10 +82,9 @@ const normalizeSplitGroup = (
 ): SplitGroup => ({
   ...withId(splitGroup),
   owner: refId(splitGroup.owner as MongoRef),
-  members: (splitGroup.members ?? []).map(member => ({
-    ...member,
-    user: refId(member.user as MongoRef),
-  })),
+  members: (splitGroup.members ?? []).map(member =>
+    normalizeMember(member as unknown as Parameters<typeof normalizeMember>[0]),
+  ),
 });
 
 const normalizeSplitGroups = (splitGroups: Array<WithMongoId<SplitGroup>>) =>
@@ -186,6 +213,29 @@ export const financeApi = {
     return response.data.data;
   },
 
+  async getSpendingByCategory(month?: string) {
+    const response = await api.get<ApiEnvelope<SpendingCategoryAnalytics>>(
+      '/transactions/analytics/categories',
+      { params: month ? { month } : undefined },
+    );
+
+    return response.data.data;
+  },
+
+  async getMonthlySpending(months = 6, endMonth?: string) {
+    const response = await api.get<ApiEnvelope<MonthlySpendingAnalytics>>(
+      '/transactions/analytics/monthly',
+      {
+        params: {
+          months,
+          ...(endMonth ? { end_month: endMonth } : {}),
+        },
+      },
+    );
+
+    return response.data.data;
+  },
+
   async getExpense(expenseId: string) {
     const response = await api.get<ApiEnvelope<Expense>>(
       `/transactions/${expenseId}`,
@@ -285,6 +335,14 @@ export const financeApi = {
     return normalizeGroup(response.data.data);
   },
 
+  async removeGroupMember(groupId: string, userId: string) {
+    const response = await api.delete<ApiEnvelope<Group>>(
+      `/groups/${groupId}/members/${userId}`,
+    );
+
+    return normalizeGroup(response.data.data);
+  },
+
   async getGroupExpenses(groupId: string) {
     const response = await api.get<ApiEnvelope<GroupExpense[]>>(
       `/groups/${groupId}/expenses`,
@@ -345,6 +403,14 @@ export const financeApi = {
     const response = await api.post<ApiEnvelope<SplitGroup>>(
       `/split-groups/${splitGroupId}/members`,
       { user_id: userId },
+    );
+
+    return normalizeSplitGroup(response.data.data);
+  },
+
+  async removeSplitGroupMember(splitGroupId: string, userId: string) {
+    const response = await api.delete<ApiEnvelope<SplitGroup>>(
+      `/split-groups/${splitGroupId}/members/${userId}`,
     );
 
     return normalizeSplitGroup(response.data.data);
@@ -428,6 +494,10 @@ export const financeQueryKeys = {
     ['finance', 'group-expenses', groupId] as const,
   groups: ['finance', 'groups'] as const,
   profile: ['finance', 'profile'] as const,
+  spendingCategories: (month: string) =>
+    ['finance', 'spending-categories', month] as const,
+  spendingMonthly: (months: number, endMonth: string) =>
+    ['finance', 'spending-monthly', months, endMonth] as const,
   settlementPayments: (splitGroupId: string) =>
     ['finance', 'settlement-payments', splitGroupId] as const,
   settlementSuggestions: (splitGroupId: string) =>

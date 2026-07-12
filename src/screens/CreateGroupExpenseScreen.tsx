@@ -50,8 +50,8 @@ export function CreateGroupExpenseScreen() {
     queryFn: () => financeApi.getGroup(groupId),
   });
   const paid_by =
-    groupQuery.data?.members.find(member => member.status === 'active')?.user ??
-    '';
+    groupQuery.data?.members.find(member => member.status === 'active')?.user
+      .id ?? '';
   const parsedAmount = parseAmount(amount);
   const itemSubtotal = useMemo(
     () =>

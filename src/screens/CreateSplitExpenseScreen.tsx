@@ -47,10 +47,10 @@ export function CreateSplitExpenseScreen() {
     queryFn: () => financeApi.getSplitGroup(splitGroupId),
   });
   const activeMembers =
-    splitGroupQuery.data?.members
-      .filter(member => member.status === 'active')
-      .map(member => member.user) ?? [];
-  const paid_by = activeMembers[0] ?? '';
+    splitGroupQuery.data?.members.filter(
+      member => member.status === 'active',
+    ) ?? [];
+  const paid_by = activeMembers[0]?.user.id ?? '';
   const parsedAmount = parseAmount(amount);
   const equalShare = useMemo(
     () =>
@@ -76,7 +76,7 @@ export function CreateSplitExpenseScreen() {
         category: category.trim(),
         notes: notes.trim(),
         split_type: 'equal',
-        participants: activeMembers,
+        participants: activeMembers.map(member => member.user.id),
       }),
     onSuccess: async () => {
       await Promise.all([
@@ -166,12 +166,14 @@ export function CreateSplitExpenseScreen() {
           {activeMembers.map(member => (
             <View
               className="flex-row items-center justify-between rounded-[16px] bg-[#F6FAF6] px-3 py-3"
-              key={member}
+              key={member.user.id}
             >
               <View className="flex-row items-center gap-2">
                 <UserRound color="#6E9081" size={16} strokeWidth={2.4} />
                 <Text className="text-[12px] font-bold text-[#24352E]">
-                  {shortId(member)}
+                  {member.user.name ||
+                    member.user.email ||
+                    shortId(member.user.id)}
                 </Text>
               </View>
               <Text className="text-[12px] font-black text-[#24352E]">

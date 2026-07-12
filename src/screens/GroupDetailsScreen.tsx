@@ -46,8 +46,22 @@ export function GroupDetailsScreen() {
     queryFn: () => financeApi.getGroupExpenses(groupId),
   });
 
-  const activeMembers =
-    groupQuery.data?.members.filter(member => member.status === 'active') ?? [];
+  const activeMembers = useMemo(
+    () =>
+      groupQuery.data?.members.filter(member => member.status === 'active') ??
+      [],
+    [groupQuery.data?.members],
+  );
+  const memberNames = useMemo(
+    () =>
+      new Map(
+        activeMembers.map(member => [
+          member.user.id,
+          member.user.name || member.user.email || shortId(member.user.id),
+        ]),
+      ),
+    [activeMembers],
+  );
   const totalSpent = useMemo(
     () =>
       (expensesQuery.data ?? []).reduce(
@@ -118,10 +132,12 @@ export function GroupDetailsScreen() {
                 {activeMembers.slice(0, 4).map(member => (
                   <View
                     className="-ml-2 h-[34px] w-[34px] items-center justify-center rounded-full border-2 border-white bg-[#7FA968]"
-                    key={member.user}
+                    key={member.user.id}
                   >
                     <Text className="text-[13px] font-black text-white">
-                      {mono(member.user)}
+                      {mono(
+                        member.user.name || member.user.email || member.user.id,
+                      )}
                     </Text>
                   </View>
                 ))}
@@ -151,7 +167,7 @@ export function GroupDetailsScreen() {
             >
               <UserPlus color="#2E5D4B" size={18} strokeWidth={2.6} />
               <Text className="text-[14px] font-extrabold text-[#2E5D4B]">
-                Add member
+                Manage members
               </Text>
             </Pressable>
           </View>
@@ -176,7 +192,9 @@ export function GroupDetailsScreen() {
                     {expense.title}
                   </Text>
                   <Text className="text-[12.5px] font-bold text-[#9AA8A0]">
-                    Paid by {shortId(expense.paid_by)}
+                    Paid by{' '}
+                    {memberNames.get(expense.paid_by) ??
+                      shortId(expense.paid_by)}
                   </Text>
                 </View>
                 <Text className="text-[15px] font-black text-[#24352E]">

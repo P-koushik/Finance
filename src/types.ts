@@ -12,6 +12,30 @@ export type Expense = {
   updatedAt?: string;
 };
 
+export type SpendingCategoryTotal = {
+  category: string;
+  amount: number;
+  percentage: number;
+};
+
+export type SpendingCategoryAnalytics = {
+  month: string;
+  label: string;
+  total: number;
+  categories: SpendingCategoryTotal[];
+};
+
+export type MonthlySpendingTotal = {
+  month: string;
+  label: string;
+  amount: number;
+};
+
+export type MonthlySpendingAnalytics = {
+  months: MonthlySpendingTotal[];
+  change_percentage: number | null;
+};
+
 export type UserProfile = {
   _id?: string;
   id?: string;
@@ -35,8 +59,15 @@ export type SharedGroupCategory =
   | 'office'
   | 'other';
 
+export type SharedUser = {
+  id: string;
+  name: string;
+  email?: string;
+  profilePicture?: string;
+};
+
 export type SharedMember = {
-  user: string;
+  user: SharedUser;
   role: 'owner' | 'admin' | 'member';
   status: 'active' | 'removed';
   joined_at?: string;
@@ -180,6 +211,7 @@ export type RootStackParamList = {
   MainTabs: NavigatorScreenParams<RootTabParamList> | undefined;
   EditExpense: { expenseId: string };
   AllExpenses: undefined;
+  SpendingInsights: undefined;
   GroupDetails: { groupId: string };
   GroupSettings: { groupId: string };
   CreateGroup: undefined;

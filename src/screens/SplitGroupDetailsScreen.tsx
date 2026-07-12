@@ -154,7 +154,7 @@ export function SplitGroupDetailsScreen() {
             >
               <UserPlus color="#2E5D4B" size={15} strokeWidth={2.5} />
               <Text className="text-[12px] font-black text-[#2E5D4B]">
-                Add people
+                Manage people
               </Text>
             </Pressable>
           </View>
@@ -162,16 +162,20 @@ export function SplitGroupDetailsScreen() {
             {activeMembers.map(member => (
               <View
                 className="flex-row items-center gap-[13px] border-b border-[#F1F5F1] py-[14px]"
-                key={member.user}
+                key={member.user.id}
               >
                 <View className="h-[42px] w-[42px] items-center justify-center rounded-[13px] bg-[#2E5D4B]">
                   <Text className="text-[14px] font-black text-white">
-                    {member.user.slice(0, 1).toUpperCase()}
+                    {(member.user.name || member.user.email || member.user.id)
+                      .slice(0, 1)
+                      .toUpperCase()}
                   </Text>
                 </View>
                 <View className="flex-1">
                   <Text className="text-[15px] font-extrabold text-[#24352E]">
-                    {shortId(member.user)}
+                    {member.user.name ||
+                      member.user.email ||
+                      shortId(member.user.id)}
                   </Text>
                   <Text className="text-[12px] font-bold text-[#9AA8A0]">
                     {member.role}
