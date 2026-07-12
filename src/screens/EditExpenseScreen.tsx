@@ -16,7 +16,7 @@ import {
   CalendarDays,
   Car,
   ChevronDown,
-  ChevronLeft,
+  ArrowLeft,
   ChevronUp,
   CircleEllipsis,
   ShoppingBag,
@@ -72,53 +72,52 @@ export function EditExpenseScreen(props: EditExpenseScreenProps) {
   };
 
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-[#eef2f6]">
-      <StatusBar barStyle="dark-content" backgroundColor="#eef2f6" />
+    <SafeAreaView edges={['top']} className="flex-1 bg-[#EEF4EE]">
+      <StatusBar barStyle="dark-content" backgroundColor="#EEF4EE" />
       <KeyboardAvoidingView
         behavior={Platform.select({ ios: 'padding', android: undefined })}
         className="flex-1"
       >
-        <View className="flex-row items-center px-3 pb-1 pt-2">
+        <View className="flex-row items-center gap-3 px-5 pb-3 pt-3">
           <Pressable
             accessibilityLabel="Go back"
             accessibilityRole="button"
-            className="h-10 w-10 items-center justify-center rounded-full active:bg-[#dce3ea]"
-            hitSlop={10}
+            className="h-10 w-10 items-center justify-center rounded-[13px] bg-white active:opacity-80"
             onPress={() => navigation.goBack()}
           >
-            <ChevronLeft color="#2d3a47" size={26} strokeWidth={2.6} />
+            <ArrowLeft color="#24352E" size={21} strokeWidth={2.5} />
           </Pressable>
-          <Text className="ml-1 text-[17px] font-bold text-[#1a2e45]">
-            Edit Expense
+          <Text className="text-[20px] font-black text-[#24352E]">
+            Edit expense
           </Text>
         </View>
 
         <ScrollView
-          contentContainerClassName="flex-grow px-4 pb-10 pt-3"
+          contentContainerClassName="flex-grow px-5 pb-12 pt-6"
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
           {loadingExpense ? (
             <View className="items-center py-16">
-              <ActivityIndicator color="#124777" />
+              <ActivityIndicator color="#2E5D4B" />
             </View>
           ) : (
             <>
-              <View className="mb-6 items-center">
-                <Text className="mb-3 text-[11px] font-black tracking-[2.5px] text-[#8a95a3]">
-                  AMOUNT
+              <View className="mb-[30px] items-center">
+                <Text className="mb-2 text-[13px] font-black text-[#8D9B93]">
+                  Amount
                 </Text>
-                <View className="flex-row items-center gap-3">
-                  <Text className="text-[36px] font-light text-[#8a95a3]">
+                <View className="flex-row items-center justify-center gap-3">
+                  <Text className="text-[45px] font-black text-[#24352E]">
                     ₹
                   </Text>
 
                   <TextInput
-                    className="min-w-[120px] p-0 text-center text-[48px] font-light text-[#2d3a47]"
+                    className="min-w-[98px] p-0 text-center text-[48px] font-black text-[#24352E]"
                     keyboardType="decimal-pad"
                     onChangeText={setAmount}
-                    placeholder="0.00"
-                    placeholderTextColor="#c5cdd6"
+                    placeholder="0"
+                    placeholderTextColor="#24352E"
                     returnKeyType="done"
                     value={amount}
                   />
@@ -127,19 +126,19 @@ export function EditExpenseScreen(props: EditExpenseScreenProps) {
                     <Pressable
                       accessibilityLabel="Increase amount"
                       accessibilityRole="button"
-                      className="h-[30px] w-[30px] items-center justify-center rounded-lg bg-[#dce3ea] active:opacity-60"
+                      className="h-[30px] w-[30px] items-center justify-center rounded-[10px] bg-white active:opacity-70"
                       onPress={() => stepAmount(1)}
                     >
-                      <ChevronUp color="#4a5568" size={16} strokeWidth={2.4} />
+                      <ChevronUp color="#2E5D4B" size={16} strokeWidth={2.4} />
                     </Pressable>
                     <Pressable
                       accessibilityLabel="Decrease amount"
                       accessibilityRole="button"
-                      className="h-[30px] w-[30px] items-center justify-center rounded-lg bg-[#dce3ea] active:opacity-60"
+                      className="h-[30px] w-[30px] items-center justify-center rounded-[10px] bg-white active:opacity-70"
                       onPress={() => stepAmount(-1)}
                     >
                       <ChevronDown
-                        color="#4a5568"
+                        color="#2E5D4B"
                         size={16}
                         strokeWidth={2.4}
                       />
@@ -148,114 +147,111 @@ export function EditExpenseScreen(props: EditExpenseScreenProps) {
                 </View>
               </View>
 
-              <View className="flex-1 rounded-[20px] bg-white px-5 py-7 shadow-sm shadow-[color:#cdd4db]">
-                <View className="flex-1 gap-7">
+              <View className="flex-1 gap-5">
+                <View className="rounded-[24px] bg-white px-5 py-6 shadow-sm">
                   <InputField
                     icon={ShoppingBag}
-                    label="Expense Title"
+                    label="What for?"
                     onChangeText={setTitle}
-                    placeholder="e.g. Weekly Groceries"
+                    placeholder="e.g. Groceries"
                     returnKeyType="next"
                     value={title}
                   />
+                </View>
 
-                  <View className="gap-2.5">
-                    <Text className="text-[14px] font-semibold text-[#686e78]">
-                      Quick Category
-                    </Text>
-                    <View className="flex-row flex-wrap gap-2">
-                      {categoryOptions.map(({ label, Icon }) => {
-                        const selected = category === label;
-                        return (
-                          <Pressable
-                            accessibilityRole="button"
-                            key={label}
-                            onPress={() =>
-                              setCategory(label as ExpenseCategory)
-                            }
-                            className={`min-h-[38px] flex-row items-center gap-1.5 rounded-[21px] px-[14px] ${
-                              selected ? 'bg-[#75e5df]' : 'bg-[#eef1f4]'
+                <View className="gap-2.5">
+                  <Text className="text-[13px] font-black text-[#6E9081]">
+                    Category
+                  </Text>
+                  <View className="flex-row flex-wrap gap-2.5">
+                    {categoryOptions.map(({ label, Icon }) => {
+                      const selected = category === label;
+                      return (
+                        <Pressable
+                          accessibilityRole="button"
+                          className={`min-h-[42px] flex-row items-center gap-1.5 rounded-[13px] border px-[14px] ${
+                            selected
+                              ? 'border-[#2E5D4B] bg-[#2E5D4B]'
+                              : 'border-[#E2ECE3] bg-white'
+                          }`}
+                          key={label}
+                          onPress={() => setCategory(label as ExpenseCategory)}
+                        >
+                          <Icon
+                            color={selected ? '#FFFFFF' : '#6E9081'}
+                            size={16}
+                            strokeWidth={2.4}
+                          />
+                          <Text
+                            className={`text-[13px] font-black ${
+                              selected ? 'text-white' : 'text-[#2E5D4B]'
                             }`}
                           >
-                            <Icon
-                              color={selected ? '#117b78' : '#6f7782'}
-                              size={16}
-                              strokeWidth={2.4}
-                            />
-                            <Text
-                              className={`text-[13px] font-extrabold ${
-                                selected ? 'text-[#117b78]' : 'text-[#606872]'
-                              }`}
-                            >
-                              {label}
-                            </Text>
-                          </Pressable>
-                        );
-                      })}
-                    </View>
+                            {label}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
                   </View>
+                </View>
 
-                  {category === 'Other' ? (
+                {category === 'Other' ? (
+                  <View className="rounded-[24px] bg-white px-5 py-6 shadow-sm">
                     <InputField
                       icon={CircleEllipsis}
-                      label="Category Name"
+                      label="Category name"
                       onChangeText={setCustomCategory}
                       placeholder="e.g. Medical, Gifts, Education"
                       returnKeyType="next"
                       value={customCategory}
                     />
-                  ) : null}
-
-                  <View className="gap-2">
-                    <Text className="text-[14px] font-semibold text-[#686e78]">
-                      Date
-                    </Text>
-                    <Pressable
-                      accessibilityRole="button"
-                      className="h-[50px] flex-row items-center gap-3 rounded-lg bg-[#eef1f4] px-4 active:opacity-70"
-                      onPress={() => setDatePickerVisible(true)}
-                    >
-                      <CalendarDays
-                        color="#747c88"
-                        size={22}
-                        strokeWidth={2.4}
-                      />
-                      <Text className="flex-1 text-[15px] font-bold text-[#626a75]">
-                        {dateLabel}
-                      </Text>
-                      <View className="h-[22px] w-[22px] items-center justify-center rounded-[4px] border border-[#c5cdd6]">
-                        <CalendarDays
-                          color="#4a5568"
-                          size={13}
-                          strokeWidth={2}
-                        />
-                      </View>
-                    </Pressable>
                   </View>
-                </View>
-              </View>
+                ) : null}
 
-              <PrimaryButton
-                className="mt-6"
-                disabled={!canSave}
-                label="Update Expense"
-                loading={saving}
-                onPress={handleSave}
-              />
+                <View className="gap-2">
+                  <Text className="text-[13px] font-black text-[#6E9081]">
+                    Date
+                  </Text>
+                  <Pressable
+                    accessibilityRole="button"
+                    className="h-[52px] flex-row items-center gap-3 rounded-[16px] bg-white px-4 active:opacity-70"
+                    onPress={() => setDatePickerVisible(true)}
+                  >
+                    <CalendarDays color="#2E5D4B" size={21} strokeWidth={2.4} />
+                    <Text className="flex-1 text-[15px] font-bold text-[#24352E]">
+                      {dateLabel}
+                    </Text>
+                    <View className="h-[26px] w-[26px] items-center justify-center rounded-[8px] bg-[#EAF2EA]">
+                      <CalendarDays
+                        color="#2E5D4B"
+                        size={14}
+                        strokeWidth={2.2}
+                      />
+                    </View>
+                  </Pressable>
+                </View>
+
+                <PrimaryButton
+                  className="mt-2 rounded-[16px] bg-[#2E5D4B]"
+                  disabled={!canSave}
+                  label="Update expense"
+                  loading={saving}
+                  onPress={handleSave}
+                />
+              </View>
             </>
           )}
         </ScrollView>
 
-        {/* ── Date picker modal ── */}
         <Modal
           animationType="fade"
           transparent
           visible={datePickerVisible}
           onRequestClose={() => setDatePickerVisible(false)}
         >
-          <View className="flex-1 items-center justify-center bg-slate-900/40">
-            <View className="mx-6 gap-4 rounded-[18px] bg-white p-5">
-              <Text className="text-[18px] font-extrabold text-[#2f3742]">
+          <View className="flex-1 items-center justify-center bg-[#1D2A24]/50">
+            <View className="mx-6 gap-4 rounded-[26px] border border-[#E3ECE4] bg-white p-[22px]">
+              <Text className="text-[18px] font-black text-[#24352E]">
                 Select Date
               </Text>
               <Calendar
@@ -263,23 +259,23 @@ export function EditExpenseScreen(props: EditExpenseScreenProps) {
                 markedDates={{
                   [selectedDateKey]: {
                     selected: true,
-                    selectedColor: '#078f84',
+                    selectedColor: '#2E5D4B',
                     selectedTextColor: '#ffffff',
                   },
                 }}
                 onDayPress={handleDayPress}
                 theme={{
-                  arrowColor: '#124777',
-                  monthTextColor: '#2f3742',
-                  selectedDayBackgroundColor: '#078f84',
+                  arrowColor: '#2E5D4B',
+                  monthTextColor: '#24352E',
+                  selectedDayBackgroundColor: '#2E5D4B',
                   textDayFontWeight: '600',
                   textMonthFontWeight: '900',
-                  textSectionTitleColor: '#6f7782',
-                  todayTextColor: '#2e62dd',
+                  textSectionTitleColor: '#6E9081',
+                  todayTextColor: '#2E5D4B',
                 }}
               />
               <PrimaryButton
-                className="h-[50px]"
+                className="h-[50px] rounded-[16px] bg-[#2E5D4B]"
                 label="Close Calendar"
                 onPress={() => setDatePickerVisible(false)}
               />

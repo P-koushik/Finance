@@ -17,7 +17,7 @@ export function useProfileViewModel() {
   const [availableAmount, setAvailableAmount] = useState('');
   const [savingsAmount, setSavingsAmount] = useState('');
   const [monthlyCreditDay, setMonthlyCreditDay] = useState(
-    String(defaultProfile.monthlyCreditDay),
+    String(defaultProfile.income_day),
   );
   const [dayPickerVisible, setDayPickerVisible] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
@@ -36,17 +36,17 @@ export function useProfileViewModel() {
 
   useEffect(() => {
     setMonthlyBudget(
-      profileBalance.monthlyBudget ? String(profileBalance.monthlyBudget) : '',
-    );
-    setAvailableAmount(
-      profileBalance.availableAmount
-        ? String(profileBalance.availableAmount)
+      profileBalance.monthly_income
+        ? String(profileBalance.monthly_income)
         : '',
     );
-    setSavingsAmount(
-      profileBalance.savingsAmount ? String(profileBalance.savingsAmount) : '',
+    setAvailableAmount(
+      profileBalance.balance ? String(profileBalance.balance) : '',
     );
-    setMonthlyCreditDay(String(profileBalance.monthlyCreditDay));
+    setSavingsAmount(
+      profileBalance.savings ? String(profileBalance.savings) : '',
+    );
+    setMonthlyCreditDay(String(profileBalance.income_day));
   }, [profileBalance, user?.displayName]);
 
   useEffect(() => {
@@ -73,7 +73,7 @@ export function useProfileViewModel() {
   const profilePicture = user?.photoURL || '';
   const today = new Date();
   const selectedCalendarDay = Math.min(
-    parsedCreditDay || defaultProfile.monthlyCreditDay,
+    parsedCreditDay || defaultProfile.income_day,
     new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate(),
   );
   const selectedDateKey = `${today.getFullYear()}-${String(

@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ShoppingCart, Trash2 } from 'lucide-react-native';
 
 import type { Expense } from '../types';
+import { appTheme } from '../styles/theme';
 import { formatCurrency, formatDateTime } from '../utils/format';
 
 type ExpenseCardProps = {
@@ -15,7 +16,7 @@ export function ExpenseCard({ expense, onDelete, onPress }: ExpenseCardProps) {
   return (
     <View style={styles.card}>
       <View style={styles.iconWrap}>
-        <ShoppingCart color="#0d4976" size={25} strokeWidth={2.7} />
+        <ShoppingCart color={appTheme.green} size={23} strokeWidth={2.7} />
       </View>
 
       <View style={styles.content}>
@@ -61,9 +62,9 @@ export function ExpenseCard({ expense, onDelete, onPress }: ExpenseCardProps) {
 
 const styles = StyleSheet.create({
   amount: {
-    color: '#1d4d7c',
+    color: appTheme.green,
     fontSize: 15,
-    fontWeight: '800',
+    fontWeight: '900',
   },
   amountWrap: {
     alignItems: 'flex-end',
@@ -71,19 +72,14 @@ const styles = StyleSheet.create({
   },
   card: {
     alignItems: 'center',
-    backgroundColor: '#ffffff',
-    borderRadius: 22,
-    elevation: 2,
+    backgroundColor: appTheme.card,
+    borderRadius: 18,
     flexDirection: 'row',
-    gap: 14,
-    minHeight: 78,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    gap: 13,
+    minHeight: 70,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     position: 'relative',
-    shadowColor: '#d1d7df',
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.65,
-    shadowRadius: 9,
   },
   content: {
     flex: 1,
@@ -91,9 +87,9 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   date: {
-    color: '#727984',
-    fontSize: 14,
-    fontWeight: '600',
+    color: '#9AA8A0',
+    fontSize: 12.5,
+    fontWeight: '700',
   },
   deleteButton: {
     alignItems: 'center',
@@ -104,7 +100,7 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   editHitArea: {
-    borderRadius: 22,
+    borderRadius: 18,
     bottom: 0,
     left: 0,
     position: 'absolute',
@@ -114,29 +110,29 @@ const styles = StyleSheet.create({
   },
   iconWrap: {
     alignItems: 'center',
-    backgroundColor: '#eef2f5',
-    borderRadius: 27,
-    height: 54,
+    backgroundColor: appTheme.greenLight,
+    borderRadius: 14,
+    height: 44,
     justifyContent: 'center',
-    width: 54,
+    width: 44,
   },
   pressed: {
     opacity: 0.55,
   },
   tag: {
-    backgroundColor: '#d5f5e5',
-    borderRadius: 9,
+    backgroundColor: '#EAF2EA',
+    borderRadius: 10,
     paddingHorizontal: 8,
     paddingVertical: 4,
   },
   tagText: {
-    color: '#198260',
+    color: appTheme.green,
     fontSize: 9,
     fontWeight: '800',
   },
   title: {
-    color: '#343b45',
-    fontSize: 16,
+    color: appTheme.greenDark,
+    fontSize: 15,
     fontWeight: '800',
   },
 });
