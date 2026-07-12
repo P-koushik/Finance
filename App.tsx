@@ -32,6 +32,7 @@ import { SplitBalancesScreen } from './src/screens/SplitBalancesScreen';
 import { SplitGroupDetailsScreen } from './src/screens/SplitGroupDetailsScreen';
 import { SplitGroupSettingsScreen } from './src/screens/SplitGroupSettingsScreen';
 import { SplitGroupsScreen } from './src/screens/SplitGroupsScreen';
+import { SpendingInsightsScreen } from './src/screens/SpendingInsightsScreen';
 
 import { BottomBar } from './src/components/BottomBar';
 import { ToastProvider } from './src/components/ToastProvider';
@@ -124,6 +125,10 @@ function AppNavigator() {
                   <Stack.Screen
                     component={AllExpensesScreen}
                     name="AllExpenses"
+                  />
+                  <Stack.Screen
+                    component={SpendingInsightsScreen}
+                    name="SpendingInsights"
                   />
                   <Stack.Screen
                     component={GroupDetailsScreen}

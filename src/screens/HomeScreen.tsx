@@ -5,18 +5,22 @@ import {
   Image,
   Pressable,
   ScrollView,
+  StyleSheet,
   StatusBar,
   Text,
   useWindowDimensions,
   View,
 } from 'react-native';
-import Carousel from 'react-native-reanimated-carousel';
+import Carousel, {
+  type ICarouselInstance,
+  Pagination,
+} from 'react-native-reanimated-carousel';
+import { useSharedValue } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  Bell,
+  ArrowUpRight,
   CirclePlus,
   PiggyBank,
-  Repeat2,
   Scale,
   TrendingUp,
   UsersRound,
@@ -26,16 +30,18 @@ import {
 import { ConfirmCard } from '../components/ConfirmCard';
 import { ExpenseCard } from '../components/ExpenseCard';
 import { SavingsDrawer } from '../components/SavingsDrawer';
-import { appTheme } from '../styles/theme';
 import { formatCurrency } from '../utils/format';
 import { useHomeViewModel } from '../view-models/useHomeViewModel';
 import { useSavingsViewModel } from '../view-models/useSavingsViewModel';
 
 const appLogo = require('../assets/app-logo.png');
+const carouselData = [0, 1];
 
 export function HomeScreen() {
   const { width } = useWindowDimensions();
   const [savingsOpen, setSavingsOpen] = React.useState(false);
+  const carouselRef = React.useRef<ICarouselInstance>(null);
+  const carouselProgress = useSharedValue(0);
   const home = useHomeViewModel();
   const savings = useSavingsViewModel();
   const spentPct =
@@ -43,14 +49,14 @@ export function HomeScreen() {
       ? `${Math.min((home.totalSpent / home.monthlyBudget) * 100, 100)}%`
       : '0%';
   const spentPctWidth = spentPct as DimensionValue;
-  const savingsPct =
+  const savingsProgress =
     (savings.profile.savings_goal ?? 0) > 0
-      ? `${Math.min(
+      ? Math.min(
           (home.savingsAmount / (savings.profile.savings_goal ?? 0)) * 100,
           100,
-        )}%`
-      : '0%';
-  const savingsPctWidth = savingsPct as DimensionValue;
+        )
+      : 0;
+  const savingsPctWidth = `${savingsProgress}%` as DimensionValue;
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-[#EEF4EE]">
@@ -64,31 +70,21 @@ export function HomeScreen() {
                 className="h-[42px] w-[42px] rounded-[13px]"
                 source={appLogo}
               />
-              <View className="min-w-0 flex-1">
-                <Text className="text-[13px] font-bold text-[#8D9B93]">
-                  Good afternoon
-                </Text>
-                <Text
-                  className="mt-[-1px] text-[19px] font-black text-[#24352E]"
-                  numberOfLines={1}
-                >
-                  Finance
-                </Text>
-              </View>
-              <Pressable
-                accessibilityLabel="Notifications"
-                accessibilityRole="button"
-                className="h-[42px] w-[42px] items-center justify-center rounded-[14px] bg-white active:opacity-80"
+              <Text
+                className="min-w-0 flex-1 text-[20px] font-black text-[#24352E]"
+                numberOfLines={1}
               >
-                <Bell color={appTheme.greenDark} size={21} strokeWidth={2.5} />
-              </Pressable>
+                Finance
+              </Text>
             </View>
 
             <Carousel
-              data={[0, 1]}
+              data={carouselData}
               height={224}
               loop={false}
+              onProgressChange={carouselProgress}
               pagingEnabled
+              ref={carouselRef}
               renderItem={({ item }) => {
                 if (item === 0) {
                   return (
@@ -128,35 +124,54 @@ export function HomeScreen() {
                 return (
                   <Pressable
                     accessibilityRole="button"
-                    className="h-[212px] rounded-[28px] border border-[#E7EFE7] bg-white p-[22px] active:opacity-90"
+                    className="h-[212px] overflow-hidden rounded-[28px] border border-[#CFE1D1] bg-[#DFEEE2] p-[22px] active:opacity-90"
                     onPress={() => setSavingsOpen(true)}
                   >
+                    <View className="absolute -right-7 -top-9 h-32 w-32 rounded-full bg-white/30" />
                     <View className="flex-row items-center justify-between">
-                      <Text className="text-[14px] font-extrabold text-[#6E9081]">
-                        Total savings
-                      </Text>
-                      <PiggyBank color="#7FA968" size={23} strokeWidth={2.5} />
+                      <View>
+                        <Text className="text-[14px] font-black text-[#2E5D4B]">
+                          Savings pocket
+                        </Text>
+                        <Text className="mt-0.5 text-[11.5px] font-bold text-[#6E9081]">
+                          Building your safety net
+                        </Text>
+                      </View>
+                      <View className="h-11 w-11 items-center justify-center rounded-[15px] bg-white/80">
+                        <PiggyBank
+                          color="#2E5D4B"
+                          size={23}
+                          strokeWidth={2.5}
+                        />
+                      </View>
                     </View>
                     <Text
-                      className="mt-3 text-[40px] font-black text-[#24352E]"
+                      className="mt-3 text-[35px] font-black text-[#24352E]"
                       numberOfLines={1}
                     >
                       {formatCurrency(home.savingsAmount)}
                     </Text>
-                    <Text className="mt-0.5 text-[13px] font-bold text-[#8D9B93]">
-                      Goal {formatCurrency(savings.profile.savings_goal ?? 0)}
-                    </Text>
-                    <View className="mt-[18px] h-2 overflow-hidden rounded-md bg-[#EAF2EA]">
+                    <View className="mt-3 h-2 overflow-hidden rounded-full bg-white/70">
                       <View
-                        className="h-full rounded-md bg-[#3C7A5E]"
+                        className="h-full rounded-full bg-[#3C7A5E]"
                         style={{ width: savingsPctWidth }}
                       />
                     </View>
-                    <View className="mt-4 flex-row items-center justify-center gap-2 rounded-[14px] bg-[#EAF2EA] py-[11px]">
-                      <Repeat2 color="#2E5D4B" size={17} strokeWidth={2.6} />
-                      <Text className="text-[14px] font-extrabold text-[#2E5D4B]">
-                        Manage savings
+                    <View className="mt-2 flex-row items-center justify-between">
+                      <Text className="text-[11.5px] font-extrabold text-[#6E9081]">
+                        {Math.round(savingsProgress)}% of{' '}
+                        {formatCurrency(savings.profile.savings_goal ?? 0)} goal
                       </Text>
+                      <View className="flex-row items-center gap-1 rounded-[12px] bg-white/80 px-3 py-2">
+                        <Text className="text-[12px] font-black text-[#2E5D4B]">
+                          Move money
+                        </Text>
+                        <ArrowUpRight
+                          color="#2E5D4B"
+                          size={15}
+                          strokeWidth={2.7}
+                        />
+                      </View>
                     </View>
                   </Pressable>
                 );
@@ -165,10 +180,19 @@ export function HomeScreen() {
               width={width - 40}
             />
 
-            <View className="mb-5 mt-2 flex-row justify-center gap-1.5">
-              <View className="h-1.5 w-[18px] rounded-full bg-[#2E5D4B]" />
-              <View className="h-1.5 w-1.5 rounded-full bg-[#C4D6C4]" />
-            </View>
+            <Pagination.Basic
+              activeDotStyle={styles.activeDot}
+              containerStyle={styles.pagination}
+              data={carouselData}
+              dotStyle={styles.dot}
+              onPress={index =>
+                carouselRef.current?.scrollTo({
+                  animated: true,
+                  count: index - carouselProgress.value,
+                })
+              }
+              progress={carouselProgress}
+            />
 
             <View className="mb-6 flex-row justify-between gap-2">
               {[
@@ -197,7 +221,7 @@ export function HomeScreen() {
                 {
                   label: 'Insights',
                   Icon: TrendingUp,
-                  onPress: () => home.navigation.navigate('AllExpenses'),
+                  onPress: () => home.navigation.navigate('SpendingInsights'),
                 },
               ].map(({ Icon, label, onPress }) => (
                 <Pressable
@@ -284,3 +308,26 @@ export function HomeScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  activeDot: {
+    backgroundColor: '#2E5D4B',
+    borderRadius: 3,
+    height: 6,
+    overflow: 'hidden',
+    width: 18,
+  },
+  dot: {
+    backgroundColor: '#C4D6C4',
+    borderRadius: 3,
+    height: 6,
+    overflow: 'hidden',
+    width: 6,
+  },
+  pagination: {
+    alignSelf: 'center',
+    gap: 6,
+    marginBottom: 20,
+    marginTop: 8,
+  },
+});
