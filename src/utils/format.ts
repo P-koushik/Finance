@@ -11,6 +11,13 @@ export const formatCurrency = (amount: number) =>
     maximumFractionDigits: 2,
   })}`;
 
+export const formatMoneyString = (amount: string | number) => {
+  const parsedAmount =
+    typeof amount === 'number' ? amount : Number(amount.replace(/,/g, ''));
+
+  return formatCurrency(Number.isFinite(parsedAmount) ? parsedAmount : 0);
+};
+
 export const formatDateTime = (value: Date | string) => {
   const date = dayjs(value);
 

@@ -9,14 +9,12 @@ import {
   View,
 } from 'react-native';
 import {
+  ArrowLeft,
   Car,
-  CirclePlus,
-  Home,
   ReceiptText,
   Search,
   ShoppingBag,
   Utensils,
-  User,
 } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -33,35 +31,31 @@ import { useAllExpensesViewModel } from '../view-models/useAllExpensesViewModel'
 const categoryUi = {
   Food: {
     Icon: Utensils,
-    iconClassName: 'bg-[#62de9a]',
-    iconColor: '#144f3b',
-    tag: 'LEISURE',
-    tagClassName: 'bg-[#84f2dc]',
-    tagTextClassName: 'text-[#09645a]',
+    iconClassName: 'bg-[#EAF2EA]',
+    iconColor: '#2E5D4B',
+    tagClassName: 'bg-[#EAF2EA]',
+    tagTextClassName: 'text-[#2E5D4B]',
   },
   Travel: {
     Icon: Car,
-    iconClassName: 'bg-[#86eee4]',
-    iconColor: '#14646a',
-    tag: 'ESSENTIAL',
-    tagClassName: 'bg-[#78eda4]',
-    tagTextClassName: 'text-[#075a36]',
+    iconClassName: 'bg-[#E5F0E8]',
+    iconColor: '#378260',
+    tagClassName: 'bg-[#E5F0E8]',
+    tagTextClassName: 'text-[#378260]',
   },
   Utilities: {
     Icon: ReceiptText,
-    iconClassName: 'bg-[#e3e7ea]',
-    iconColor: '#164e78',
-    tag: 'ESSENTIAL',
-    tagClassName: 'bg-[#78eda4]',
-    tagTextClassName: 'text-[#075a36]',
+    iconClassName: 'bg-[#F4F1DE]',
+    iconColor: '#8A6F25',
+    tagClassName: 'bg-[#F4F1DE]',
+    tagTextClassName: 'text-[#8A6F25]',
   },
   Other: {
     Icon: ShoppingBag,
-    iconClassName: 'bg-[#d5e5ff]',
-    iconColor: '#173f6a',
-    tag: 'LEISURE',
-    tagClassName: 'bg-[#84f2dc]',
-    tagTextClassName: 'text-[#09645a]',
+    iconClassName: 'bg-[#F2EAF6]',
+    iconColor: '#7A5294',
+    tagClassName: 'bg-[#F2EAF6]',
+    tagTextClassName: 'text-[#7A5294]',
   },
 };
 
@@ -95,8 +89,8 @@ export function AllExpensesScreen() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const groupedExpenses = useMemo<ExpenseGroup[]>(() => {
-    const normalizedSearch = searchQuery.trim().toLowerCase();
-    const filteredExpenses = normalizedSearch
+    const trimmedSearch = searchQuery.trim().toLowerCase();
+    const filteredExpenses = trimmedSearch
       ? expenses.filter(expense => {
           const searchable = [
             expense.title,
@@ -108,7 +102,7 @@ export function AllExpensesScreen() {
             .join(' ')
             .toLowerCase();
 
-          return searchable.includes(normalizedSearch);
+          return searchable.includes(trimmedSearch);
         })
       : expenses;
 
@@ -131,125 +125,131 @@ export function AllExpensesScreen() {
     }, []);
   }, [expenses, searchQuery]);
 
-  const openTab = (screen: 'Home' | 'AddExpense' | 'Profile') => {
-    navigation.navigate('MainTabs', { screen });
-  };
-
   return (
-    <SafeAreaView edges={['top']} className="flex-1 bg-white">
-      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
-      <View className="flex-1 bg-white">
-        <View className="bg-white px-[22px] pt-8">
-          <Text className="text-[18px] font-black tracking-[0px] text-[#123f70]">
-            All Transactions
-          </Text>
-          <View className="mt-4 h-[36px] flex-row items-center gap-3 rounded-xl border-[1.4px] border-[#c9ced7] bg-white px-[18px] shadow">
-            <Search color="#98a1ad" size={23} strokeWidth={2.4} />
+    <SafeAreaView edges={['top']} className="flex-1 bg-[#EEF4EE]">
+      <StatusBar barStyle="dark-content" backgroundColor="#EEF4EE" />
+      <View className="flex-1 bg-[#EEF4EE]">
+        <View className="px-5 pb-4 pt-3">
+          <View className="flex-row items-center gap-3">
+            <Pressable
+              accessibilityLabel="Go back"
+              accessibilityRole="button"
+              className="h-10 w-10 items-center justify-center rounded-[13px] bg-white active:opacity-80"
+              onPress={() => navigation.goBack()}
+            >
+              <ArrowLeft color="#24352E" size={21} strokeWidth={2.5} />
+            </Pressable>
+            <Text className="text-[20px] font-black text-[#24352E]">
+              All transactions
+            </Text>
+          </View>
+          <View className="mt-5 h-[52px] flex-row items-center gap-3 rounded-[16px] bg-white px-4">
+            <Search color="#8D9B93" size={21} strokeWidth={2.4} />
             <TextInput
               autoCapitalize="none"
               clearButtonMode="while-editing"
               onChangeText={setSearchQuery}
               placeholder="Search transactions..."
-              placeholderTextColor="#b7bec8"
-              className="h-11 flex-1 p-0 text-[16px] font-medium text-[#334155]"
+              placeholderTextColor="#9AA8A0"
+              className="h-full flex-1 p-0 text-[15px] font-bold text-[#24352E]"
               value={searchQuery}
             />
           </View>
         </View>
 
         <ScrollView
-          contentContainerClassName="px-[14px] pb-5"
+          contentContainerClassName="px-5 pb-12"
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
           {loading ? (
             <View className="items-center py-[42px]">
-              <ActivityIndicator color="#124777" />
+              <ActivityIndicator color="#2E5D4B" />
             </View>
           ) : groupedExpenses.length ? (
-            <View className="gap-6 rounded-xl bg-white px-5 py-[26px] shadow-lg shadow-[#d8dee6]">
-              {groupedExpenses.map((group, groupIndex) => (
+            <View className="gap-5">
+              {groupedExpenses.map(group => (
                 <View key={group.title} className="gap-2">
-                  <Text className="mb-2 text-[15px] font-extrabold uppercase text-[#8c939d]">
+                  <Text className="px-1 text-[13px] font-black uppercase text-[#6E9081]">
                     {group.title}
                   </Text>
-                  {group.data.map((expense, expenseIndex) => {
-                    const ui = getCategoryUi(expense.category);
-                    const Icon = ui.Icon;
-                    const isLastInPanel =
-                      groupIndex === groupedExpenses.length - 1 &&
-                      expenseIndex === group.data.length - 1;
+                  <View className="rounded-[24px] bg-white px-4 py-1 shadow-sm">
+                    {group.data.map((expense, expenseIndex) => {
+                      const ui = getCategoryUi(expense.category);
+                      const Icon = ui.Icon;
+                      const isLastInGroup =
+                        expenseIndex === group.data.length - 1;
 
-                    return (
-                      <Pressable
-                        accessibilityLabel={`Edit ${expense.title}`}
-                        accessibilityRole="button"
-                        key={expense._id}
-                        onLongPress={() => handleDelete(expense._id)}
-                        onPress={() =>
-                          navigation.navigate('EditExpense', {
-                            expenseId: expense._id,
-                          })
-                        }
-                        className={`min-h-[60px] flex-row items-center gap-2.5 pb-3 active:opacity-65 ${
-                          !isLastInPanel ? 'border-b border-[#edf0f3]' : ''
-                        }`}
-                      >
-                        <View
-                          className={`h-11 w-11 items-center justify-center rounded-[22px] ${ui.iconClassName}`}
+                      return (
+                        <Pressable
+                          accessibilityLabel={`Edit ${expense.title}`}
+                          accessibilityRole="button"
+                          className={`min-h-[70px] flex-row items-center gap-[13px] py-[13px] active:opacity-70 ${
+                            !isLastInGroup ? 'border-b border-[#F1F5F1]' : ''
+                          }`}
+                          key={expense._id}
+                          onLongPress={() => handleDelete(expense._id)}
+                          onPress={() =>
+                            navigation.navigate('EditExpense', {
+                              expenseId: expense._id,
+                            })
+                          }
                         >
-                          <Icon
-                            color={ui.iconColor}
-                            size={26}
-                            strokeWidth={2.4}
-                          />
-                        </View>
-
-                        <View className="min-w-0 flex-1 gap-[3px]">
-                          <Text
-                            numberOfLines={1}
-                            className="text-[15px] font-extrabold text-[#3a3e45]"
-                          >
-                            {expense.title}
-                          </Text>
-                          <Text
-                            numberOfLines={1}
-                            className="text-[13px] font-semibold text-[#7b828d]"
-                          >
-                            {formatExpenseTime(expense.date)} {'\u2022'}{' '}
-                            {expense.category ?? 'Other'}
-                          </Text>
-                        </View>
-
-                        <View className="min-w-[86px] items-end gap-[5px]">
-                          <Text
-                            numberOfLines={1}
-                            className="text-[15px] font-extrabold text-[#2e333a]"
-                          >
-                            -{formatCurrency(expense.amount)}
-                          </Text>
                           <View
-                            className={`rounded-[10px] px-[7px] py-[3px] ${ui.tagClassName}`}
+                            className={`h-11 w-11 items-center justify-center rounded-[14px] ${ui.iconClassName}`}
                           >
+                            <Icon
+                              color={ui.iconColor}
+                              size={23}
+                              strokeWidth={2.5}
+                            />
+                          </View>
+
+                          <View className="min-w-0 flex-1 gap-[3px]">
                             <Text
-                              className={`text-[9px] font-black ${ui.tagTextClassName}`}
+                              className="text-[15px] font-black text-[#24352E]"
+                              numberOfLines={1}
                             >
-                              {ui.tag}
+                              {expense.title}
+                            </Text>
+                            <Text
+                              className="text-[12.5px] font-bold text-[#9AA8A0]"
+                              numberOfLines={1}
+                            >
+                              {formatExpenseTime(expense.date)}
                             </Text>
                           </View>
-                        </View>
-                      </Pressable>
-                    );
-                  })}
+
+                          <View className="min-w-[86px] items-end gap-[5px]">
+                            <Text
+                              className="text-[15px] font-black text-[#24352E]"
+                              numberOfLines={1}
+                            >
+                              {formatCurrency(expense.amount)}
+                            </Text>
+                            <View
+                              className={`rounded-[10px] px-[8px] py-[4px] ${ui.tagClassName}`}
+                            >
+                              <Text
+                                className={`text-[9px] font-black ${ui.tagTextClassName}`}
+                              >
+                                {expense.category ?? 'Other'}
+                              </Text>
+                            </View>
+                          </View>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
                 </View>
               ))}
             </View>
           ) : (
-            <View className="items-center rounded-xl bg-white p-7 shadow-lg shadow-[#d8dee6]">
-              <Text className="mb-2 text-[17px] font-extrabold text-[#343b45]">
+            <View className="items-center rounded-[24px] border border-[#EDF3ED] bg-white p-7">
+              <Text className="mb-2 text-[17px] font-black text-[#24352E]">
                 No transactions
               </Text>
-              <Text className="text-center text-[14px] leading-[21px] text-[#7d8792]">
+              <Text className="text-center text-[14px] font-bold leading-[21px] text-[#8D9B93]">
                 {searchQuery.trim()
                   ? 'Try a different title, category, or amount.'
                   : 'Saved expenses will appear here.'}
@@ -257,38 +257,6 @@ export function AllExpensesScreen() {
             </View>
           )}
         </ScrollView>
-
-        <View className="h-[76px] flex-row items-center justify-around bg-white px-6">
-          <Pressable
-            accessibilityLabel="Open home"
-            accessibilityRole="button"
-            onPress={() => openTab('Home')}
-            className="min-w-[58px] items-center gap-1 py-2 active:opacity-65"
-          >
-            <Home color="#164e78" size={22} strokeWidth={2.3} />
-            <Text className="text-[12px] font-bold text-[#164e78]">Home</Text>
-          </Pressable>
-          <Pressable
-            accessibilityLabel="Add transaction"
-            accessibilityRole="button"
-            onPress={() => openTab('AddExpense')}
-            className="min-w-[58px] items-center gap-1 py-2 active:opacity-65"
-          >
-            <CirclePlus color="#4c5561" size={24} strokeWidth={2.3} />
-            <Text className="text-[12px] font-bold text-[#59626e]">Add</Text>
-          </Pressable>
-          <Pressable
-            accessibilityLabel="Open profile"
-            accessibilityRole="button"
-            onPress={() => openTab('Profile')}
-            className="min-w-[58px] items-center gap-1 py-2 active:opacity-65"
-          >
-            <User color="#4c5561" size={22} strokeWidth={2.3} />
-            <Text className="text-[12px] font-bold text-[#59626e]">
-              Profile
-            </Text>
-          </Pressable>
-        </View>
 
         <ConfirmCard
           confirmLabel="Delete"

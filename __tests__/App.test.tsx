@@ -42,6 +42,13 @@ jest.mock('react-native-gesture-handler', () => ({
 jest.mock('react-native-reanimated-carousel', () => ({
   __esModule: true,
   default: () => null,
+  Pagination: {
+    Basic: () => null,
+  },
+}));
+
+jest.mock('react-native-reanimated', () => ({
+  useSharedValue: (initialValue: number) => ({ value: initialValue }),
 }));
 
 jest.mock('react-native-screens', () => ({
