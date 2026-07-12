@@ -249,8 +249,8 @@ export function EditExpenseScreen(props: EditExpenseScreenProps) {
           visible={datePickerVisible}
           onRequestClose={() => setDatePickerVisible(false)}
         >
-          <View className="flex-1 items-center justify-center bg-slate-900/40">
-            <View className="mx-6 gap-4 rounded-[18px] bg-white p-5">
+          <View className="flex-1 items-center justify-center bg-[#1D2A24]/50">
+            <View className="mx-6 gap-4 rounded-[26px] border border-[#E3ECE4] bg-white p-[22px]">
               <Text className="text-[18px] font-black text-[#24352E]">
                 Select Date
               </Text>

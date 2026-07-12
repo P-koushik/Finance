@@ -15,7 +15,6 @@ import {
   Mail,
   Pencil,
   PiggyBank,
-  Shield,
   User,
   WalletCards,
 } from 'lucide-react-native';
@@ -227,19 +226,6 @@ export function ProfileScreen() {
           ) : null}
 
           <View className="mt-5 rounded-[22px] border border-[#EDF3ED] bg-white px-4 py-1">
-            <View className="flex-row items-center gap-[13px] border-b border-[#F1F5F1] py-[14px]">
-              <View className="h-[38px] w-[38px] items-center justify-center rounded-[12px] bg-[#F1F6F1]">
-                <Shield color="#6E9081" size={20} strokeWidth={2.5} />
-              </View>
-              <View className="flex-1">
-                <Text className="text-[15px] font-extrabold text-[#24352E]">
-                  Hide balances
-                </Text>
-                <Text className="text-[12px] font-bold text-[#9AA8A0]">
-                  Blur amounts for privacy
-                </Text>
-              </View>
-            </View>
             <Pressable
               accessibilityRole="button"
               className="flex-row items-center gap-[13px] py-[14px] active:opacity-70"
@@ -265,8 +251,8 @@ export function ProfileScreen() {
           transparent
           visible={dayPickerVisible}
         >
-          <View className="flex-1 items-center justify-center bg-slate-900/40">
-            <View className="mx-6 gap-4 rounded-[22px] bg-white p-5">
+          <View className="flex-1 items-center justify-center bg-[#1D2A24]/50">
+            <View className="mx-6 gap-4 rounded-[26px] border border-[#E3ECE4] bg-white p-[22px]">
               <Text className="text-[18px] font-black text-[#24352E]">
                 Choose Monthly Credit Day
               </Text>
