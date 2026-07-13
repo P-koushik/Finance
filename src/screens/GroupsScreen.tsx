@@ -117,8 +117,7 @@ export function GroupsScreen() {
         >
           {groups.map((group, index) => {
             const totalSpent = groupTotals[group.id] ?? 0;
-            const memberCount = Math.max(activeMemberCount(group), 1);
-            const yourShare = totalSpent / memberCount;
+            const expenseCount = expenseQueries[index]?.data?.length ?? 0;
 
             return (
               <Pressable
@@ -170,10 +169,10 @@ export function GroupsScreen() {
                   </View>
                   <View className="items-end">
                     <Text className="text-[11px] font-extrabold text-[#9AA8A0]">
-                      Your share
+                      Expenses
                     </Text>
                     <Text className="mt-0.5 text-[15.5px] font-black text-[#2E5D4B]">
-                      {formatMoneyString(yourShare)}
+                      {expenseCount}
                     </Text>
                   </View>
                 </View>
