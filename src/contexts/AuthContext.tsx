@@ -152,6 +152,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       );
 
       await updateProfile(credential.user, { displayName: name.trim() });
+      const idToken = await credential.user.getIdToken(true);
+      await financeApi.signIn(idToken);
     },
     [],
   );
