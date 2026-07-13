@@ -30,6 +30,11 @@ export function SplitBalancesScreen() {
   const queryClient = useQueryClient();
   const { splitGroupId } = route.params;
 
+  const profileQuery = useQuery({
+    queryKey: financeQueryKeys.profile,
+    queryFn: financeApi.getProfile,
+  });
+
   const balancesQuery = useQuery({
     queryKey: financeQueryKeys.splitBalances(splitGroupId),
     queryFn: () => financeApi.getSplitBalances(splitGroupId),
@@ -91,6 +96,12 @@ export function SplitBalancesScreen() {
 
   const pendingPayments =
     paymentsQuery.data?.filter(payment => payment.status === 'pending') ?? [];
+  const currentUserId = profileQuery.data?.id ?? profileQuery.data?._id ?? '';
+  const currentMember = splitGroupQuery.data?.members.find(
+    member => member.user.id === currentUserId && member.status === 'active',
+  );
+  const canManageSettlements =
+    currentMember?.role === 'owner' || currentMember?.role === 'admin';
   const memberName = (userId: string) => {
     const user = splitGroupQuery.data?.members.find(
       member => member.user.id === userId,
@@ -117,7 +128,8 @@ export function SplitBalancesScreen() {
       {balancesQuery.isLoading ||
       suggestionsQuery.isLoading ||
       paymentsQuery.isLoading ||
-      splitGroupQuery.isLoading ? (
+      splitGroupQuery.isLoading ||
+      profileQuery.isLoading ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator color="#2E5D4B" />
         </View>
@@ -159,22 +171,35 @@ export function SplitBalancesScreen() {
             <Text className="text-[16px] font-black text-[#24352E]">
               Settlement Suggestions
             </Text>
-            {suggestionsQuery.data?.map(suggestion => (
-              <Pressable
-                accessibilityRole="button"
-                className="rounded-[18px] border border-[#EDF3ED] bg-white p-4 active:opacity-80"
-                key={`${suggestion.paid_by}-${suggestion.paid_to}`}
-                onPress={() => createPayment.mutate(suggestion)}
-              >
-                <Text className="text-[13px] font-bold text-[#24352E]">
-                  {memberName(suggestion.paid_by)} pays{' '}
-                  {memberName(suggestion.paid_to)}
-                </Text>
-                <Text className="mt-1 text-[16px] font-black text-[#2E5D4B]">
-                  {formatMoneyString(suggestion.amount)}
-                </Text>
-              </Pressable>
-            ))}
+            {suggestionsQuery.data?.map(suggestion => {
+              const canRequest =
+                suggestion.paid_by === currentUserId || canManageSettlements;
+
+              return (
+                <Pressable
+                  accessibilityRole={canRequest ? 'button' : undefined}
+                  className={`rounded-[18px] border border-[#EDF3ED] bg-white p-4 ${
+                    canRequest ? 'active:opacity-80' : 'opacity-70'
+                  }`}
+                  disabled={!canRequest}
+                  key={`${suggestion.paid_by}-${suggestion.paid_to}`}
+                  onPress={() => createPayment.mutate(suggestion)}
+                >
+                  <Text className="text-[13px] font-bold text-[#24352E]">
+                    {memberName(suggestion.paid_by)} pays{' '}
+                    {memberName(suggestion.paid_to)}
+                  </Text>
+                  <Text className="mt-1 text-[16px] font-black text-[#2E5D4B]">
+                    {formatMoneyString(suggestion.amount)}
+                  </Text>
+                  {!canRequest ? (
+                    <Text className="mt-2 text-[11px] font-bold text-[#8D9B93]">
+                      The payer or a group manager must request this payment.
+                    </Text>
+                  ) : null}
+                </Pressable>
+              );
+            })}
 
             {!suggestionsQuery.data?.length ? (
               <View className="items-center rounded-[22px] border border-[#EDF3ED] bg-white p-8">
@@ -201,28 +226,34 @@ export function SplitBalancesScreen() {
                 <Text className="mt-1 text-[16px] font-black text-[#2E5D4B]">
                   {formatMoneyString(payment.amount)}
                 </Text>
-                <View className="mt-3 flex-row gap-2">
-                  <Pressable
-                    accessibilityRole="button"
-                    className="flex-1 flex-row items-center justify-center gap-2 rounded-[14px] bg-[#2E5D4B] px-3 py-3 active:opacity-80"
-                    onPress={() => confirmPayment.mutate(payment.id)}
-                  >
-                    <Check color="#ffffff" size={16} strokeWidth={2.6} />
-                    <Text className="text-[13px] font-extrabold text-white">
-                      Confirm
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    accessibilityRole="button"
-                    className="flex-1 flex-row items-center justify-center gap-2 rounded-[14px] bg-[#F8E9E5] px-3 py-3 active:opacity-80"
-                    onPress={() => rejectPayment.mutate(payment.id)}
-                  >
-                    <X color="#C4614E" size={16} strokeWidth={2.6} />
-                    <Text className="text-[13px] font-extrabold text-[#C4614E]">
-                      Reject
-                    </Text>
-                  </Pressable>
-                </View>
+                {payment.paid_to === currentUserId ? (
+                  <View className="mt-3 flex-row gap-2">
+                    <Pressable
+                      accessibilityRole="button"
+                      className="flex-1 flex-row items-center justify-center gap-2 rounded-[14px] bg-[#2E5D4B] px-3 py-3 active:opacity-80"
+                      onPress={() => confirmPayment.mutate(payment.id)}
+                    >
+                      <Check color="#ffffff" size={16} strokeWidth={2.6} />
+                      <Text className="text-[13px] font-extrabold text-white">
+                        Confirm
+                      </Text>
+                    </Pressable>
+                    <Pressable
+                      accessibilityRole="button"
+                      className="flex-1 flex-row items-center justify-center gap-2 rounded-[14px] bg-[#F8E9E5] px-3 py-3 active:opacity-80"
+                      onPress={() => rejectPayment.mutate(payment.id)}
+                    >
+                      <X color="#C4614E" size={16} strokeWidth={2.6} />
+                      <Text className="text-[13px] font-extrabold text-[#C4614E]">
+                        Reject
+                      </Text>
+                    </Pressable>
+                  </View>
+                ) : (
+                  <Text className="mt-2 text-[11px] font-bold text-[#8D9B93]">
+                    Waiting for {memberName(payment.paid_to)} to review.
+                  </Text>
+                )}
               </View>
             ))}
 
