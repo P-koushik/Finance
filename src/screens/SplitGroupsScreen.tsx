@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import {
   ActivityIndicator,
   Pressable,
+  RefreshControl,
   ScrollView,
   StatusBar,
   Text,
@@ -104,6 +105,19 @@ export function SplitGroupsScreen() {
       summary.netAmount < 0 ? total + Math.abs(summary.netAmount) : total,
     0,
   );
+  const refreshing =
+    profileQuery.isRefetching ||
+    splitGroupsQuery.isRefetching ||
+    balanceQueries.some(balanceQuery => balanceQuery.isRefetching) ||
+    expenseQueries.some(expenseQuery => expenseQuery.isRefetching);
+  const refresh = async () => {
+    await Promise.all([
+      profileQuery.refetch(),
+      splitGroupsQuery.refetch(),
+      ...balanceQueries.map(balanceQuery => balanceQuery.refetch()),
+      ...expenseQueries.map(expenseQuery => expenseQuery.refetch()),
+    ]);
+  };
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-[#EEF4EE]">
@@ -152,6 +166,14 @@ export function SplitGroupsScreen() {
       ) : (
         <ScrollView
           contentContainerClassName="gap-[14px] px-5 pb-32 pt-1"
+          refreshControl={
+            <RefreshControl
+              colors={['#2E5D4B']}
+              onRefresh={refresh}
+              refreshing={refreshing}
+              tintColor="#2E5D4B"
+            />
+          }
           showsVerticalScrollIndicator={false}
         >
           {splitSummaries.map(({ netAmount, splitGroup, subtitle }, index) => {

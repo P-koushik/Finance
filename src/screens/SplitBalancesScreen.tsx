@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Alert,
   Pressable,
+  RefreshControl,
   ScrollView,
   StatusBar,
   Text,
@@ -109,6 +110,21 @@ export function SplitBalancesScreen() {
 
     return user?.name || user?.email || shortId(userId);
   };
+  const refreshing =
+    profileQuery.isRefetching ||
+    balancesQuery.isRefetching ||
+    splitGroupQuery.isRefetching ||
+    suggestionsQuery.isRefetching ||
+    paymentsQuery.isRefetching;
+  const refresh = async () => {
+    await Promise.all([
+      profileQuery.refetch(),
+      balancesQuery.refetch(),
+      splitGroupQuery.refetch(),
+      suggestionsQuery.refetch(),
+      paymentsQuery.refetch(),
+    ]);
+  };
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-[#EEF4EE]">
@@ -136,6 +152,14 @@ export function SplitBalancesScreen() {
       ) : (
         <ScrollView
           contentContainerClassName="gap-5 px-5 pb-28"
+          refreshControl={
+            <RefreshControl
+              colors={['#2E5D4B']}
+              onRefresh={refresh}
+              refreshing={refreshing}
+              tintColor="#2E5D4B"
+            />
+          }
           showsVerticalScrollIndicator={false}
         >
           <View className="gap-2">

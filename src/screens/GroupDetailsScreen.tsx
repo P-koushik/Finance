@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import {
   ActivityIndicator,
   Pressable,
+  RefreshControl,
   ScrollView,
   StatusBar,
   Text,
@@ -70,6 +71,10 @@ export function GroupDetailsScreen() {
       ),
     [expensesQuery.data],
   );
+  const refreshing = groupQuery.isRefetching || expensesQuery.isRefetching;
+  const refresh = async () => {
+    await Promise.all([groupQuery.refetch(), expensesQuery.refetch()]);
+  };
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-[#EEF4EE]">
@@ -107,6 +112,14 @@ export function GroupDetailsScreen() {
       ) : (
         <ScrollView
           contentContainerClassName="gap-4 px-5 pb-32"
+          refreshControl={
+            <RefreshControl
+              colors={['#2E5D4B']}
+              onRefresh={refresh}
+              refreshing={refreshing}
+              tintColor="#2E5D4B"
+            />
+          }
           showsVerticalScrollIndicator={false}
         >
           <View className="rounded-[26px] bg-[#2E5D4B] p-[22px]">

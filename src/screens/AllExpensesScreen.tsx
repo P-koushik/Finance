@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
+  RefreshControl,
   ScrollView,
   StatusBar,
   Text,
@@ -84,6 +85,8 @@ export function AllExpensesScreen() {
     handleDelete,
     loading,
     navigation,
+    refresh,
+    refreshing,
     setExpenseToDelete,
   } = useAllExpensesViewModel();
   const [searchQuery, setSearchQuery] = useState('');
@@ -160,6 +163,14 @@ export function AllExpensesScreen() {
         <ScrollView
           contentContainerClassName="px-5 pb-12"
           keyboardShouldPersistTaps="handled"
+          refreshControl={
+            <RefreshControl
+              colors={['#2E5D4B']}
+              onRefresh={refresh}
+              refreshing={refreshing}
+              tintColor="#2E5D4B"
+            />
+          }
           showsVerticalScrollIndicator={false}
         >
           {loading ? (

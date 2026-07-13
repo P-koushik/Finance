@@ -23,7 +23,11 @@ export function useProfileViewModel() {
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  const { data: profileBalance = defaultProfile, refetch } = useQuery({
+  const {
+    data: profileBalance = defaultProfile,
+    isRefetching: refreshing,
+    refetch,
+  } = useQuery({
     queryKey: financeQueryKeys.profile,
     queryFn: financeApi.getProfile,
   });
@@ -33,6 +37,10 @@ export function useProfileViewModel() {
       refetch();
     }, [refetch]),
   );
+
+  const refresh = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
 
   useEffect(() => {
     setMonthlyBudget(
@@ -170,6 +178,8 @@ export function useProfileViewModel() {
     profileEmail,
     profileName,
     profilePicture,
+    refresh,
+    refreshing,
     saving: updateMutation.isPending,
     selectedDateKey,
     setAvailableAmount,

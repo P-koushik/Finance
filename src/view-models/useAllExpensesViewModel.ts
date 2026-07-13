@@ -18,6 +18,7 @@ export function useAllExpensesViewModel() {
   const {
     data: expenses = [],
     isLoading: loading,
+    isRefetching: refreshing,
     refetch,
   } = useQuery({
     queryKey: financeQueryKeys.expenses,
@@ -29,6 +30,10 @@ export function useAllExpensesViewModel() {
       refetch();
     }, [refetch]),
   );
+
+  const refresh = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
 
   const deleteMutation = useMutation({
     mutationFn: financeApi.deleteExpense,
@@ -67,6 +72,8 @@ export function useAllExpensesViewModel() {
     handleDelete: setExpenseToDelete,
     loading,
     navigation,
+    refresh,
+    refreshing,
     setExpenseToDelete,
   };
 }

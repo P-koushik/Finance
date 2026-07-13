@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import {
   ActivityIndicator,
   Pressable,
+  RefreshControl,
   ScrollView,
   StatusBar,
   Text,
@@ -85,6 +86,18 @@ export function SpendingInsightsScreen() {
   const change = monthlyQuery.data?.change_percentage;
   const isLoading = categoriesQuery.isLoading || monthlyQuery.isLoading;
   const hasError = categoriesQuery.isError || monthlyQuery.isError;
+  const refreshing = categoriesQuery.isRefetching || monthlyQuery.isRefetching;
+  const refresh = async () => {
+    await Promise.all([categoriesQuery.refetch(), monthlyQuery.refetch()]);
+  };
+  const refreshControl = (
+    <RefreshControl
+      colors={['#2E5D4B']}
+      onRefresh={refresh}
+      refreshing={refreshing}
+      tintColor="#2E5D4B"
+    />
+  );
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-[#EEF4EE]">
@@ -109,7 +122,11 @@ export function SpendingInsightsScreen() {
           <ActivityIndicator color="#2E5D4B" />
         </View>
       ) : hasError ? (
-        <View className="flex-1 items-center justify-center px-8">
+        <ScrollView
+          contentContainerClassName="flex-grow items-center justify-center px-8"
+          refreshControl={refreshControl}
+          showsVerticalScrollIndicator={false}
+        >
           <View className="h-14 w-14 items-center justify-center rounded-[18px] bg-[#EAF2EA]">
             <ChartNoAxesColumnIncreasing
               color="#2E5D4B"
@@ -120,10 +137,14 @@ export function SpendingInsightsScreen() {
           <Text className="mt-4 text-[17px] font-black text-[#24352E]">
             Could not load insights
           </Text>
-        </View>
+          <Text className="mt-2 text-[13px] font-bold text-[#8D9B93]">
+            Pull down to try again.
+          </Text>
+        </ScrollView>
       ) : (
         <ScrollView
           contentContainerClassName="gap-4 px-5 pb-12"
+          refreshControl={refreshControl}
           showsVerticalScrollIndicator={false}
         >
           <View className="rounded-[26px] border border-[#EDF3ED] bg-white p-[22px] shadow-sm">

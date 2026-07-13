@@ -4,6 +4,7 @@ import {
   DimensionValue,
   Image,
   Pressable,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   StatusBar,
@@ -63,7 +64,17 @@ export function HomeScreen() {
       <StatusBar barStyle="dark-content" backgroundColor="#EEF4EE" />
 
       <View className="flex-1 bg-[#EEF4EE]">
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              colors={['#2E5D4B']}
+              onRefresh={home.refresh}
+              refreshing={home.refreshing}
+              tintColor="#2E5D4B"
+            />
+          }
+          showsVerticalScrollIndicator={false}
+        >
           <View className="px-5 pb-44 pt-2">
             <View className="flex-row items-center gap-3 pb-5">
               <Image

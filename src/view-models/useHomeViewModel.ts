@@ -20,6 +20,7 @@ export function useHomeViewModel() {
   const {
     data: expenses = [],
     isLoading: expensesLoading,
+    isRefetching: expensesRefetching,
     refetch: refetchExpenses,
   } = useQuery({
     queryKey: financeQueryKeys.expenses,
@@ -28,6 +29,7 @@ export function useHomeViewModel() {
   const {
     data: profile = defaultProfile,
     isLoading: profileLoading,
+    isRefetching: profileRefetching,
     refetch: refetchProfile,
   } = useQuery({
     queryKey: financeQueryKeys.profile,
@@ -40,6 +42,10 @@ export function useHomeViewModel() {
       refetchProfile();
     }, [refetchExpenses, refetchProfile]),
   );
+
+  const refresh = useCallback(async () => {
+    await Promise.all([refetchExpenses(), refetchProfile()]);
+  }, [refetchExpenses, refetchProfile]);
 
   const totalSpent = useMemo(
     () => expenses.reduce((total, expense) => total + expense.amount, 0),
@@ -97,6 +103,8 @@ export function useHomeViewModel() {
     loading: expensesLoading || profileLoading,
     monthlyBudget: profile.monthly_income,
     navigation,
+    refresh,
+    refreshing: expensesRefetching || profileRefetching,
     savingsAmount: profile.savings,
     setExpenseToDelete,
     topCategory,
