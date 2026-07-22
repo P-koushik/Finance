@@ -24,7 +24,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { InputField } from '../components/InputField';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { financeApi, financeQueryKeys } from '../hooks/finance-api';
-import type { RootStackParamList } from '../types';
+import type { RootStackParamList, UserProfile } from '../types';
 import { formatMoneyString } from '../utils/format';
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
@@ -90,6 +90,11 @@ export function CreateSplitExpenseScreen() {
         participants: participantIds,
       }),
     onSuccess: async () => {
+      const profile = queryClient.getQueryData<UserProfile>(
+        financeQueryKeys.profile,
+      );
+      const currentUserId = profile?.id ?? profile?._id;
+
       await Promise.all([
         queryClient.invalidateQueries({
           queryKey: financeQueryKeys.splitExpenses(splitGroupId),
@@ -100,6 +105,13 @@ export function CreateSplitExpenseScreen() {
         queryClient.invalidateQueries({
           queryKey: financeQueryKeys.settlementSuggestions(splitGroupId),
         }),
+        ...(currentUserId === paidBy
+          ? [
+              queryClient.invalidateQueries({
+                queryKey: financeQueryKeys.profile,
+              }),
+            ]
+          : []),
       ]);
       navigation.goBack();
     },

@@ -85,7 +85,14 @@ export function SplitBalancesScreen() {
   const confirmPayment = useMutation({
     mutationFn: (paymentId: string) =>
       financeApi.confirmSettlementPayment(splitGroupId, paymentId),
-    onSuccess: invalidateSettlement,
+    onSuccess: async () => {
+      await Promise.all([
+        invalidateSettlement(),
+        queryClient.invalidateQueries({
+          queryKey: financeQueryKeys.profile,
+        }),
+      ]);
+    },
     onError: () => Alert.alert('Payment', 'Could not confirm payment.'),
   });
   const rejectPayment = useMutation({

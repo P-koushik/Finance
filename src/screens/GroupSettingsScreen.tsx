@@ -80,9 +80,14 @@ export function GroupSettingsScreen() {
   const deleteGroup = useMutation({
     mutationFn: () => financeApi.deleteGroup(groupId),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: financeQueryKeys.groups,
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: financeQueryKeys.groups,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: financeQueryKeys.profile,
+        }),
+      ]);
       navigation.navigate('MainTabs', { screen: 'Groups' });
     },
     onError: () => Alert.alert('Group settings', 'Could not delete group.'),
