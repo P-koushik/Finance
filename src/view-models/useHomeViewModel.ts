@@ -5,6 +5,7 @@ import {
   useNavigation,
 } from '@react-navigation/native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import dayjs from 'dayjs';
 
 import { useToast } from '../components/ToastProvider';
 import { financeApi, financeQueryKeys } from '../hooks/finance-api';
@@ -47,24 +48,43 @@ export function useHomeViewModel() {
     await Promise.all([refetchExpenses(), refetchProfile()]);
   }, [refetchExpenses, refetchProfile]);
 
+  const currentMonthExpenses = useMemo(() => {
+    const currentMonth = dayjs().format('YYYY-MM');
+
+    return expenses.filter(expense => {
+      const expenseDate = dayjs(expense.date);
+
+      return (
+        expenseDate.isValid() && expenseDate.format('YYYY-MM') === currentMonth
+      );
+    });
+  }, [expenses]);
+
   const totalSpent = useMemo(
-    () => expenses.reduce((total, expense) => total + expense.amount, 0),
-    [expenses],
+    () =>
+      currentMonthExpenses.reduce(
+        (total, expense) => total + expense.amount,
+        0,
+      ),
+    [currentMonthExpenses],
   );
 
   const topCategory = useMemo(() => {
-    if (!expenses.length) return 'None';
+    if (!currentMonthExpenses.length) return 'None';
 
-    const totals = expenses.reduce<Record<string, number>>((acc, expense) => {
-      const category = expense.category ?? 'Other';
+    const totals = currentMonthExpenses.reduce<Record<string, number>>(
+      (acc, expense) => {
+        const category = expense.category ?? 'Other';
 
-      acc[category] = (acc[category] ?? 0) + expense.amount;
+        acc[category] = (acc[category] ?? 0) + expense.amount;
 
-      return acc;
-    }, {});
+        return acc;
+      },
+      {},
+    );
 
     return Object.entries(totals).sort((a, b) => b[1] - a[1])[0][0];
-  }, [expenses]);
+  }, [currentMonthExpenses]);
 
   const deleteMutation = useMutation({
     mutationFn: financeApi.deleteExpense,
@@ -109,6 +129,6 @@ export function useHomeViewModel() {
     setExpenseToDelete,
     topCategory,
     totalSpent,
-    visibleExpenses: expenses.slice(0, 10),
+    visibleExpenses: currentMonthExpenses,
   };
 }
