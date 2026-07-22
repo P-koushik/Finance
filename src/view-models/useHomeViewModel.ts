@@ -1,9 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import {
-  NavigationProp,
-  useFocusEffect,
-  useNavigation,
-} from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 
@@ -36,13 +32,6 @@ export function useHomeViewModel() {
     queryKey: financeQueryKeys.profile,
     queryFn: financeApi.getProfile,
   });
-
-  useFocusEffect(
-    useCallback(() => {
-      refetchExpenses();
-      refetchProfile();
-    }, [refetchExpenses, refetchProfile]),
-  );
 
   const refresh = useCallback(async () => {
     await Promise.all([refetchExpenses(), refetchProfile()]);
@@ -89,9 +78,14 @@ export function useHomeViewModel() {
   const deleteMutation = useMutation({
     mutationFn: financeApi.deleteExpense,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: financeQueryKeys.expenses,
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: financeQueryKeys.expenses,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: financeQueryKeys.profile,
+        }),
+      ]);
       setExpenseToDelete(null);
       showToast({
         type: 'success',

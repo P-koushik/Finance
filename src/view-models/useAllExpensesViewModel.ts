@@ -1,9 +1,5 @@
 import { useCallback, useState } from 'react';
-import {
-  NavigationProp,
-  useFocusEffect,
-  useNavigation,
-} from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useToast } from '../components/ToastProvider';
@@ -25,12 +21,6 @@ export function useAllExpensesViewModel() {
     queryFn: financeApi.getExpenses,
   });
 
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-    }, [refetch]),
-  );
-
   const refresh = useCallback(async () => {
     await refetch();
   }, [refetch]);
@@ -38,9 +28,14 @@ export function useAllExpensesViewModel() {
   const deleteMutation = useMutation({
     mutationFn: financeApi.deleteExpense,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: financeQueryKeys.expenses,
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: financeQueryKeys.expenses,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: financeQueryKeys.profile,
+        }),
+      ]);
       setExpenseToDelete(null);
       showToast({
         type: 'success',

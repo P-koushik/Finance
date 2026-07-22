@@ -1,5 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
+import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useToast } from '../components/ToastProvider';
@@ -13,20 +12,11 @@ export function useSavingsViewModel() {
   const { showToast } = useToast();
   const [action, setAction] = useState<SavingsAction>('deposit');
   const [amount, setAmount] = useState('');
-  const {
-    data: profile = defaultProfile,
-    isLoading: profileLoading,
-    refetch: refetchProfile,
-  } = useQuery({
-    queryKey: financeQueryKeys.profile,
-    queryFn: financeApi.getProfile,
-  });
-
-  useFocusEffect(
-    useCallback(() => {
-      refetchProfile();
-    }, [refetchProfile]),
-  );
+  const { data: profile = defaultProfile, isLoading: profileLoading } =
+    useQuery({
+      queryKey: financeQueryKeys.profile,
+      queryFn: financeApi.getProfile,
+    });
 
   const availableMoney = profile.balance;
   const parsedAmount = useMemo(
@@ -41,11 +31,8 @@ export function useSavingsViewModel() {
       isDeposit
         ? financeApi.addToSavings(parsedAmount)
         : financeApi.withdrawFromSavings(parsedAmount),
-    onSuccess: async nextProfile => {
+    onSuccess: nextProfile => {
       queryClient.setQueryData(financeQueryKeys.profile, nextProfile);
-      await queryClient.invalidateQueries({
-        queryKey: financeQueryKeys.profile,
-      });
       setAmount('');
       showToast({
         type: 'success',

@@ -100,6 +100,9 @@ export function useEditExpenseViewModel({
         queryClient.invalidateQueries({
           queryKey: financeQueryKeys.expense(expenseId),
         }),
+        queryClient.invalidateQueries({
+          queryKey: financeQueryKeys.profile,
+        }),
       ]);
       showToast({
         type: 'success',

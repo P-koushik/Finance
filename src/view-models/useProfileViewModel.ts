@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Keyboard } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { DateData } from 'react-native-calendars';
 
@@ -31,12 +30,6 @@ export function useProfileViewModel() {
     queryKey: financeQueryKeys.profile,
     queryFn: financeApi.getProfile,
   });
-
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-    }, [refetch]),
-  );
 
   const refresh = useCallback(async () => {
     await refetch();
@@ -98,11 +91,8 @@ export function useProfileViewModel() {
         monthlyCreditDay: parsedCreditDay,
         income_date: selectedDateKey,
       }),
-    onSuccess: async nextProfile => {
+    onSuccess: nextProfile => {
       queryClient.setQueryData(financeQueryKeys.profile, nextProfile);
-      await queryClient.invalidateQueries({
-        queryKey: financeQueryKeys.profile,
-      });
       setIsEditing(false);
       showToast({
         type: 'success',
