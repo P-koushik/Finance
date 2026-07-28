@@ -2,7 +2,9 @@ import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useToast } from '../components/ToastProvider';
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
+import { expensesApi as financeApi } from '../hooks/expenses-api';
+import { profileApi } from '../hooks/profile-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
 import { defaultProfile } from '../utils/profile';
 
 export type SavingsAction = 'deposit' | 'withdraw';
@@ -15,7 +17,7 @@ export function useSavingsViewModel() {
   const { data: profile = defaultProfile, isLoading: profileLoading } =
     useQuery({
       queryKey: financeQueryKeys.profile,
-      queryFn: financeApi.getProfile,
+      queryFn: profileApi.getProfile,
     });
 
   const availableMoney = profile.balance;

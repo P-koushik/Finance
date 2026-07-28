@@ -15,7 +15,8 @@ import { useQuery } from '@tanstack/react-query';
 import Svg, { Circle, G } from 'react-native-svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
+import { expensesApi as financeApi } from '../hooks/expenses-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
 import type { RootStackParamList } from '../types';
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;

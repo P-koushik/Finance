@@ -4,7 +4,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 
 import { useToast } from '../components/ToastProvider';
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
+import { expensesApi as financeApi } from '../hooks/expenses-api';
+import { profileApi } from '../hooks/profile-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
 import type { RootStackParamList } from '../types';
 import { defaultProfile } from '../utils/profile';
 
@@ -30,7 +32,7 @@ export function useHomeViewModel() {
     refetch: refetchProfile,
   } = useQuery({
     queryKey: financeQueryKeys.profile,
-    queryFn: financeApi.getProfile,
+    queryFn: profileApi.getProfile,
   });
 
   const refresh = useCallback(async () => {

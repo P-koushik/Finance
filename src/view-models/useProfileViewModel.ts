@@ -5,7 +5,8 @@ import { DateData } from 'react-native-calendars';
 
 import { useToast } from '../components/ToastProvider';
 import { useAuth } from '../contexts/AuthContext';
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
+import { profileApi as financeApi } from '../hooks/profile-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
 import { defaultProfile } from '../utils/profile';
 
 export function useProfileViewModel() {

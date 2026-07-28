@@ -15,7 +15,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, Check, X } from 'lucide-react-native';
 
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
+import { splitGroupsApi } from '../hooks/split-groups-api';
+import { profileApi } from '../hooks/profile-api';
+import { settlementApi } from '../hooks/settlement-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
 import type { RootStackParamList, SettlementSuggestion } from '../types';
 import { formatMoneyString } from '../utils/format';
 
@@ -33,24 +36,24 @@ export function SplitBalancesScreen() {
 
   const profileQuery = useQuery({
     queryKey: financeQueryKeys.profile,
-    queryFn: financeApi.getProfile,
+    queryFn: profileApi.getProfile,
   });
 
   const balancesQuery = useQuery({
     queryKey: financeQueryKeys.splitBalances(splitGroupId),
-    queryFn: () => financeApi.getSplitBalances(splitGroupId),
+    queryFn: () => settlementApi.getSplitBalances(splitGroupId),
   });
   const splitGroupQuery = useQuery({
     queryKey: financeQueryKeys.splitGroup(splitGroupId),
-    queryFn: () => financeApi.getSplitGroup(splitGroupId),
+    queryFn: () => splitGroupsApi.getSplitGroup(splitGroupId),
   });
   const suggestionsQuery = useQuery({
     queryKey: financeQueryKeys.settlementSuggestions(splitGroupId),
-    queryFn: () => financeApi.getSettlementSuggestions(splitGroupId),
+    queryFn: () => settlementApi.getSettlementSuggestions(splitGroupId),
   });
   const paymentsQuery = useQuery({
     queryKey: financeQueryKeys.settlementPayments(splitGroupId),
-    queryFn: () => financeApi.getSettlementPayments(splitGroupId),
+    queryFn: () => settlementApi.getSettlementPayments(splitGroupId),
   });
 
   const invalidateSettlement = async () => {
@@ -72,7 +75,7 @@ export function SplitBalancesScreen() {
 
   const createPayment = useMutation({
     mutationFn: (suggestion: SettlementSuggestion) =>
-      financeApi.createSettlementPayment(splitGroupId, {
+      settlementApi.createSettlementPayment(splitGroupId, {
         paid_by: suggestion.paid_by,
         paid_to: suggestion.paid_to,
         amount: suggestion.amount,
@@ -84,7 +87,7 @@ export function SplitBalancesScreen() {
   });
   const confirmPayment = useMutation({
     mutationFn: (paymentId: string) =>
-      financeApi.confirmSettlementPayment(splitGroupId, paymentId),
+      settlementApi.confirmSettlementPayment(splitGroupId, paymentId),
     onSuccess: async () => {
       await Promise.all([
         invalidateSettlement(),
@@ -97,7 +100,7 @@ export function SplitBalancesScreen() {
   });
   const rejectPayment = useMutation({
     mutationFn: (paymentId: string) =>
-      financeApi.rejectSettlementPayment(splitGroupId, paymentId),
+      settlementApi.rejectSettlementPayment(splitGroupId, paymentId),
     onSuccess: invalidateSettlement,
     onError: () => Alert.alert('Payment', 'Could not reject payment.'),
   });

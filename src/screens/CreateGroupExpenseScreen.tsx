@@ -25,7 +25,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { InputField } from '../components/InputField';
 import { PrimaryButton } from '../components/PrimaryButton';
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
+import { groupsApi as financeApi } from '../hooks/groups-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
 import type {
   GroupExpenseItem,
   RootStackParamList,

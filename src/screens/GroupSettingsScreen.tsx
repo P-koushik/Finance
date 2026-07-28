@@ -17,7 +17,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ConfirmCard } from '../components/ConfirmCard';
 import { PrimaryButton } from '../components/PrimaryButton';
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
+import { groupsApi as financeApi } from '../hooks/groups-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
 import type { RootStackParamList, SharedGroupCategory } from '../types';
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;

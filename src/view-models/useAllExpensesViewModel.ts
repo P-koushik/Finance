@@ -3,7 +3,8 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useToast } from '../components/ToastProvider';
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
+import { expensesApi as financeApi } from '../hooks/expenses-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
 import type { RootStackParamList } from '../types';
 
 export function useAllExpensesViewModel() {

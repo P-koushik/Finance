@@ -23,7 +23,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { InputField } from '../components/InputField';
 import { PrimaryButton } from '../components/PrimaryButton';
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
+import { splitGroupsApi as financeApi } from '../hooks/split-groups-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
 import type { RootStackParamList, UserProfile } from '../types';
 import { formatMoneyString } from '../utils/format';
 

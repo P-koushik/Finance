@@ -14,7 +14,8 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
+import { groupsApi as financeApi } from '../hooks/groups-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
 import { appTheme } from '../styles/theme';
 import type { Group, RootStackParamList, SharedGroupCategory } from '../types';
 import { formatMoneyString } from '../utils/format';

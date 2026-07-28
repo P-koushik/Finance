@@ -14,7 +14,10 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
+import { splitGroupsApi as financeApi } from '../hooks/split-groups-api';
+import { profileApi } from '../hooks/profile-api';
+import { settlementApi } from '../hooks/settlement-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
 import { appTheme } from '../styles/theme';
 import type { RootStackParamList, SplitGroup } from '../types';
 import { formatMoneyString, getTimestamp } from '../utils/format';
@@ -43,7 +46,7 @@ export function SplitGroupsScreen() {
   const navigation = useNavigation<Navigation>();
   const profileQuery = useQuery({
     queryKey: financeQueryKeys.profile,
-    queryFn: financeApi.getProfile,
+    queryFn: profileApi.getProfile,
   });
   const splitGroupsQuery = useQuery({
     queryKey: financeQueryKeys.splitGroups,
@@ -57,7 +60,7 @@ export function SplitGroupsScreen() {
     queries: splitGroups.map(splitGroup => ({
       enabled: Boolean(splitGroup.id),
       queryKey: financeQueryKeys.splitBalances(splitGroup.id),
-      queryFn: () => financeApi.getSplitBalances(splitGroup.id),
+      queryFn: () => settlementApi.getSplitBalances(splitGroup.id),
     })),
   });
   const expenseQueries = useQueries({

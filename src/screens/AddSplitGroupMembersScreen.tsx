@@ -16,7 +16,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ConfirmCard } from '../components/ConfirmCard';
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
+import { splitGroupsApi as financeApi } from '../hooks/split-groups-api';
+import { profileApi } from '../hooks/profile-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
 import type { RootStackParamList, UserSearchResult } from '../types';
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
@@ -44,7 +46,7 @@ export function AddSplitGroupMembersScreen() {
   });
   const searchQuery = useQuery({
     queryKey: ['finance', 'user-search', searchTerm.toLowerCase()],
-    queryFn: () => financeApi.searchUsers(searchTerm),
+    queryFn: () => profileApi.searchUsers(searchTerm),
     enabled: searchTerm.length >= 3,
   });
 

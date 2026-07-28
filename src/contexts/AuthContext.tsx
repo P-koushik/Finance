@@ -22,7 +22,7 @@ import * as GoogleSignInModule from '@react-native-google-signin/google-signin';
 
 import { GOOGLE_WEB_CLIENT_ID } from '@env';
 import { queryClient } from '../lib/query-client';
-import { financeApi } from '../hooks/finance-api';
+import { profileApi as financeApi } from '../hooks/profile-api';
 
 type AuthContextValue = {
   initializing: boolean;
