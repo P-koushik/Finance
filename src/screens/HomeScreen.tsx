@@ -4,6 +4,7 @@ import {
   DimensionValue,
   Image,
   Pressable,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   StatusBar,
@@ -63,7 +64,17 @@ export function HomeScreen() {
       <StatusBar barStyle="dark-content" backgroundColor="#EEF4EE" />
 
       <View className="flex-1 bg-[#EEF4EE]">
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              colors={['#2E5D4B']}
+              onRefresh={home.refresh}
+              refreshing={home.refreshing}
+              tintColor="#2E5D4B"
+            />
+          }
+          showsVerticalScrollIndicator={false}
+        >
           <View className="px-5 pb-44 pt-2">
             <View className="flex-row items-center gap-3 pb-5">
               <Image
@@ -244,7 +255,7 @@ export function HomeScreen() {
               <Text className="text-[17px] font-black text-[#24352E]">
                 Recent activity
               </Text>
-              {home.expenses.length > 10 ? (
+              {home.expenses.length ? (
                 <Pressable
                   accessibilityRole="button"
                   hitSlop={8}
@@ -261,7 +272,7 @@ export function HomeScreen() {
               <View className="items-center py-8">
                 <ActivityIndicator color="#2E5D4B" />
               </View>
-            ) : home.expenses.length ? (
+            ) : home.visibleExpenses.length ? (
               <View className="gap-2 rounded-[24px] border border-[#EDF3ED] bg-white p-3">
                 {home.visibleExpenses.map(expense => (
                   <ExpenseCard
@@ -280,10 +291,10 @@ export function HomeScreen() {
               <View className="items-center rounded-[24px] border border-[#EDF3ED] bg-white p-7">
                 <TrendingUp color="#7FA968" size={30} strokeWidth={2.5} />
                 <Text className="mb-2 mt-3 text-[17px] font-extrabold text-[#24352E]">
-                  No expenses yet
+                  No expenses this month
                 </Text>
                 <Text className="text-center text-[14px] leading-[21px] text-[#8D9B93]">
-                  Add your first expense to start tracking total spending.
+                  Transactions from the current month will appear here.
                 </Text>
               </View>
             )}

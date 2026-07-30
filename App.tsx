@@ -207,7 +207,7 @@ function AppNavigator() {
 
 function App() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView className="flex-1">
       <QueryClientProvider client={queryClient}>
         <SafeAreaProvider>
           <ToastProvider>

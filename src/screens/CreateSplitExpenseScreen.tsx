@@ -12,6 +12,8 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   ArrowLeft,
+  CheckCircle2,
+  Circle,
   ReceiptText,
   Tag,
   UserRound,
@@ -21,8 +23,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { InputField } from '../components/InputField';
 import { PrimaryButton } from '../components/PrimaryButton';
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
-import type { RootStackParamList } from '../types';
+import { splitGroupsApi as financeApi } from '../hooks/split-groups-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
+import type { RootStackParamList, UserProfile } from '../types';
 import { formatMoneyString } from '../utils/format';
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
@@ -41,6 +44,8 @@ export function CreateSplitExpenseScreen() {
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('Food');
   const [notes, setNotes] = useState('');
+  const [paidBy, setPaidBy] = useState('');
+  const [participantIds, setParticipantIds] = useState<string[]>([]);
 
   const splitGroupQuery = useQuery({
     queryKey: financeQueryKeys.splitGroup(splitGroupId),
@@ -50,35 +55,47 @@ export function CreateSplitExpenseScreen() {
     splitGroupQuery.data?.members.filter(
       member => member.status === 'active',
     ) ?? [];
-  const paid_by = activeMembers[0]?.user.id ?? '';
   const parsedAmount = parseAmount(amount);
   const equalShare = useMemo(
     () =>
-      activeMembers.length && parsedAmount > 0
-        ? parsedAmount / activeMembers.length
+      participantIds.length && parsedAmount > 0
+        ? parsedAmount / participantIds.length
         : 0,
-    [activeMembers.length, parsedAmount],
+    [participantIds.length, parsedAmount],
   );
   const canSave =
     Boolean(title.trim()) &&
     Boolean(category.trim()) &&
     parsedAmount > 0 &&
-    activeMembers.length > 1 &&
-    Boolean(paid_by);
+    participantIds.length > 1 &&
+    Boolean(paidBy);
+
+  const toggleParticipant = (userId: string) => {
+    setParticipantIds(current =>
+      current.includes(userId)
+        ? current.filter(id => id !== userId)
+        : [...current, userId],
+    );
+  };
 
   const createExpense = useMutation({
     mutationFn: () =>
       financeApi.createSplitExpense(splitGroupId, {
         title: title.trim(),
         total_amount: amount.trim(),
-        paid_by,
+        paid_by: paidBy,
         date: new Date().toISOString(),
         category: category.trim(),
         notes: notes.trim(),
         split_type: 'equal',
-        participants: activeMembers.map(member => member.user.id),
+        participants: participantIds,
       }),
     onSuccess: async () => {
+      const profile = queryClient.getQueryData<UserProfile>(
+        financeQueryKeys.profile,
+      );
+      const currentUserId = profile?.id ?? profile?._id;
+
       await Promise.all([
         queryClient.invalidateQueries({
           queryKey: financeQueryKeys.splitExpenses(splitGroupId),
@@ -89,6 +106,13 @@ export function CreateSplitExpenseScreen() {
         queryClient.invalidateQueries({
           queryKey: financeQueryKeys.settlementSuggestions(splitGroupId),
         }),
+        ...(currentUserId === paidBy
+          ? [
+              queryClient.invalidateQueries({
+                queryKey: financeQueryKeys.profile,
+              }),
+            ]
+          : []),
       ]);
       navigation.goBack();
     },
@@ -148,6 +172,34 @@ export function CreateSplitExpenseScreen() {
           value={notes}
         />
 
+        <View className="gap-2 rounded-[22px] border border-[#EDF3ED] bg-white p-4">
+          <Text className="text-[15px] font-black text-[#24352E]">Paid by</Text>
+          {activeMembers.map(member => {
+            const selected = paidBy === member.user.id;
+
+            return (
+              <Pressable
+                accessibilityRole="radio"
+                accessibilityState={{ selected }}
+                className="flex-row items-center gap-3 rounded-[16px] bg-[#F6FAF6] px-3 py-3 active:opacity-80"
+                key={member.user.id}
+                onPress={() => setPaidBy(member.user.id)}
+              >
+                {selected ? (
+                  <CheckCircle2 color="#2E5D4B" size={19} strokeWidth={2.5} />
+                ) : (
+                  <Circle color="#9AA8A0" size={19} strokeWidth={2.2} />
+                )}
+                <Text className="flex-1 text-[13px] font-extrabold text-[#24352E]">
+                  {member.user.name ||
+                    member.user.email ||
+                    shortId(member.user.id)}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+
         <View className="gap-3 rounded-[22px] border border-[#EDF3ED] bg-white p-4">
           <View className="flex-row items-center justify-between">
             <View>
@@ -155,7 +207,7 @@ export function CreateSplitExpenseScreen() {
                 Split Equally
               </Text>
               <Text className="mt-1 text-[12px] font-bold text-[#8D9B93]">
-                {activeMembers.length} participants
+                {participantIds.length} participants
               </Text>
             </View>
             <Text className="text-[15px] font-black text-[#2E5D4B]">
@@ -163,24 +215,35 @@ export function CreateSplitExpenseScreen() {
             </Text>
           </View>
 
-          {activeMembers.map(member => (
-            <View
-              className="flex-row items-center justify-between rounded-[16px] bg-[#F6FAF6] px-3 py-3"
-              key={member.user.id}
-            >
-              <View className="flex-row items-center gap-2">
-                <UserRound color="#6E9081" size={16} strokeWidth={2.4} />
-                <Text className="text-[12px] font-bold text-[#24352E]">
-                  {member.user.name ||
-                    member.user.email ||
-                    shortId(member.user.id)}
+          {activeMembers.map(member => {
+            const selected = participantIds.includes(member.user.id);
+
+            return (
+              <Pressable
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: selected }}
+                className="flex-row items-center justify-between rounded-[16px] bg-[#F6FAF6] px-3 py-3"
+                key={member.user.id}
+                onPress={() => toggleParticipant(member.user.id)}
+              >
+                <View className="flex-row items-center gap-2">
+                  {selected ? (
+                    <CheckCircle2 color="#2E5D4B" size={17} strokeWidth={2.4} />
+                  ) : (
+                    <UserRound color="#6E9081" size={16} strokeWidth={2.4} />
+                  )}
+                  <Text className="text-[12px] font-bold text-[#24352E]">
+                    {member.user.name ||
+                      member.user.email ||
+                      shortId(member.user.id)}
+                  </Text>
+                </View>
+                <Text className="text-[12px] font-black text-[#24352E]">
+                  {selected ? formatMoneyString(equalShare) : 'Excluded'}
                 </Text>
-              </View>
-              <Text className="text-[12px] font-black text-[#24352E]">
-                {formatMoneyString(equalShare)}
-              </Text>
-            </View>
-          ))}
+              </Pressable>
+            );
+          })}
         </View>
 
         <PrimaryButton

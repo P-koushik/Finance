@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import {
   ActivityIndicator,
   Pressable,
+  RefreshControl,
   ScrollView,
   StatusBar,
   Text,
@@ -13,7 +14,10 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
+import { splitGroupsApi as financeApi } from '../hooks/split-groups-api';
+import { profileApi } from '../hooks/profile-api';
+import { settlementApi } from '../hooks/settlement-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
 import { appTheme } from '../styles/theme';
 import type { RootStackParamList, SplitGroup } from '../types';
 import { formatMoneyString, getTimestamp } from '../utils/format';
@@ -42,7 +46,7 @@ export function SplitGroupsScreen() {
   const navigation = useNavigation<Navigation>();
   const profileQuery = useQuery({
     queryKey: financeQueryKeys.profile,
-    queryFn: financeApi.getProfile,
+    queryFn: profileApi.getProfile,
   });
   const splitGroupsQuery = useQuery({
     queryKey: financeQueryKeys.splitGroups,
@@ -56,7 +60,7 @@ export function SplitGroupsScreen() {
     queries: splitGroups.map(splitGroup => ({
       enabled: Boolean(splitGroup.id),
       queryKey: financeQueryKeys.splitBalances(splitGroup.id),
-      queryFn: () => financeApi.getSplitBalances(splitGroup.id),
+      queryFn: () => settlementApi.getSplitBalances(splitGroup.id),
     })),
   });
   const expenseQueries = useQueries({
@@ -104,6 +108,19 @@ export function SplitGroupsScreen() {
       summary.netAmount < 0 ? total + Math.abs(summary.netAmount) : total,
     0,
   );
+  const refreshing =
+    profileQuery.isRefetching ||
+    splitGroupsQuery.isRefetching ||
+    balanceQueries.some(balanceQuery => balanceQuery.isRefetching) ||
+    expenseQueries.some(expenseQuery => expenseQuery.isRefetching);
+  const refresh = async () => {
+    await Promise.all([
+      profileQuery.refetch(),
+      splitGroupsQuery.refetch(),
+      ...balanceQueries.map(balanceQuery => balanceQuery.refetch()),
+      ...expenseQueries.map(expenseQuery => expenseQuery.refetch()),
+    ]);
+  };
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-[#EEF4EE]">
@@ -152,6 +169,14 @@ export function SplitGroupsScreen() {
       ) : (
         <ScrollView
           contentContainerClassName="gap-[14px] px-5 pb-32 pt-1"
+          refreshControl={
+            <RefreshControl
+              colors={['#2E5D4B']}
+              onRefresh={refresh}
+              refreshing={refreshing}
+              tintColor="#2E5D4B"
+            />
+          }
           showsVerticalScrollIndicator={false}
         >
           {splitSummaries.map(({ netAmount, splitGroup, subtitle }, index) => {

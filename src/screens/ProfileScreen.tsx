@@ -3,6 +3,7 @@ import {
   Image,
   Modal,
   Pressable,
+  RefreshControl,
   ScrollView,
   StatusBar,
   Text,
@@ -43,6 +44,8 @@ export function ProfileScreen() {
     profileEmail,
     profileName,
     profilePicture,
+    refresh,
+    refreshing,
     saving,
     selectedDateKey,
     setAvailableAmount,
@@ -63,6 +66,16 @@ export function ProfileScreen() {
           }`}
           keyboardDismissMode="none"
           keyboardShouldPersistTaps="handled"
+          refreshControl={
+            isEditing ? undefined : (
+              <RefreshControl
+                colors={['#2E5D4B']}
+                onRefresh={refresh}
+                refreshing={refreshing}
+                tintColor="#2E5D4B"
+              />
+            )
+          }
           showsVerticalScrollIndicator={false}
         >
           <Text className="pb-5 text-[24px] font-black text-[#24352E]">

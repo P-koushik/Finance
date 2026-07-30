@@ -4,7 +4,8 @@ import { DateData } from 'react-native-calendars';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useToast } from '../components/ToastProvider';
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
+import { expensesApi as financeApi } from '../hooks/expenses-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
 import type { ExpenseCategory, RootStackParamList } from '../types';
 import { formatDateKey, formatDateTime } from '../utils/format';
 
@@ -99,6 +100,9 @@ export function useEditExpenseViewModel({
         }),
         queryClient.invalidateQueries({
           queryKey: financeQueryKeys.expense(expenseId),
+        }),
+        queryClient.invalidateQueries({
+          queryKey: financeQueryKeys.profile,
         }),
       ]);
       showToast({

@@ -1,13 +1,12 @@
 import { useCallback, useMemo, useState } from 'react';
-import {
-  NavigationProp,
-  useFocusEffect,
-  useNavigation,
-} from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import dayjs from 'dayjs';
 
 import { useToast } from '../components/ToastProvider';
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
+import { expensesApi as financeApi } from '../hooks/expenses-api';
+import { profileApi } from '../hooks/profile-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
 import type { RootStackParamList } from '../types';
 import { defaultProfile } from '../utils/profile';
 
@@ -20,6 +19,7 @@ export function useHomeViewModel() {
   const {
     data: expenses = [],
     isLoading: expensesLoading,
+    isRefetching: expensesRefetching,
     refetch: refetchExpenses,
   } = useQuery({
     queryKey: financeQueryKeys.expenses,
@@ -28,44 +28,66 @@ export function useHomeViewModel() {
   const {
     data: profile = defaultProfile,
     isLoading: profileLoading,
+    isRefetching: profileRefetching,
     refetch: refetchProfile,
   } = useQuery({
     queryKey: financeQueryKeys.profile,
-    queryFn: financeApi.getProfile,
+    queryFn: profileApi.getProfile,
   });
 
-  useFocusEffect(
-    useCallback(() => {
-      refetchExpenses();
-      refetchProfile();
-    }, [refetchExpenses, refetchProfile]),
-  );
+  const refresh = useCallback(async () => {
+    await Promise.all([refetchExpenses(), refetchProfile()]);
+  }, [refetchExpenses, refetchProfile]);
+
+  const currentMonthExpenses = useMemo(() => {
+    const currentMonth = dayjs().format('YYYY-MM');
+
+    return expenses.filter(expense => {
+      const expenseDate = dayjs(expense.date);
+
+      return (
+        expenseDate.isValid() && expenseDate.format('YYYY-MM') === currentMonth
+      );
+    });
+  }, [expenses]);
 
   const totalSpent = useMemo(
-    () => expenses.reduce((total, expense) => total + expense.amount, 0),
-    [expenses],
+    () =>
+      currentMonthExpenses.reduce(
+        (total, expense) => total + expense.amount,
+        0,
+      ),
+    [currentMonthExpenses],
   );
 
   const topCategory = useMemo(() => {
-    if (!expenses.length) return 'None';
+    if (!currentMonthExpenses.length) return 'None';
 
-    const totals = expenses.reduce<Record<string, number>>((acc, expense) => {
-      const category = expense.category ?? 'Other';
+    const totals = currentMonthExpenses.reduce<Record<string, number>>(
+      (acc, expense) => {
+        const category = expense.category ?? 'Other';
 
-      acc[category] = (acc[category] ?? 0) + expense.amount;
+        acc[category] = (acc[category] ?? 0) + expense.amount;
 
-      return acc;
-    }, {});
+        return acc;
+      },
+      {},
+    );
 
     return Object.entries(totals).sort((a, b) => b[1] - a[1])[0][0];
-  }, [expenses]);
+  }, [currentMonthExpenses]);
 
   const deleteMutation = useMutation({
     mutationFn: financeApi.deleteExpense,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: financeQueryKeys.expenses,
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: financeQueryKeys.expenses,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: financeQueryKeys.profile,
+        }),
+      ]);
       setExpenseToDelete(null);
       showToast({
         type: 'success',
@@ -97,10 +119,12 @@ export function useHomeViewModel() {
     loading: expensesLoading || profileLoading,
     monthlyBudget: profile.monthly_income,
     navigation,
+    refresh,
+    refreshing: expensesRefetching || profileRefetching,
     savingsAmount: profile.savings,
     setExpenseToDelete,
     topCategory,
     totalSpent,
-    visibleExpenses: expenses.slice(0, 10),
+    visibleExpenses: currentMonthExpenses,
   };
 }

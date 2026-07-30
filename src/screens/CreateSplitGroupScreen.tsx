@@ -16,7 +16,9 @@ import { ArrowLeft, Check, Plus, Scale } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { PrimaryButton } from '../components/PrimaryButton';
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
+import { splitGroupsApi as financeApi } from '../hooks/split-groups-api';
+import { profileApi } from '../hooks/profile-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
 import type { RootStackParamList, UserSearchResult } from '../types';
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
@@ -35,11 +37,11 @@ export function CreateSplitGroupScreen() {
 
   const profileQuery = useQuery({
     queryKey: financeQueryKeys.profile,
-    queryFn: financeApi.getProfile,
+    queryFn: profileApi.getProfile,
   });
   const usersQuery = useQuery({
     queryKey: ['finance', 'user-search', 'all'],
-    queryFn: () => financeApi.searchUsers(''),
+    queryFn: () => profileApi.searchUsers(''),
   });
 
   const users = useMemo(() => usersQuery.data ?? [], [usersQuery.data]);
