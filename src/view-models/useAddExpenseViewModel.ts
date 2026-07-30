@@ -4,7 +4,8 @@ import { DateData } from 'react-native-calendars';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { useToast } from '../components/ToastProvider';
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
+import { expensesApi as financeApi } from '../hooks/expenses-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
 import type { ExpenseCategory, RootTabParamList } from '../types';
 import { formatDateKey, formatDateTime } from '../utils/format';
 
@@ -33,9 +34,14 @@ export function useAddExpenseViewModel({ navigation }: AddExpenseScreenProps) {
   const createMutation = useMutation({
     mutationFn: financeApi.createExpense,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: financeQueryKeys.expenses,
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: financeQueryKeys.expenses,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: financeQueryKeys.profile,
+        }),
+      ]);
       setTitle('');
       setAmount('');
       setCategory('Food');

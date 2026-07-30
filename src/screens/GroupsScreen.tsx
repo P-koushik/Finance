@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import {
   ActivityIndicator,
   Pressable,
+  RefreshControl,
   ScrollView,
   StatusBar,
   Text,
@@ -13,7 +14,8 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
+import { groupsApi as financeApi } from '../hooks/groups-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
 import { appTheme } from '../styles/theme';
 import type { Group, RootStackParamList, SharedGroupCategory } from '../types';
 import { formatMoneyString } from '../utils/format';
@@ -84,6 +86,15 @@ export function GroupsScreen() {
       }, {}),
     [expenseQueries, groups],
   );
+  const refreshing =
+    groupsQuery.isRefetching ||
+    expenseQueries.some(expenseQuery => expenseQuery.isRefetching);
+  const refresh = async () => {
+    await Promise.all([
+      groupsQuery.refetch(),
+      ...expenseQueries.map(expenseQuery => expenseQuery.refetch()),
+    ]);
+  };
 
   return (
     <SafeAreaView edges={['top']} className="flex-1 bg-[#EEF4EE]">
@@ -113,12 +124,19 @@ export function GroupsScreen() {
       ) : (
         <ScrollView
           contentContainerClassName="gap-[16px] px-5 pb-32 pt-[18px]"
+          refreshControl={
+            <RefreshControl
+              colors={['#2E5D4B']}
+              onRefresh={refresh}
+              refreshing={refreshing}
+              tintColor="#2E5D4B"
+            />
+          }
           showsVerticalScrollIndicator={false}
         >
           {groups.map((group, index) => {
             const totalSpent = groupTotals[group.id] ?? 0;
-            const memberCount = Math.max(activeMemberCount(group), 1);
-            const yourShare = totalSpent / memberCount;
+            const expenseCount = expenseQueries[index]?.data?.length ?? 0;
 
             return (
               <Pressable
@@ -170,10 +188,10 @@ export function GroupsScreen() {
                   </View>
                   <View className="items-end">
                     <Text className="text-[11px] font-extrabold text-[#9AA8A0]">
-                      Your share
+                      Expenses
                     </Text>
                     <Text className="mt-0.5 text-[15.5px] font-black text-[#2E5D4B]">
-                      {formatMoneyString(yourShare)}
+                      {expenseCount}
                     </Text>
                   </View>
                 </View>

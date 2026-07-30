@@ -13,6 +13,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   ArrowLeft,
   CalendarDays,
+  CheckCircle2,
+  Circle,
   CirclePlus,
   ReceiptText,
   Tag,
@@ -23,8 +25,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { InputField } from '../components/InputField';
 import { PrimaryButton } from '../components/PrimaryButton';
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
-import type { GroupExpenseItem, RootStackParamList } from '../types';
+import { groupsApi as financeApi } from '../hooks/groups-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
+import type {
+  GroupExpenseItem,
+  RootStackParamList,
+  UserProfile,
+} from '../types';
 import { formatMoneyString } from '../utils/format';
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
@@ -44,14 +51,14 @@ export function CreateGroupExpenseScreen() {
   const [category, setCategory] = useState('Other');
   const [notes, setNotes] = useState('');
   const [items, setItems] = useState<DraftItem[]>([]);
+  const [paidBy, setPaidBy] = useState('');
 
   const groupQuery = useQuery({
     queryKey: financeQueryKeys.group(groupId),
     queryFn: () => financeApi.getGroup(groupId),
   });
-  const paid_by =
-    groupQuery.data?.members.find(member => member.status === 'active')?.user
-      .id ?? '';
+  const activeMembers =
+    groupQuery.data?.members.filter(member => member.status === 'active') ?? [];
   const parsedAmount = parseAmount(amount);
   const itemSubtotal = useMemo(
     () =>
@@ -71,7 +78,7 @@ export function CreateGroupExpenseScreen() {
     Boolean(title.trim()) &&
     Boolean(category.trim()) &&
     parsedAmount > 0 &&
-    Boolean(paid_by) &&
+    Boolean(paidBy) &&
     itemSubtotalMatches &&
     !groupQuery.isLoading;
 
@@ -80,16 +87,30 @@ export function CreateGroupExpenseScreen() {
       financeApi.createGroupExpense(groupId, {
         title: title.trim(),
         amount: amount.trim(),
-        paid_by,
+        paid_by: paidBy,
         date: new Date().toISOString(),
         category: category.trim(),
         notes: notes.trim(),
         items: usableItems,
       }),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: financeQueryKeys.groupExpenses(groupId),
-      });
+      const profile = queryClient.getQueryData<UserProfile>(
+        financeQueryKeys.profile,
+      );
+      const currentUserId = profile?.id ?? profile?._id;
+
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: financeQueryKeys.groupExpenses(groupId),
+        }),
+        ...(currentUserId === paidBy
+          ? [
+              queryClient.invalidateQueries({
+                queryKey: financeQueryKeys.profile,
+              }),
+            ]
+          : []),
+      ]);
       navigation.goBack();
     },
     onError: () => Alert.alert('Group expense', 'Could not create expense.'),
@@ -179,6 +200,32 @@ export function CreateGroupExpenseScreen() {
           placeholder=""
           value={new Date().toLocaleDateString()}
         />
+
+        <View className="gap-2 rounded-[22px] border border-[#EDF3ED] bg-white p-4">
+          <Text className="text-[15px] font-black text-[#24352E]">Paid by</Text>
+          {activeMembers.map(member => {
+            const selected = paidBy === member.user.id;
+
+            return (
+              <Pressable
+                accessibilityRole="radio"
+                accessibilityState={{ selected }}
+                className="flex-row items-center gap-3 rounded-[16px] bg-[#F6FAF6] px-3 py-3 active:opacity-80"
+                key={member.user.id}
+                onPress={() => setPaidBy(member.user.id)}
+              >
+                {selected ? (
+                  <CheckCircle2 color="#2E5D4B" size={19} strokeWidth={2.5} />
+                ) : (
+                  <Circle color="#9AA8A0" size={19} strokeWidth={2.2} />
+                )}
+                <Text className="flex-1 text-[13px] font-extrabold text-[#24352E]">
+                  {member.user.name || member.user.email || member.user.id}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
 
         <View className="gap-3 rounded-[22px] border border-[#EDF3ED] bg-white p-4">
           <View className="flex-row items-center justify-between">

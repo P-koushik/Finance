@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Keyboard } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { DateData } from 'react-native-calendars';
 
 import { useToast } from '../components/ToastProvider';
 import { useAuth } from '../contexts/AuthContext';
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
+import { profileApi as financeApi } from '../hooks/profile-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
 import { defaultProfile } from '../utils/profile';
 
 export function useProfileViewModel() {
@@ -23,16 +23,18 @@ export function useProfileViewModel() {
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  const { data: profileBalance = defaultProfile, refetch } = useQuery({
+  const {
+    data: profileBalance = defaultProfile,
+    isRefetching: refreshing,
+    refetch,
+  } = useQuery({
     queryKey: financeQueryKeys.profile,
     queryFn: financeApi.getProfile,
   });
 
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-    }, [refetch]),
-  );
+  const refresh = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
 
   useEffect(() => {
     setMonthlyBudget(
@@ -90,11 +92,8 @@ export function useProfileViewModel() {
         monthlyCreditDay: parsedCreditDay,
         income_date: selectedDateKey,
       }),
-    onSuccess: async nextProfile => {
+    onSuccess: nextProfile => {
       queryClient.setQueryData(financeQueryKeys.profile, nextProfile);
-      await queryClient.invalidateQueries({
-        queryKey: financeQueryKeys.profile,
-      });
       setIsEditing(false);
       showToast({
         type: 'success',
@@ -170,6 +169,8 @@ export function useProfileViewModel() {
     profileEmail,
     profileName,
     profilePicture,
+    refresh,
+    refreshing,
     saving: updateMutation.isPending,
     selectedDateKey,
     setAvailableAmount,

@@ -17,7 +17,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ConfirmCard } from '../components/ConfirmCard';
 import { PrimaryButton } from '../components/PrimaryButton';
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
+import { groupsApi as financeApi } from '../hooks/groups-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
 import type { RootStackParamList, SharedGroupCategory } from '../types';
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
@@ -80,9 +81,14 @@ export function GroupSettingsScreen() {
   const deleteGroup = useMutation({
     mutationFn: () => financeApi.deleteGroup(groupId),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: financeQueryKeys.groups,
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: financeQueryKeys.groups,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: financeQueryKeys.profile,
+        }),
+      ]);
       navigation.navigate('MainTabs', { screen: 'Groups' });
     },
     onError: () => Alert.alert('Group settings', 'Could not delete group.'),

@@ -1,13 +1,10 @@
 import { useCallback, useState } from 'react';
-import {
-  NavigationProp,
-  useFocusEffect,
-  useNavigation,
-} from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useToast } from '../components/ToastProvider';
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
+import { expensesApi as financeApi } from '../hooks/expenses-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
 import type { RootStackParamList } from '../types';
 
 export function useAllExpensesViewModel() {
@@ -18,24 +15,28 @@ export function useAllExpensesViewModel() {
   const {
     data: expenses = [],
     isLoading: loading,
+    isRefetching: refreshing,
     refetch,
   } = useQuery({
     queryKey: financeQueryKeys.expenses,
     queryFn: financeApi.getExpenses,
   });
 
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-    }, [refetch]),
-  );
+  const refresh = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
 
   const deleteMutation = useMutation({
     mutationFn: financeApi.deleteExpense,
     onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: financeQueryKeys.expenses,
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: financeQueryKeys.expenses,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: financeQueryKeys.profile,
+        }),
+      ]);
       setExpenseToDelete(null);
       showToast({
         type: 'success',
@@ -67,6 +68,8 @@ export function useAllExpensesViewModel() {
     handleDelete: setExpenseToDelete,
     loading,
     navigation,
+    refresh,
+    refreshing,
     setExpenseToDelete,
   };
 }

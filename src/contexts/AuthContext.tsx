@@ -22,7 +22,7 @@ import * as GoogleSignInModule from '@react-native-google-signin/google-signin';
 
 import { GOOGLE_WEB_CLIENT_ID } from '@env';
 import { queryClient } from '../lib/query-client';
-import { financeApi } from '../hooks/finance-api';
+import { profileApi as financeApi } from '../hooks/profile-api';
 
 type AuthContextValue = {
   initializing: boolean;
@@ -152,6 +152,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       );
 
       await updateProfile(credential.user, { displayName: name.trim() });
+      const idToken = await credential.user.getIdToken(true);
+      await financeApi.signIn(idToken);
     },
     [],
   );

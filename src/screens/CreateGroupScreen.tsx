@@ -16,7 +16,9 @@ import { ArrowLeft, Check, Plus, UsersRound } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { PrimaryButton } from '../components/PrimaryButton';
-import { financeApi, financeQueryKeys } from '../hooks/finance-api';
+import { groupsApi as financeApi } from '../hooks/groups-api';
+import { profileApi } from '../hooks/profile-api';
+import { financeQueryKeys } from '../hooks/finance-query-keys';
 import type { RootStackParamList, UserSearchResult } from '../types';
 
 type Navigation = NativeStackNavigationProp<RootStackParamList>;
@@ -34,7 +36,7 @@ export function CreateGroupScreen() {
 
   const usersQuery = useQuery({
     queryKey: ['finance', 'user-search', 'all'],
-    queryFn: () => financeApi.searchUsers(''),
+    queryFn: () => profileApi.searchUsers(''),
   });
 
   const users = useMemo(() => usersQuery.data ?? [], [usersQuery.data]);
